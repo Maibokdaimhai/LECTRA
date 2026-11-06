@@ -13,6 +13,8 @@ Status: consolidated planning revision for PR [#7](https://github.com/Maibokdaim
 | [System SDS](system-sds.md) | Architecture, data, transactions, identity/access, UI theme, API conventions, starter/history/notes, delivery and verification design. | Part C / #3 |
 | [Three-sprint plan](sprints/plan.md) | Sprint outcomes, timing, lab overlap, two-person rotation, risks and implementation/release gates. | Part D / #4 |
 | [Baseline review](baseline-review.md) | BASE-01–08, PD-01–03, individually dispositioned Section 8 P10/P05/P14/P15, separate Initial Review REV-08 and source limitations. | Planning review, not teammate approval or Part F evidence |
+| [Sprint 1 contract register](sprints/sprint-1/README.md), [shared conventions](sprints/sprint-1/shared-contract.md) and [Product DoD](sprints/sprint-1/product-dod.md) | Common Part E prerequisites, stable IDs, UI/API/schema/security consistency, verification/evidence/completion boundaries and remaining child-contract work. | #5 shared foundation drafted; human adoption and remaining #10-#14 acceptance pending |
+| [F-01 contract](sprints/sprint-1/f-01-authentication.md) and [STS](sprints/sprint-1/f-01-authentication-sts.md) | Proposed login/session/access UI/API/schema contract, 20 stable AC, planned verification and shared-DoD/setup gates. | Part E / #10 under #5; unreviewed, no implementation or executed tests |
 
 ## Current scope at a glance
 
@@ -23,7 +25,7 @@ Status: consolidated planning revision for PR [#7](https://github.com/Maibokdaim
 
 ## What is not provided by this planning PR
 
-Issue [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5) still needs the feature-level Sprint 1 design/UI/API/data contracts, AC, STS and Product DoD before implementation. Issue [#6](https://github.com/Maibokdaimhai/LECTRA/issues/6) prepares the evidence/PDF outline; actual Part F requires observed application tests, demonstrations, substantive teammate reviews and an accepted release. No contract, PASS result, contribution or approval may be inferred from these plans.
+Issue [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5) now has draft shared conventions/Product DoD plus the F-01 contract/STS draft. Shared human adoption and every applicable child contract's design/UI/API/data/AC/STS review/versioning remain required before its implementation; F-02-F-05 contracts remain pending. Issue [#6](https://github.com/Maibokdaimhai/LECTRA/issues/6) prepares the evidence/PDF outline; actual Part F requires observed application tests, demonstrations, substantive teammate reviews and an accepted release. No executed test, contribution or approval may be inferred from these drafts.
 
 The root README is intentionally still the initial empty file. It must become a real dependency/configuration/migrate/seed/run/build/test guide when those commands exist, before the Sprint 1 release; do not invent working commands in a planning-only document.
 
