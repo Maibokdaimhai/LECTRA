@@ -1,6 +1,6 @@
 # LECTRA — System-Level Software Design Specification
 
-Version: 0.3 (2026-11-06). Status: planning draft, not implemented or teammate-approved. Revision 0.2 added the project owner's requested cool-color theme; revision 0.3 elaborates component states, typography, responsive layouts, screen guidance and planned visual verification. No application behavior or feature scope is changed.
+Version: 0.4 (2026-11-06). Status: revised planning draft, not implemented or teammate-approved. Retains the cool-color theme from revisions 0.2–0.3. Revision 0.4 adds explicit Course/Section context, versioned starter copies, comparison semantics, private improvement notes and engineering details from the product-direction review. These are documented future features, not completed implementation.
 Related issue: [#3](https://github.com/Maibokdaimhai/LECTRA/issues/3).
 Baseline: [SRS](srs.md), [decisions](decisions.md), [features](features.md).
 
@@ -35,28 +35,63 @@ Proposed repository layout after setup: `apps/web`, `apps/api`, `prisma`, `tests
 | Entity | Important fields | Relationships / constraints |
 | --- | --- | --- |
 | User | id, email, passwordHash, role, displayName | Unique normalized email; role OWNER or RESPONDENT. |
-| Classroom | id, courseCode, title, term, ownerId | Required instructor owner; only that owner manages its surveys. |
-| Membership | classroomId, studentId | Unique pair; student role validated on seed/use. |
-| Lecture | id, classroomId, title, lectureDate | Belongs to one classroom; date denotes classroom local calendar date. |
-| Survey | id, lectureId, ownerId, title, status, mode, publishedAt, closedAt | Unique lectureId; owner must match classroom owner; transitions governed by service transaction. |
-| Question | id, surveyId, position, prompt, type, required | Unique survey/position; type RATING/TEXT in S1, SINGLE_CHOICE in S2. |
+| Course | id, code, title | Unique course code; academic context only, not an ownership boundary. Seeded read-only context. |
+| Section | id, courseId, term, sectionCode, ownerId | FK to Course and instructor; unique `(courseId, term, sectionCode)`; each owner accesses only their Sections, including when another owner teaches the same Course. |
+| Membership | sectionId, studentId | Unique pair; student role validated on seed/use. No attendance/grade data. |
+| Lecture | id, sectionId, title, lectureDate, sequence | Belongs to one Section; local calendar date plus ordering sequence. Unique `(sectionId, sequence)`; dates need not be unique. |
+| Survey | id, lectureId, ownerId, title, status, mode, publishedAt, closedAt, sourceTemplateVersionId nullable | Unique lectureId; owner must match Section owner; transitions governed by service transaction. Provenance does not grant source access or trigger live updates. |
+| Question | id, surveyId, position, prompt, type, required, category nullable, ratingMinLabel/ratingMaxLabel, sourceTemplateQuestionId nullable, metricDefinitionId nullable | Unique survey/position; type RATING/TEXT in S1, SINGLE_CHOICE in S2. Prompt/anchors/options are stored snapshots. Provenance and metric metadata are S2 additions. |
 | ChoiceOption (S2) | id, questionId, position, label | Unique question/position; selected answer must belong to its question. |
 | SurveyEligibility | surveyId, studentId | Unique pair; publication snapshot, immutable after publish. |
 | Participation | surveyId, studentId | Unique pair and FK to eligibility. The participation row is the submission-status source and carries no anonymous answer ID or per-submission timestamp. |
 | ResponseBundle | id, surveyId, identifiedStudentId nullable | S1 identifiedStudentId is required by mode-aware service validation and references eligibility. In anonymous mode it must be null. No precise per-bundle submission timestamp. |
 | Answer | bundleId, surveyId, questionId, ratingValue/textValue/optionId | Unique bundle/question; composite foreign keys keep bundle and question in the same survey; one type-specific value only; rating range CHECK 1–5. |
 | Session store | sid, session payload, expiry | Managed by connect-pg-simple in a separately named table, schema created with versioned SQL migration rather than implicit production auto-create. |
+| QuestionnaireTemplate (S2) | id, key, name | Unique stable key, e.g. `lecture-feedback`; seeded catalog, no public authoring API. |
+| TemplateVersion (S2) | id, templateId, version, state | Unique template/version; published versions are immutable; retiring a version prevents new selection but preserves old provenance. |
+| TemplateQuestion / TemplateOption (S2) | id, templateVersionId/questionId, position, category, prompt, type, required, anchors/options, metricDefinitionId nullable | Immutable definitions scoped to the template version; copying creates independent survey rows with new IDs. |
+| MetricDefinition (S2) | id, key, version, canonicalPrompt, type, min/max, anchor labels, interpretation, category | Immutable measurement identity. Source-version lineage alone is not comparability. Non-rating definitions have no numeric trend in the initial baseline. |
+| ImprovementNote (S3) | id, surveyId, ownerId, issueSummary, plannedAction, outcomeReflection nullable, status, revision, createdAt, updatedAt, appliedAt nullable | Unique surveyId; owner matches survey owner; default Planned, revision starts at 1; owner-private only. |
+| NoteStatusChange (S3) | id, noteId, actorId, fromStatus nullable, toStatus, reason nullable, changedAt | Append-only creation/status history in the same transaction as the note update. Does not store raw response excerpts or full previous note bodies. |
 
-Database CHECKs/foreign keys/unique constraints cover what can be expressed locally. Cross-table rules (e.g. owner/classroom consistency, answer type, response mode, required-question completeness) are checked by the authoritative service inside the transaction. Composite keys and relevant FK targets are specified fully in feature contracts and migrations before implementation. A unique index on `(surveyId, identifiedStudentId)` is additional protection for identified bundles; anonymous duplicate prevention uses Participation uniqueness.
+Database CHECKs/foreign keys/unique constraints cover what can be expressed locally. Cross-table rules (e.g. owner/Section consistency, answer type, response mode, required-question completeness) are checked by the authoritative service inside the transaction. Composite keys and relevant FK targets are specified fully in feature contracts and migrations before implementation. A unique index on `(surveyId, identifiedStudentId)` is additional protection for identified bundles; anonymous duplicate prevention uses Participation uniqueness.
+
+`Classroom` in previous drafts is replaced by `Section`, not retained as a second overlapping entity. The repository has no implemented schema or migration yet; this is a planning correction, not a claim that a production migration ran. Resolve access through `Survey → Lecture → Section → owner` and validate redundant `Survey.ownerId`/`ImprovementNote.ownerId` consistently; never trust the supplied Course, Section or owner ID. Course-level aggregation always starts from owned Sections.
+
+```mermaid
+erDiagram
+    COURSE ||--o{ SECTION : offers
+    USER ||--o{ SECTION : owns
+    SECTION ||--o{ MEMBERSHIP : enrolls
+    USER ||--o{ MEMBERSHIP : joins
+    SECTION ||--o{ LECTURE : contains
+    LECTURE ||--o| SURVEY : evaluates
+    SURVEY ||--o{ QUESTION : defines
+    SURVEY ||--o{ SURVEY_ELIGIBILITY : snapshots
+    SURVEY_ELIGIBILITY ||--o| PARTICIPATION : records
+    SURVEY ||--o{ RESPONSE_BUNDLE : collects
+    RESPONSE_BUNDLE ||--o{ ANSWER : contains
+    QUESTION ||--o{ ANSWER : receives
+    QUESTIONNAIRE_TEMPLATE ||--|{ TEMPLATE_VERSION : versions
+    TEMPLATE_VERSION ||--|{ TEMPLATE_QUESTION : defines
+    TEMPLATE_QUESTION o|--o{ QUESTION : copied_from
+    METRIC_DEFINITION o|--o{ QUESTION : measures
+    SURVEY ||--o| IMPROVEMENT_NOTE : informs
+    IMPROVEMENT_NOTE ||--|{ NOTE_STATUS_CHANGE : records
+```
+
+The diagram intentionally has no Participation → anonymous ResponseBundle association. Identified bundles have a student FK as stated in the table; the absence of a drawn link is not a claim of anonymous Sprint 1 storage. A template/question provenance link points to an immutable source definition, never to live display text.
 
 Published questions/eligibility are immutable and cannot be removed through application routes. Draft deletion cascades Draft questions only after owner/state checks. Published records have no hard-delete application operation. Schema migration and deletion behavior must preserve submitted associations.
 
 ## 3. Transactions and concurrency
 
-1. Publish locks the owned Survey row, checks Draft state, validates questions/lecture and candidate membership, creates the eligibility snapshot, then commits Published state atomically.
+1. Every Draft mutation, deletion and publication locks the same Survey row before checking state. Publish validates questions, owned Course/Section/Lecture and candidate membership, creates the eligibility snapshot, then commits Published state atomically. This prevents an edit racing publication from changing a published question after a stale Draft check.
 2. Submit locks the Survey row before reading its authoritative state, verifies the session student is eligible, checks typed answers, inserts unique Participation, bundle and all answers, and commits together.
 3. Close takes the same row lock and changes Published to Closed. The lock/commit order defines BR-11, not arrival order at the browser or a client timestamp.
 4. Concurrent duplicates are rejected by the database unique constraint even if both requests passed an earlier check. Map the constraint to a safe domain error; no partial answers remain.
+5. New survey creation, starter application and duplicate-to-Draft check the owned target lecture and rely on unique `Survey.lectureId` under concurrency. Copy all definitions or none; no partly populated Draft is returned as successful.
+6. Note creation locks/checks the survey's Closed/result-visible state and uses unique surveyId. Note edits check owner and expected revision, update with a revision increment, and append any status transition atomically. A stale edit returns 409 with no lost update or partial history row.
 
 Serialize per-survey submissions initially to keep correctness simple for a small classroom. Keep lock duration short; do not hash passwords, call external services or render results while holding it. Retry recognized deadlock/serialization failures only with a bounded policy defined in the contract. A lost confirmation never permits a second write; the student checks their persisted submission status.
 
@@ -67,7 +102,7 @@ Prisma transaction APIs depend on the pinned ORM version. This SDS specifies beh
 - Login accepts email/password, compares an Argon2id password hash, returns a generic invalid-credentials message and never logs credentials. Seeded accounts are sufficient; no signup/recovery endpoints.
 - Regenerate the session ID after successful authentication. Store only the minimum server-side identity data; re-resolve user role/permissions from trusted storage on protected requests.
 - Use PostgreSQL session storage, not process-local MemoryStore. Set `resave: false` and `saveUninitialized: false`; pin and verify compatible middleware/store versions.
-- Cookie: `HttpOnly`, `SameSite=Lax`, `Path=/`, fixed eight-hour expiry without rolling renewal; `Secure` in HTTPS deployment. Local HTTP development may disable Secure explicitly.
+- Cookie: `HttpOnly`, `SameSite=Lax`, `Path=/`, fixed eight-hour expiry without rolling renewal; `Secure` in HTTPS deployment. Local HTTP development may disable Secure explicitly. Store authentication time and enforce the absolute eight-hour age server-side as well; cookie/store refresh behavior must not silently extend the authenticated lifetime.
 - `GET /api/auth/me` returns the current safe user identity or 401. Expired or missing sessions cannot access protected routes.
 - `POST /api/auth/logout` destroys the server session and clears the cookie; subsequent replay of that cookie is unauthorized. Logout is idempotent.
 - State-changing browser requests require a synchronizer CSRF token in `X-CSRF-Token`, including login/logout, plus Origin checking against the configured application origin. A session endpoint bootstraps the token. Do not treat SameSite alone as the complete CSRF control.
@@ -80,7 +115,7 @@ All entries are backend rules. Inaccessible record identifiers return 404 to avo
 | Operation | Respondent | Owner |
 | --- | --- | --- |
 | Login/logout/me | Own session | Own session |
-| List contexts | Eligible Published/Closed surveys only | Owned classrooms/lectures/surveys only |
+| List contexts | Eligible Published/Closed surveys only | Course context through owned Sections, owned lectures/surveys only |
 | Read Draft / create/edit/delete Draft | Denied | Own only |
 | Publish/close | Denied | Own only |
 | Read survey for answering | Eligible Published/Closed; submitting requires Published | Own preview; cannot submit as student |
@@ -90,10 +125,15 @@ All entries are backend rules. Inaccessible record identifiers return 404 to avo
 | Read anonymous answers by identity | No such operation | No such operation |
 | Read results/text | Denied | Own; count while Published, results after Closed under threshold policy |
 | Export aggregates (S2) | Denied | Same constraints as results |
+| Preview starter catalog/version (S2) | Denied | Read published selectable seeded versions; no template-edit API |
+| Apply starter / duplicate survey (S2) | Denied | Own target lecture; source survey must also be owned; create Draft only |
+| Read history/trends (S3) | Denied | Owned Sections only; comparison/suppression rules still apply |
+| Create/read/edit improvement note (S3) | Denied, including eligible respondents | Own Closed survey with visible results; note private; revision checks on writes |
+| Share improvement note | No baseline operation | No baseline operation |
 
 ## 6. UI and API conventions
 
-Main screens: login; student eligible-survey list, answering form and confirmation/own-status view; instructor survey list, Draft editor, survey detail/publication/closing controls, and results. Later additions: mode selection, single-choice/subset controls, CSV action, history filters/trends.
+Main screens: login; student eligible-survey list, answering form and confirmation/own-status view; instructor survey list, Draft editor, survey detail/publication/closing controls, and results. Course/Section/Lecture context is visible in creation and answering flows. Later additions: mode selection, starter preview/apply, single-choice/subset controls, CSV action, history filters/trends and owner-private improvement note panel.
 
 Every screen defines loading, empty, validation, unauthorized/expired-session and safe unexpected-error states. Disable repeated UI submission for feedback, but rely on backend/DB protection. Clear private cached UI state on logout. Result views never receive hidden identity fields. Do not display blank required text as valid or a null mean as zero.
 
@@ -203,12 +243,13 @@ Sprint 1 implements the light theme only. A dark-mode toggle is outside the curr
 | Destructive button | Error foreground on white with error border for a secondary destructive choice; solid error color with white label only for the final destructive confirmation. | Darken within the error family; no blue hover override. | Shared visible focus treatment. | Preserve the reason the action is unavailable; never present destructive completion as success before server confirmation. |
 | Text input / textarea | White surface, text token, control border, 12px internal padding. Persistent label above. | Border may use primary; no shadow required. | Primary border plus shared focus outline. | Validation adds error border, linked message and `aria-invalid`; errors remain visible until corrected/revalidated. |
 | Rating group | Five equal-height labelled radio options, white surface and control borders. | Muted/blue-soft surface without implying committed selection. | Blue/white selected option plus checked indicator; native radio keyboard behavior. | Display group-level validation; never preselect a score. |
+| Single-choice group (S2) | Labelled option radio list; each option wraps inside a ≥44px target. | Muted/blue-soft surface without selecting until activation. | Checked indicator and primary emphasis; native radio keyboard behavior. | Group-level errors; optional questions can remain unanswered. |
 | Badge | Semantic foreground/background, 8px horizontal/4px vertical padding, text label. | No hover behavior unless it is actually a control. | Static badges are not tab stops. | State remains readable; use actual survey/participation state from the backend. |
 | Survey card | White surface, subtle border, 12px radius, title and metadata, one clear action. | Only interactive parts receive control hover styling. | A named title link or explicit action, not multiple nested interactive card layers. | Closed/submitted status keeps a suitable view action; it does not look like a fresh submit action. |
 
 Shared focus treatment is a 2px `--color-focus` outline with a 2px surface-colored gap. Check it on every actual surrounding surface; keep it outside clipping containers and visible beneath sticky headers. Use real `button`, `a`, `input`, `textarea` and radio controls before adding ARIA. Icon-only controls need an accessible name and a ≥44px hit area; decorative icons are hidden from assistive technology. No tooltip is required to understand a core action.
 
-Question validation appears after an attempted submission or after the user leaves an edited field, rather than immediately marking an untouched empty form as wrong. On failed submission, show an error summary with links to invalid fields and move focus to it. Keep all entered answers available while validation or a recoverable request error is shown. A score is required only when the question's stored required flag says so.
+Question validation appears after an attempted submission or after the user leaves an edited field, rather than immediately marking an untouched empty form as wrong. On failed submission, show an error summary with links to invalid fields and move focus to it. Keep all entered answers available while validation or a recoverable request error is shown. A score is required only when the question's stored required flag says so. Optional rating/single-choice groups provide an explicit `Clear answer` control after selection; required groups do not silently default to a score. Clearing removes the value rather than sending null as an invented answer.
 
 #### 6.1.6 Responsive application shell
 
@@ -229,13 +270,16 @@ Avoid a fixed mobile submit bar in Sprint 1; put the action at the end of the fo
 | Screen | Content hierarchy and theme | Primary action and state handling |
 | --- | --- | --- |
 | Login | Pale page background, white centred card, LECTRA name, brief purpose, labelled email/password fields. No decorative illustration is required. | `Log in`; generic credential error in an inline error panel, no invented success state; preserve email but do not persist the password. |
-| Student survey list | Page title, classroom/lecture context, survey cards with Published/Closed and own submission status as separate labels. | `Answer survey` only when eligible, Published and not submitted; otherwise `View submission` where applicable. Closed-unsubmitted entries explain that collection ended. |
+| Student survey list | Page title, Course/Section/Lecture context, survey cards with Published/Closed and own submission status as separate labels. | `Answer survey` only when eligible, Published and not submitted; otherwise `View submission` where applicable. Closed-unsubmitted entries explain that collection ended. |
 | Answering form | Lecture title, privacy notice, required-question explanation, ordered white question sections and rating/text controls. | `Submit feedback`; show a persistent busy state while sending and confirmation only after the API confirms persistence. No automatic reset on a recoverable error. |
 | Submission confirmation / own record | Success panel, survey/lecture title and persisted submission status. Own identified answers appear as readable content rather than enabled editing controls. | `Back to surveys`; no edit/resubmit promise. Future anonymous mode shows participation status without a user-linked answer view. |
-| Instructor survey list | Owned classroom/lecture filters and cards/table; state badges are consistent with the student view. | `Create survey`; empty state explains that no owned surveys exist and links to creation only when an owned lecture is available. |
+| Instructor survey list | Owned Course/Section/Lecture filters and cards/table; state badges are consistent with the student view. | `Create survey`; empty state explains that no owned surveys exist and links to creation only when an owned lecture is available. |
 | Draft editor | Title/context first, ordered question blocks, question type/required controls, validation and saved Draft state. | `Save draft`; place `Publish survey` in a distinct action group with an irreversible-structure-lock explanation. Do not show a saved label before persistence. |
 | Published detail / closing | Teal Published badge, read-only question structure and response count. Results/text are withheld until Closed. | `Close survey` opens a warning dialog explaining that responses stop and reopening is unsupported. Keep the actual server state visible if closing fails. |
 | Closed results | Neutral Closed badge; labelled metrics, per-question distributions and text-feedback sections. | No Sprint 1 export control. Future CSV is subject to the same result permissions; do not render a disabled placeholder as an implemented feature. |
+| Starter selection (S2) | Course/Section/Lecture context, blank-versus-starter choice, source name/version and four-category preview. | `Use starter`; create an independent Draft, then use the existing editor. Never apply over an already populated Draft or update historical surveys silently. |
+| History / trends (S3) | Owned Course/Section filters, lecture dates/states, visible per-lecture counts and compatible-metric labels. | Inspect a lecture or compatible series; show why hidden/incomparable data is excluded without exposing its values. |
+| Teaching Improvement Note (S3) | Private label, issue/action/reflection fields, Planned/Applied badge and update/version information in the owned Closed-results screen. | `Save note` / explicit status change; no share control. A stale edit preserves unsent text and offers reload/reapply, not silent overwrite. |
 
 A privacy notice uses blue-soft or muted surfaces, plain language and a visible mode label. For identified surveys, explain that answers are linked to the account in storage although owner results omit identity labels. For future anonymous surveys, show the reviewed limitations and minimum-count rule without implying that text cannot identify its author. The notice is informational; do not invent a consent checkbox or a legal assurance outside the baseline.
 
@@ -291,12 +335,15 @@ Candidate endpoint families, to be finalized with payloads in Issue #5:
 | Family | Planned paths |
 | --- | --- |
 | Session | `GET /api/auth/session`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` |
-| Context/discovery | `GET /api/classrooms`, `GET /api/classrooms/:id/lectures`, `GET /api/surveys` |
+| Context/discovery | `GET /api/courses`, `GET /api/sections`, `GET /api/sections/:id/lectures`, `GET /api/surveys` |
 | Survey | `POST /api/surveys`, `GET/PATCH/DELETE /api/surveys/:id`, `POST /api/surveys/:id/publish`, `POST /api/surveys/:id/close` |
 | Response | `POST /api/surveys/:id/responses`, `GET /api/surveys/:id/my-submission` |
 | Results | `GET /api/surveys/:id/results`, later `GET /api/surveys/:id/export.csv` |
+| Starter/copy (S2) | `GET /api/questionnaire-templates`, `GET /api/questionnaire-templates/:id/versions/:version`, `POST /api/surveys` with a source selector, `POST /api/surveys/:id/copies` |
+| History/trends (S3) | `GET /api/surveys` with owned filters, `GET /api/analytics/lecture-trends` with an exact metric-definition ID |
+| Improvement notes (S3) | `GET/POST/PATCH /api/surveys/:id/improvement-note`; no public/share/delete route |
 
-List endpoints use bounded pagination; the default/maximum and filtering schemas must be specified in feature contracts. JSON request bodies are bounded at 64 KiB initially. Zod validates payload shape; the application validates database-backed eligibility/state/ownership in the same transaction that writes. Do not accept supplied `ownerId`, `role` or `studentId` as actor identity.
+List endpoints use bounded pagination with default 20 and maximum 100 records; cap offset at 10,000 and use deterministic sorting with an ID tiebreaker. Filter dates are validated calendar dates; reject invalid/inverted ranges. JSON request bodies are bounded at 128 KiB so ten 2,000-code-point answers fit even with four-byte UTF-8 characters; return 413 for a transport-limit breach rather than implying a persisted partial response. Zod validates payload shape; the application validates database-backed eligibility/state/ownership in the same transaction that writes. Do not accept supplied `ownerId`, `role` or `studentId` as actor identity. Feature contracts finalize endpoint payloads, pagination envelopes, exact codes and boundary tests before implementation.
 
 ## 7. Anonymous-mode design boundary and gate
 
@@ -310,7 +357,7 @@ F-06 is blocked until OPEN-04 is resolved in a reviewed contract. Do not enable 
 
 ## 8. Database setup, configuration and delivery
 
-Version domain schema and custom session/constraint SQL together through Prisma migrations. A documented seed produces at least two owners in distinct classrooms, multiple students including one ineligible/cross-class student, memberships and lectures. Tests use a dedicated PostgreSQL test database; never reset the development or deployed database during tests. Seeds are repeatable against a disposable demo database, hash local demo passwords and avoid real student records.
+Version domain schema and custom session/constraint SQL together through Prisma migrations. A documented seed produces at least two owners in distinct Sections (including Sections of the same Course), at least six students for threshold testing, one ineligible/cross-Section student, memberships and multiple lectures. Tests use a dedicated PostgreSQL test database; never reset the development or deployed database during tests. Seeds are repeatable against a disposable demo database, hash local demo passwords and avoid real student records. Versioned starter data is added in S2; note/trend fixtures in S3. Do not pre-seed an unimplemented feature and present it as working product behavior.
 
 Configuration plan: `DATABASE_URL`, dedicated `TEST_DATABASE_URL`, `SESSION_SECRET`, `APP_ORIGIN`, `PORT`, `NODE_ENV`, and local-only demo seed credentials. Commit variable names/examples only. Obtain demo passwords via local seed/private course handoff, not real secrets in Git/PDF. Reject missing required production configuration.
 
@@ -322,12 +369,125 @@ GitHub Actions will run build/unit/integration/selected E2E checks on relevant P
 
 Vitest covers validation/summary/state logic; Supertest drives Express with real PostgreSQL for permissions/transactions/retrieval; Playwright covers owner publish → student submit → owner closed-results and selected rejection journeys. Preserve meaningful TDD failures before corrections. Mock-only persistence is insufficient.
 
-Current state: documentation only; no application, installed dependencies, migrations, tests, runtime commands or measured results. OPEN-01/02/04/05 remain review/setup gates. Feature-level contracts must finalize request/response shapes, schema details and test cases before each implementation.
+Current state: documentation only; no application, installed dependencies, migrations, application tests, runtime commands or measured product results. Documentation consistency checks are separate from application tests. Review/setup/privacy/resource gates are listed in the [decision log](decisions.md). Feature-level contracts must finalize request/response shapes, schema details and test cases before each implementation. No human teammate review is inferred from an AI documentation audit.
 
-## Technical references
+The following design sections complete the system-level context for later contracts. They specify intended behavior and constraints without claiming installed packages, executable endpoints, migrations or test results.
+
+## 10. Starter Questionnaire lifecycle and copy isolation
+
+F-07 reuses the Draft editor; it is not a separate survey builder. The seed supplies one catalog entry and immutable version 1 with the four questions in the SRS. Template ownership administration and arbitrary template CRUD are excluded.
+
+1. Owner chooses an owned Course/Section/Lecture without an existing survey.
+2. Owner chooses blank survey or a specific published starter version. Preview displays name/version, ordered prompts, categories, types, required flags and rating anchors.
+3. API receives the exact source version ID, never a moving `latest` alias. Recheck that the selected version remains selectable and the target lecture is still available.
+4. In one transaction create the Draft, fresh questions/options, source provenance and any permitted immutable metric references. A source and target row never share the same mutable Question/Option identity.
+5. Owner edits the new Draft with the existing 1–10 question/type/required constraints. Removing a copied question does not remove the template question. Added questions start without certified metric comparability.
+6. Publication freezes the copied definitions and eligible set under the existing lifecycle; rendering/results read survey snapshots, not template text.
+
+Template revision appends version 2 and its definitions through reviewed seed/migration work; never overwrite published version 1. Retiring a version hides it from new selection but cannot break old provenance. Foreign-key deletion behavior is RESTRICT for referenced published source versions/metric definitions. A copied survey may have customized text while preserving `sourceTemplateQuestionId` as provenance; provenance is not evidence of an unchanged measurement.
+
+Duplicate-to-Draft copies an owned survey into a different owned lecture without a survey. Copy only definitions/provenance, reset state to Draft, set mode to identified by default, clear publication/closure fields, and recompute eligibility on later publication. Do not copy answers, Participation, historical eligibility snapshots, timestamps or notes. A uniqueness conflict on target lecture returns 409 without a partially created survey.
+
+## 11. Measurement meaning and analysis boundaries
+
+Rating questions store visible 1/5 anchors and interpretation in their frozen definitions; the author must make clear whether the scale is understanding, clarity, speed or another construct. S1 authoring contracts must capture this meaning before publication. S2 adds optional immutable `MetricDefinition` provenance for exact, trusted starter-derived ratings. Existing custom S1 questions are not retroactively grouped by matching titles.
+
+| Change before publication | Template provenance | Comparable metric |
+| --- | --- | --- |
+| Reorder question | Keep source reference. | Keep when measurement unchanged. |
+| Change required/optional | Keep source reference. | Keep, but show answered/eligible denominators and disclose differing completion rules. |
+| Edit prompt, type, scale anchors or interpretation | Keep source reference as provenance only. | Clear inherited metric reference; do not let the client force it back. |
+| Change category | Keep source reference. | Category is grouping metadata, not a comparison key; metric remains only if the measurement definition is still exact. |
+| Add a new custom question | No source reference. | No automatic certified metric. |
+
+An edit back to apparently matching text does not automatically restore a cleared metric; re-create from the immutable source or perform an explicit reviewed future mapping change. Do not infer semantic equivalence with AI or fuzzy text matching. The initial trend implementation compares exact rating metric versions, not single-choice distributions with changing options.
+
+History queries constrain `Section.ownerId` before aggregation. Filters may span multiple Sections of the same Course only when that instructor owns them, with Section boundaries labelled. Each comparison record includes Course/Section, lecture title/date, survey state/mode, metric version, eligible count, submitted count, answered count, mean and distribution where visible. Do not expose suppressed statistics, text or per-student participation. A mixed response mode or required-flag difference is explicitly labelled rather than silently implying equal sampling conditions.
+
+For ratings, compute sum/count using valid answered values and round only for presentation. Per-lecture means stay separate; no pooled Course/instructor score is included. Date filters on `lectureDate` are inclusive ISO calendar dates; timestamps such as publication/closure/note changes use UTC instants and display in the configured course timezone (initially Asia/Bangkok). UI dates must not shift when the browser has another timezone.
+
+## 12. Teaching Improvement Notes
+
+F-10 is an owner-private reflection/action workflow attached to the existing Closed-results screen. The initial implementation has no student visibility, sharing toggle, discussion, notification, automatic feedback import or AI synthesis. This keeps raw feedback from being republished and keeps the Sprint 3 workload bounded. It supports recording an instructor's response to feedback; communicating that response to students is a deferred scope decision.
+
+| Field | Planned validation / exposure |
+| --- | --- |
+| issueSummary | Required, trimmed nonblank, 1–2,000 Unicode code points, plain text. |
+| plannedAction | Required, trimmed nonblank, 1–2,000 code points, plain text. |
+| outcomeReflection | Optional up to 2,000; nonblank required to enter Applied. Does not certify effectiveness. |
+| status | Planned or Applied; create Planned only. |
+| revision | Server integer starting at 1; request supplies the last-read revision when updating; increment once per committed edit. |
+| appliedAt | Server UTC timestamp when entering Applied; cleared when returning to Planned; previous transition remains in history. |
+| ownerId / surveyId | Resolved/validated through authenticated survey ownership, never a permission grant from the request. |
+
+| Transition | Preconditions | Atomic effects |
+| --- | --- | --- |
+| None → Planned | Owned Closed survey with visible results; no existing note; valid issue/action. | Create note and creation status-history entry. |
+| Planned → Planned or Applied → Applied | Correct revision; valid fields; Applied still has nonblank reflection. | Edit fields, increment revision; no fake status-change row. |
+| Planned → Applied | Correct revision and nonblank outcome reflection. | Set Applied/appliedAt, increment revision, append transition. |
+| Applied → Planned | Correct revision and nonblank return reason up to 500 code points. | Clear current appliedAt, increment revision, append transition/reason. |
+
+Do not allow an arbitrary status value, a missing revision on PATCH, creation against an unowned/open/suppressed survey, or two notes after concurrent create. Missing revision is a validation error; stale revision or duplicate note returns 409. If the note exists but survey access fails, do not reveal that existence. Read and write guards both require current result visibility; use the same centralized policy as results/export rather than a second inconsistent threshold implementation.
+
+Keep the author's unsent edits in component memory on a conflict, offer reload and deliberate reapply, and do not silently resubmit with the new revision. No server-side note autosave/history of every body edit is promised. Status history records the actor/time/transition, not a copy of raw student feedback or credentials. No hard-delete API is included; correction uses normal edit/status behavior.
+
+Privacy defaults: never populate a note with a raw student comment automatically; no student name/answer-bundle link; exclude all note content/status/history from respondent endpoints, aggregate CSV and trend exports. A later shared-notes design must define a separately reviewable public summary, audience eligibility, redaction, publication/retraction and corresponding access tests before scope acceptance.
+
+## 13. API projection, export and failure safety
+
+All result consumers call one ownership/state/privacy policy and one aggregate projection. Owner access alone does not override Closed-state or anonymous-threshold rules. Do not retrieve broad raw records and hide fields only in React. Parameterize queries; validate sort/filter identifiers against an allowlist rather than interpolating request strings into SQL.
+
+| Response projection | Permitted content | Explicit omissions |
+| --- | --- | --- |
+| Respondent survey | Frozen questionnaire/context, mode disclosure, own eligibility/submission status. | Other respondents, owner results/notes, internal privacy correlations. |
+| Own identified submission | Own stored answers and status within eligible survey. | Other bundles and private notes. |
+| Own anonymous submission status | Submitted boolean and survey/context ID. | Answer bundle ID/content/timing or a recovery token joining identity to answers. |
+| Published owner results | Survey/context/state and total submitted count. | Scores, distributions, text, individual participants and notes. |
+| Closed owner results | Authorized aggregates and plain-text comments, or count plus suppression reason. | Respondent identity, per-bundle ID/timestamp, participation list, hidden suppressed values. |
+| Private note | Note body/status/revision and permitted status history to its owner only. | No copying into any other result/student/export payload. |
+
+Aggregate CSV uses a fixed schema: Course code, Section/term, lecture title/date, survey ID/title/mode, question ID/category/prompt/type, answered count, mean where applicable, and rating score or choice-option counts. These are per-question aggregate rows, not per-person rows. Include denominator metadata and a documented format version; no names, student IDs, raw answers/comments, notes or authentication data. Required-flag/metric metadata may accompany compatible analysis but do not imply instrument validity.
+
+Quote fields and escape embedded quotes/delimiters/newlines. Neutralize spreadsheet-formula prefixes in user-authored text cells (including leading control/whitespace cases) under a reviewed export policy, preserving real numeric aggregate cells as numeric values. Test formula-like titles, Thai text, commas, quotes, multiline prompts and null means. Ordinary CSV quoting alone is not a formula-injection defense; no universal protection for every reader/save-and-reopen transformation is claimed. Use a server-generated safe filename and `text/csv; charset=utf-8` with attachment disposition; the feature contract records whether a UTF-8 BOM is included for the target spreadsheet reader and any compatibility caveats.
+
+Private responses use no-store cache headers; avoid persistent browser caches of identity, responses or notes. Application logs exclude request/response bodies, passwords, cookies, session/CSRF values, raw feedback and user-to-anonymous-bundle correlations. Operational error codes may be logged without sensitive values; detailed logging/retention for F-06 remains a reviewed privacy gate. Do not expose debug endpoints or seed operations in the public API.
+
+Unexpected transaction/database failures roll back and return safe errors; constraint conflicts map to named domain errors. Never convert an exception into a success confirmation. Use a generic 500 response for unexpected failures and retain safe diagnostic context. Frontend reads may offer explicit retry; ambiguous submission timeouts use own-status lookup before a second send. Exact error codes/shapes and CSRF/session failure cases belong in each feature contract.
+
+## 14. Schema evolution, reproducible fixtures and operability
+
+Proposed increments are additive: S1 User/Course/Section/Membership/Lecture/Survey/Question/Eligibility/Participation/ResponseBundle/Answer plus session store; S2 adds template/version/metric/options and anonymous-mode enforcement; S3 adds notes/status history and history-query indexes. Keep existing question snapshots authoritative when adding template metadata. No automatic prompt-based metric backfill and no anonymous relabelling of identified historical answers.
+
+Index ownership/context/history lookup paths (`Section.ownerId`, `Lecture.sectionId/lectureDate`, `Survey.lectureId/status`, question survey/order), eligibility/participation composite keys, Answer bundle/question and note survey ID. Validate actual query plans before adding broader indexes for the NFR-04 load target. Results remain derived; no separate stale materialized dashboard is required.
+
+Demonstration/test fixtures must include: two owner Sections in the same Course; a student in one Section only; a student eligible for more than one lecture; no-answer/optional-answer surveys; 1/5/invalid rating boundaries; another owner's Draft; concurrent submit/close scenarios; anonymous Closed surveys at four and five submissions; source starter versions with a customized independent copy; comparable/incomparable lecture metrics; and Planned/Applied notes plus stale revisions. These are future fixture requirements, not existing generated evidence.
+
+Run migrations explicitly before serving the new code; record applied schema version and fail safely if required schema/configuration is unavailable. Never regenerate demo data on application startup or perform destructive reset during deploy. A rollback must use code compatible with the current schema or a reviewed forward correction; do not promise destructive migration rollback without a data recovery plan.
+
+For Lab 5, separate development, test and deployed database credentials, least-privilege runtime identity and migration privileges. Confirm backup/restore availability and describe the reproducible restore procedure with the actual GCP resources provided. Do not claim a tested backup, availability target or zero-downtime upgrade until demonstrated. Operational health endpoints expose only minimal status, not database credentials, schema contents or answers.
+
+## 15. Verification responsibility and contract readiness
+
+| Area | Unit plan | Real API/database plan | Selected UI / manual plan |
+| --- | --- | --- | --- |
+| Identity/access | Session-age/validation helpers. | Valid/invalid login, logout replay, expiry, CSRF, role/owner/cross-response matrix. | Login/logout and expired-session recovery. |
+| Survey lifecycle | State/definition validation. | Draft edit versus publish locks, one survey per lecture, ownership, snapshot and close/submit ordering. | Owner create/publish/close with persisted state. |
+| Response | Type/required/Unicode validation. | Atomic save/rollback, unique concurrent participation, wrong-question rejection and restart retrieval. | Student answer/confirmation/own identified readback and rejection. |
+| Results | Mean/count/optional denominator. | Shared authorization/projection, no hidden identity data, no-answer and Closed-state policy. | Labelled charts/tables, no false zero, text display. |
+| Anonymous | Privacy helper/threshold logic. | Storage/API/log/export inspection, own-status separation, four/five boundary and metadata risks. | Truthful disclosure, status-only self view, suppressed results. |
+| Starter/copy | Definition/metric invalidation helpers. | Atomic independent copy, immutable versions, customizations and no copied responses/notes. | Preview → use starter → customize → publish. |
+| Trend | Comparable-metric and denominator rules. | Owner scope before aggregate, exclude hidden data and incompatible metrics. | Filtered lecture series with scale/context/counts. |
+| Notes | Field/status transition rules. | Private ownership, state/threshold guard, unique create, revision conflict and atomic status history. | Review results → create/edit Planned → Applied; conflict and unauthorized cases. |
+
+F-01–05 require their complete AC/STS/DoD before implementation under Issue #5. F-06–10 need a feature contract before their own work starts, but their full endpoint details and executable tests are not required for Deliverable 1. The new system descriptions provide enough entities, ownership, dependencies and planned verification to allocate them now; they do not replace feature-level design, substantive teammate review or actual evidence.
+
+## Reference links
 
 - [Express session middleware](https://expressjs.com/en/resources/middleware/session/): server-side session model and store/cookie options.
 - [connect-pg-simple](https://github.com/voxpelli/node-connect-pg-simple): PostgreSQL session-store setup and schema.
 - [Prisma transactions](https://www.prisma.io/docs/orm/fundamentals/transactions): transaction semantics; use the documentation matching the pinned version during setup.
 - [WCAG 2.2: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html): text contrast targets for the selected palette.
 - [WCAG 2.2: Non-text Contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html): essential control, state and chart indicators.
+- [PostgreSQL explicit locking](https://www.postgresql.org/docs/current/explicit-locking.html): row locks and transaction concurrency; use the documentation for the pinned PostgreSQL version at implementation time.
+- [PostgreSQL constraints](https://www.postgresql.org/docs/current/ddl-constraints.html): unique/foreign-key/check responsibilities and cross-row limits.
+- [OWASP CSV Injection](https://owasp.org/www-community/attacks/CSV_Injection): risks in spreadsheet-interpreted text cells, separate from ordinary CSV quoting.
