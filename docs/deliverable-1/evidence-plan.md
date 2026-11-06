@@ -1,6 +1,6 @@
 # Deliverable 1 - Evidence Capture Plan
 
-Version 0.1, 2026-11-06. Related [#6](https://github.com/Maibokdaimhai/LECTRA/issues/6); actual execution/PDF assembly [#26](https://github.com/Maibokdaimhai/LECTRA/issues/26). Lead for this proposed plan: Maibokdaimhai, with AI assistance; planned teammate reviewer: R1NNE0. The Issue remains shared. No actual review, application build/test, assessed release, contribution or final PDF is supplied by this plan.
+Version 0.2, 2026-11-06: synchronized with staging and corrected documentation-PR history after [PR #30 review](https://github.com/Maibokdaimhai/LECTRA/pull/30#pullrequestreview-5803367771). Related [#6](https://github.com/Maibokdaimhai/LECTRA/issues/6); actual execution/PDF assembly [#26](https://github.com/Maibokdaimhai/LECTRA/issues/26). Lead: Maibokdaimhai, with AI assistance; reviewer: R1NNE0 (changes requested; re-review pending). The Issue remains shared. No approval, application build/test, assessed release, implementation contribution or final PDF is supplied by this plan.
 
 Companion documents: [report outline](report-outline.md) and [evidence register](evidence-register.md). Whole-product sources: [SRS](../srs.md), [features](../features.md), [traceability](../traceability.md), [System SDS](../system-sds.md), [sprint plan](../sprints/plan.md). Shared Part E/F-01 draft sources are in [PR #29](https://github.com/Maibokdaimhai/LECTRA/pull/29), independent of this branch; exact F-01 mapping source is commit `fc64e2cc16557d77d67ef278d56e05c86c2621fc`. Referencing that source does not claim it is merged/approved or that other contracts exist.
 
@@ -62,7 +62,7 @@ If another actual test better demonstrates the required category, document the s
 
 ## 5. Process, release and safe reproduction
 
-Sample two **completed** implementation Issues/PRs only when their actual review/integration exists. For each record Issue, feature/contract/AC, feature branch from staging, actual author/opposite reviewer, a concrete review check/question/finding/reason, fix/recheck as needed, staging integration SHA and inclusion in the reviewed main release. Current open docs PRs #27/#28/#29 are planning history, not completed implementation or Part F substitute. Do not close an umbrella to create an artificial completed sample.
+Sample two **completed** implementation Issues/PRs only when their actual review/integration exists. For each record Issue, feature/contract/AC, feature branch from staging, actual author/opposite reviewer, a concrete review check/question/finding/reason, fix/recheck as needed, staging integration SHA and inclusion in the reviewed main release. Documentation PRs #27/#28/#29 record planning history; their opening or merge is not completed application implementation or a substitute for Part F. Do not close an umbrella to create an artificial completed sample.
 
 Record the real contract/test-design -> RED -> implementation/GREEN -> review -> integration -> release sequence with dates/SHAs when available. One reviewed release PR from integrated staging to main supplies the actual release reference. Record actual accepted main tag/SHA and required build/tests on that version; feature-branch checks alone are insufficient. Later fixes must not silently replace the submitted version. No merge/review/release is performed by this plan.
 
