@@ -1,6 +1,6 @@
 # LECTRA — System-Level Software Design Specification
 
-Version: 0.4 (2026-11-06). Status: revised planning draft, not implemented or teammate-approved. Retains the cool-color theme from revisions 0.2–0.3. Revision 0.4 adds explicit Course/Section context, versioned starter copies, comparison semantics, private improvement notes and engineering details from the product-direction review. These are documented future features, not completed implementation.
+Version: 0.6 (2026-11-06). Status: consolidated planning draft, not implemented or teammate-approved. Retains the cool-color theme, academic hierarchy and revision 0.5 privacy/note/scale/copy/request-limit decisions. Revision 0.6 adds bounded P15 usability evaluation to existing QA with qualified teammate-report provenance; it adds no application feature or instructor mandate. Feature-level contracts and application execution remain separate.
 Related issue: [#3](https://github.com/Maibokdaimhai/LECTRA/issues/3).
 Baseline: [SRS](srs.md), [decisions](decisions.md), [features](features.md).
 
@@ -39,8 +39,8 @@ Proposed repository layout after setup: `apps/web`, `apps/api`, `prisma`, `tests
 | Section | id, courseId, term, sectionCode, ownerId | FK to Course and instructor; unique `(courseId, term, sectionCode)`; each owner accesses only their Sections, including when another owner teaches the same Course. |
 | Membership | sectionId, studentId | Unique pair; student role validated on seed/use. No attendance/grade data. |
 | Lecture | id, sectionId, title, lectureDate, sequence | Belongs to one Section; local calendar date plus ordering sequence. Unique `(sectionId, sequence)`; dates need not be unique. |
-| Survey | id, lectureId, ownerId, title, status, mode, publishedAt, closedAt, sourceTemplateVersionId nullable | Unique lectureId; owner must match Section owner; transitions governed by service transaction. Provenance does not grant source access or trigger live updates. |
-| Question | id, surveyId, position, prompt, type, required, category nullable, ratingMinLabel/ratingMaxLabel, sourceTemplateQuestionId nullable, metricDefinitionId nullable | Unique survey/position; type RATING/TEXT in S1, SINGLE_CHOICE in S2. Prompt/anchors/options are stored snapshots. Provenance and metric metadata are S2 additions. |
+| Survey | id, lectureId, ownerId, title, status, mode, definitionRevision, publishedAt, closedAt, sourceTemplateVersionId/sourceSurveyId/sourceSurveyRevision nullable | Unique lectureId; owner matches Section owner. S1 definitionRevision increments on Draft-definition edits; source metadata added S2 identifies the copied snapshot, not a live link. |
+| Question | id, surveyId, position, prompt, type, required, category nullable, ratingMin/ratingMax, ratingMinLabel/ratingMaxLabel, scaleInterpretation, sourceTemplateQuestionId nullable, metricDefinitionId nullable | Unique survey/position; S1 stores immutable rating meaning/range/anchors with the survey. Type RATING/TEXT in S1, SINGLE_CHOICE in S2. Provenance/metric metadata are S2 additions; numeric equality alone does not imply comparable meaning. |
 | ChoiceOption (S2) | id, questionId, position, label | Unique question/position; selected answer must belong to its question. |
 | SurveyEligibility | surveyId, studentId | Unique pair; publication snapshot, immutable after publish. |
 | Participation | surveyId, studentId | Unique pair and FK to eligibility. The participation row is the submission-status source and carries no anonymous answer ID or per-submission timestamp. |
@@ -49,10 +49,9 @@ Proposed repository layout after setup: `apps/web`, `apps/api`, `prisma`, `tests
 | Session store | sid, session payload, expiry | Managed by connect-pg-simple in a separately named table, schema created with versioned SQL migration rather than implicit production auto-create. |
 | QuestionnaireTemplate (S2) | id, key, name | Unique stable key, e.g. `lecture-feedback`; seeded catalog, no public authoring API. |
 | TemplateVersion (S2) | id, templateId, version, state | Unique template/version; published versions are immutable; retiring a version prevents new selection but preserves old provenance. |
-| TemplateQuestion / TemplateOption (S2) | id, templateVersionId/questionId, position, category, prompt, type, required, anchors/options, metricDefinitionId nullable | Immutable definitions scoped to the template version; copying creates independent survey rows with new IDs. |
+| TemplateQuestion / TemplateOption (S2) | id, templateVersionId/questionId, position, category, prompt, type, required, min/max/anchor labels, scaleInterpretation/options, metricDefinitionId nullable | Immutable source definitions preserve the same scale meaning as copied survey questions; copying creates independent rows with new IDs. |
 | MetricDefinition (S2) | id, key, version, canonicalPrompt, type, min/max, anchor labels, interpretation, category | Immutable measurement identity. Source-version lineage alone is not comparability. Non-rating definitions have no numeric trend in the initial baseline. |
-| ImprovementNote (S3) | id, surveyId, ownerId, issueSummary, plannedAction, outcomeReflection nullable, status, revision, createdAt, updatedAt, appliedAt nullable | Unique surveyId; owner matches survey owner; default Planned, revision starts at 1; owner-private only. |
-| NoteStatusChange (S3) | id, noteId, actorId, fromStatus nullable, toStatus, reason nullable, changedAt | Append-only creation/status history in the same transaction as the note update. Does not store raw response excerpts or full previous note bodies. |
+| ImprovementNote (S3) | id, surveyId, ownerId, issueSummary, plannedAction, status, revision, createdAt, updatedAt, appliedAt nullable | Unique surveyId; owner matches survey owner; default Planned, revision starts at 1; owner-private. No reflection requirement, reversal reason or separate history entity. |
 
 Database CHECKs/foreign keys/unique constraints cover what can be expressed locally. Cross-table rules (e.g. owner/Section consistency, answer type, response mode, required-question completeness) are checked by the authoritative service inside the transaction. Composite keys and relevant FK targets are specified fully in feature contracts and migrations before implementation. A unique index on `(surveyId, identifiedStudentId)` is additional protection for identified bundles; anonymous duplicate prevention uses Participation uniqueness.
 
@@ -77,7 +76,6 @@ erDiagram
     TEMPLATE_QUESTION o|--o{ QUESTION : copied_from
     METRIC_DEFINITION o|--o{ QUESTION : measures
     SURVEY ||--o| IMPROVEMENT_NOTE : informs
-    IMPROVEMENT_NOTE ||--|{ NOTE_STATUS_CHANGE : records
 ```
 
 The diagram intentionally has no Participation → anonymous ResponseBundle association. Identified bundles have a student FK as stated in the table; the absence of a drawn link is not a claim of anonymous Sprint 1 storage. A template/question provenance link points to an immutable source definition, never to live display text.
@@ -91,7 +89,7 @@ Published questions/eligibility are immutable and cannot be removed through appl
 3. Close takes the same row lock and changes Published to Closed. The lock/commit order defines BR-11, not arrival order at the browser or a client timestamp.
 4. Concurrent duplicates are rejected by the database unique constraint even if both requests passed an earlier check. Map the constraint to a safe domain error; no partial answers remain.
 5. New survey creation, starter application and duplicate-to-Draft check the owned target lecture and rely on unique `Survey.lectureId` under concurrency. Copy all definitions or none; no partly populated Draft is returned as successful.
-6. Note creation locks/checks the survey's Closed/result-visible state and uses unique surveyId. Note edits check owner and expected revision, update with a revision increment, and append any status transition atomically. A stale edit returns 409 with no lost update or partial history row.
+6. Note creation checks Closed/result-access policy and uses unique surveyId. Note edits check owner and expected revision, updating fields/status/essential timestamps and revision atomically. A stale edit returns 409 without overwriting newer content; no detailed transition-history write is required.
 
 Serialize per-survey submissions initially to keep correctness simple for a small classroom. Keep lock duration short; do not hash passwords, call external services or render results while holding it. Retry recognized deadlock/serialization failures only with a bounded policy defined in the contract. A lost confirmation never permits a second write; the student checks their persisted submission status.
 
@@ -123,12 +121,13 @@ All entries are backend rules. Inaccessible record identifiers return 404 to avo
 | Read submission status | Own only | No per-student participation endpoint |
 | Read identified answers | Own only | No respondent-linked answer endpoint |
 | Read anonymous answers by identity | No such operation | No such operation |
-| Read results/text | Denied | Own; count while Published, results after Closed under threshold policy |
+| Read results/text | Denied | Own; count while Published; Closed identified text allowed; anonymous text never; quantitative questions use mode-specific release policy |
+| Read raw anonymous text | No baseline operation | Denied through every result surface, regardless of survey count |
 | Export aggregates (S2) | Denied | Same constraints as results |
 | Preview starter catalog/version (S2) | Denied | Read published selectable seeded versions; no template-edit API |
 | Apply starter / duplicate survey (S2) | Denied | Own target lecture; source survey must also be owned; create Draft only |
 | Read history/trends (S3) | Denied | Owned Sections only; comparison/suppression rules still apply |
-| Create/read/edit improvement note (S3) | Denied, including eligible respondents | Own Closed survey with visible results; note private; revision checks on writes |
+| Create/read/edit improvement note (S3) | Denied, including eligible respondents | Own Closed survey with accessible results; anonymous requires at least one releasable quantitative question; private/revision checks apply |
 | Share improvement note | No baseline operation | No baseline operation |
 
 ## 6. UI and API conventions
@@ -273,13 +272,13 @@ Avoid a fixed mobile submit bar in Sprint 1; put the action at the end of the fo
 | Student survey list | Page title, Course/Section/Lecture context, survey cards with Published/Closed and own submission status as separate labels. | `Answer survey` only when eligible, Published and not submitted; otherwise `View submission` where applicable. Closed-unsubmitted entries explain that collection ended. |
 | Answering form | Lecture title, privacy notice, required-question explanation, ordered white question sections and rating/text controls. | `Submit feedback`; show a persistent busy state while sending and confirmation only after the API confirms persistence. No automatic reset on a recoverable error. |
 | Submission confirmation / own record | Success panel, survey/lecture title and persisted submission status. Own identified answers appear as readable content rather than enabled editing controls. | `Back to surveys`; no edit/resubmit promise. Future anonymous mode shows participation status without a user-linked answer view. |
-| Instructor survey list | Owned Course/Section/Lecture filters and cards/table; state badges are consistent with the student view. | `Create survey`; empty state explains that no owned surveys exist and links to creation only when an owned lecture is available. |
+| Instructor survey list | S1 owned current-work list and Course/Section/Lecture selectors; consistent state badges. Historical date/state search is S3/F-09. | `Create survey`; no new historical-search screen is implied by context selection; empty state links to creation only when an owned lecture is available. |
 | Draft editor | Title/context first, ordered question blocks, question type/required controls, validation and saved Draft state. | `Save draft`; place `Publish survey` in a distinct action group with an irreversible-structure-lock explanation. Do not show a saved label before persistence. |
 | Published detail / closing | Teal Published badge, read-only question structure and response count. Results/text are withheld until Closed. | `Close survey` opens a warning dialog explaining that responses stop and reopening is unsupported. Keep the actual server state visible if closing fails. |
 | Closed results | Neutral Closed badge; labelled metrics, per-question distributions and text-feedback sections. | No Sprint 1 export control. Future CSV is subject to the same result permissions; do not render a disabled placeholder as an implemented feature. |
 | Starter selection (S2) | Course/Section/Lecture context, blank-versus-starter choice, source name/version and four-category preview. | `Use starter`; create an independent Draft, then use the existing editor. Never apply over an already populated Draft or update historical surveys silently. |
 | History / trends (S3) | Owned Course/Section filters, lecture dates/states, visible per-lecture counts and compatible-metric labels. | Inspect a lecture or compatible series; show why hidden/incomparable data is excluded without exposing its values. |
-| Teaching Improvement Note (S3) | Private label, issue/action/reflection fields, Planned/Applied badge and update/version information in the owned Closed-results screen. | `Save note` / explicit status change; no share control. A stale edit preserves unsent text and offers reload/reapply, not silent overwrite. |
+| Teaching Improvement Note (S3) | Private label, issue/action fields, simple Planned/Applied choice and essential timestamp/revision information in the owned Closed-results screen. | `Save note`; no share/history/reversal-reason/reflection control. A stale edit preserves unsent text and offers reload/reapply, not silent overwrite. |
 
 A privacy notice uses blue-soft or muted surfaces, plain language and a visible mode label. For identified surveys, explain that answers are linked to the account in storage although owner results omit identity labels. For future anonymous surveys, show the reviewed limitations and minimum-count rule without implying that text cannot identify its author. The notice is informational; do not invent a consent checkbox or a legal assurance outside the baseline.
 
@@ -290,8 +289,8 @@ A privacy notice uses blue-soft or muted surfaces, plain language and a visible 
 - Use horizontal blue bars with score labels on the left and exact counts on the right. A labelled HTML table presents the same values below or beside the chart; tooltips are supplemental. Keep bar/axis labels outside light fills to avoid unreadable text overlays.
 - A chart has a visible question heading, scale/context and a text description. At narrow widths, preserve labels/counts and reduce plot width before reducing text size. Do not rely on color differences to distinguish two series: use direct labels and patterns/line styles or separate small charts.
 - Mean values show two decimal places under BR-12. Percentages are optional display calculations whose rounding must not change source counts; their denominator must be labelled. Do not add means for single-choice questions.
-- Text feedback uses neutral white cards, the question prompt and preserved line breaks. Do not show names, avatars, user IDs, exact submission times or an order label that suggests a person's identity. Render stored comments as escaped plain text.
-- Future anonymous results below five submissions show only count and a neutral explanation such as `Results are hidden until at least 5 students submit`. Do not leave hidden charts/text values in the response payload or DOM. CSV follows the same policy.
+- Identified text feedback uses neutral white cards, the prompt and preserved line breaks without names/IDs/times. Anonymous raw text never reaches owner UI/API/export/analytics, including hidden DOM fields or note prefill.
+- Future anonymous quantitative results are released per question, not by total survey count. A hidden question shows metadata and generic `Not enough anonymous data` text without its answered count, mean or distribution. Apply the same release decision in CSV and analytics; never return hidden values to the client. Sparse-bin handling and residual inference risks are specified in Section 7.
 - History/trends remain Sprint 3. Only compare question series whose meaning and scale are explicitly compatible; a matching color or title does not establish comparability.
 
 #### 6.1.9 Loading, errors, dialogs and motion
@@ -343,7 +342,9 @@ Candidate endpoint families, to be finalized with payloads in Issue #5:
 | History/trends (S3) | `GET /api/surveys` with owned filters, `GET /api/analytics/lecture-trends` with an exact metric-definition ID |
 | Improvement notes (S3) | `GET/POST/PATCH /api/surveys/:id/improvement-note`; no public/share/delete route |
 
-List endpoints use bounded pagination with default 20 and maximum 100 records; cap offset at 10,000 and use deterministic sorting with an ID tiebreaker. Filter dates are validated calendar dates; reject invalid/inverted ranges. JSON request bodies are bounded at 128 KiB so ten 2,000-code-point answers fit even with four-byte UTF-8 characters; return 413 for a transport-limit breach rather than implying a persisted partial response. Zod validates payload shape; the application validates database-backed eligibility/state/ownership in the same transaction that writes. Do not accept supplied `ownerId`, `role` or `studentId` as actor identity. Feature contracts finalize endpoint payloads, pagination envelopes, exact codes and boundary tests before implementation.
+BASE-04 responsibility split: F-02/S1 provides the owned Course/Section/Lecture selectors and the role-appropriate current-work/eligible survey list needed to create, manage or answer a survey. F-09/S3 adds historical date/state search and cross-lecture analysis to the same list/detail views, not a duplicate context screen. Reuse `/api/courses`, `/api/sections`, Section lecture listing and `/api/surveys`; optional historical `fromDate/toDate/status` filters are specified when F-09 is contracted. `/api/analytics/lecture-trends` is only for compatible analysis, not a second context-list API. Ownership filtering applies from S1 regardless of when search controls are added.
+
+List endpoints use bounded pagination with default 20 and maximum 100 records; cap offset at 10,000 and use deterministic sorting with an ID tiebreaker. Historical date/state filters are F-09/S3, not required for S1 context selection. The proposed F-04 body limit is 256 KiB encoded bytes, independently of decoded type/length/count validation. Ordinary UTF-8 is not the worst case: surrogate-pair JSON escapes can use 12 ASCII bytes per Unicode code point, so ten 2,000-code-point answers can consume 240,000 bytes plus the envelope. Issue #5 must bound envelope/IDs/keys, validate a ≤8 KiB envelope budget, choose parser/compression settings and verify that maximum supported serialization fits. Arbitrary whitespace/escape padding remains subject to the cap. Reject oversized bodies with 413 before persistence, unexpected compression with an explicit unsupported-content response, more than ten answers or decoded over-limit content even when encoded bytes fit. Do not accept supplied `ownerId`, `role` or `studentId` as identity. Exact payloads and boundary tests belong in the F-03/F-04/F-05 contracts.
 
 ## 7. Anonymous-mode design boundary and gate
 
@@ -351,7 +352,13 @@ Identified mode intentionally stores a student-to-bundle link. Anonymous mode do
 
 Separating tables does not by itself establish anonymity. Row order, generated IDs, request timing, logs, database audit records and backups can correlate identity and answers. For F-06, its contract must define unguessable independent answer IDs, collection/order handling, absence of per-answer timing metadata, logging redaction/retention, result-release controls and adversarial tests. No identity-bearing response payloads or correlation IDs may enter answer records or exports.
 
-The threat boundary covers owners/ordinary application users; it explicitly does not claim unlinkability against privileged transaction/network observation. Owners cannot see per-student participation. Anonymous results/text/exports appear only after closure and five submissions. Free text can self-identify; warn students not to include identifying details. A threshold reduces small-group exposure but is not proof of anonymity.
+The threat boundary covers owners/ordinary application users; it does not claim unlinkability against privileged transaction/network observation. Owners cannot see per-student participation. Confirmed PD-01 forbids raw anonymous text in owner Results UI, APIs, CSV, analytics and note prefill at any count. This is separate from identity/answer separation and quantitative suppression.
+
+Collection/storage remains undecided: recommend disabling anonymous text for a simpler MVP, but do not adopt it without explicit team agreement. The alternative is collect-but-inaccessible, which needs a purpose, storage/access/retention policy and verification before F-06. An anonymous starter containing a text question must not publish until that policy is agreed and the Draft satisfies it. Do not silently drop text, add a privileged raw-text viewer, or treat hiding it in React as enforcement.
+
+Working quantitative policy: after closure each question needs at least five valid nonempty answers. Propose an additional sparse-bin guard of at least three answers in every nonzero rating/option bin; otherwise suppress the whole question's numeric projection, including mean, distribution and answered count. Release only frozen question metadata plus a generic suppression label. The survey's overall count may remain visible, but a total of five/ten does not unlock optional questions answered by one/two people. Never reveal complementary cells through totals, per-question means, partial CSV rows or pooled analytics. Finalize the exact guards and adversarial tests in the F-06 contract.
+
+The count thresholds are working project choices, not instructor mandates or anonymity guarantees. Unanimous responses, external classroom knowledge, repeated observations and coordinated respondents can still support inference. No arbitrary response-subgroup, participant or cross-question filtering is included. Trends/notes must consume release decisions for each question, not a single survey-level `isAnonymousSafe` flag.
 
 F-06 is blocked until OPEN-04 is resolved in a reviewed contract. Do not enable an anonymous checkbox before the actual privacy behavior and tests exist.
 
@@ -388,9 +395,13 @@ Template revision appends version 2 and its definitions through reviewed seed/mi
 
 Duplicate-to-Draft copies an owned survey into a different owned lecture without a survey. Copy only definitions/provenance, reset state to Draft, set mode to identified by default, clear publication/closure fields, and recompute eligibility on later publication. Do not copy answers, Participation, historical eligibility snapshots, timestamps or notes. A uniqueness conflict on target lecture returns 409 without a partially created survey.
 
+BASE-05 snapshot rule: an immutable template copy names the exact TemplateVersion and locks/checks its selectability during copying so retirement cannot cause a half-valid source. A mutable source Draft copy includes the definitionRevision shown in its preview. In one transaction, lock the source Survey row, recheck ownership/revision, read all ordered definitions/options and create the target copy; every source-definition mutation increments that revision under the same row lock. Revision mismatch returns 409 with no target copy, requiring refresh. Published/Closed sources use their frozen revision. Record source survey/revision or template version as provenance; a client cannot request a moving source or obtain a mixture of old/new questions. Finalize lock order/source-retirement tests in F-07/S2 rather than implement a new version-management workflow now.
+
 ## 11. Measurement meaning and analysis boundaries
 
 Rating questions store visible 1/5 anchors and interpretation in their frozen definitions; the author must make clear whether the scale is understanding, clarity, speed or another construct. S1 authoring contracts must capture this meaning before publication. S2 adds optional immutable `MetricDefinition` provenance for exact, trusted starter-derived ratings. Existing custom S1 questions are not retroactively grouped by matching titles.
+
+BASE-06 storage/API direction: persist ratingMin=1, ratingMax=5, both endpoint labels and a nonblank scaleInterpretation with the prompt/type/required flag in S1. Authoring validates meaning before publication; answering and result APIs return that same frozen scale metadata, and F-05 labels the average with its interpretation. A speed scale such as slow→fast is not a suitability scale and has no implicit positive direction. Mean is a descriptive summary under the selected rating convention, not an automatic teaching-quality judgement. F-03/F-05 contracts in Issue #5 define exact schema fields, payloads and readback/immutability tests.
 
 | Change before publication | Template provenance | Comparable metric |
 | --- | --- | --- |
@@ -402,40 +413,31 @@ Rating questions store visible 1/5 anchors and interpretation in their frozen de
 
 An edit back to apparently matching text does not automatically restore a cleared metric; re-create from the immutable source or perform an explicit reviewed future mapping change. Do not infer semantic equivalence with AI or fuzzy text matching. The initial trend implementation compares exact rating metric versions, not single-choice distributions with changing options.
 
-History queries constrain `Section.ownerId` before aggregation. Filters may span multiple Sections of the same Course only when that instructor owns them, with Section boundaries labelled. Each comparison record includes Course/Section, lecture title/date, survey state/mode, metric version, eligible count, submitted count, answered count, mean and distribution where visible. Do not expose suppressed statistics, text or per-student participation. A mixed response mode or required-flag difference is explicitly labelled rather than silently implying equal sampling conditions.
+History queries constrain `Section.ownerId` before aggregation. Filters may span multiple Sections of the same Course only when that instructor owns them, with Section boundaries labelled. Context metadata may include Course/Section, lecture title/date, survey state/mode, metric version and permitted survey counts. Question answered count, mean and distribution appear only for a releasable question; suppressed rows do not expose them. No anonymous text or per-student participation appears. Partition summaries by response mode and label required-flag/context differences rather than silently implying equal sampling conditions.
 
-For ratings, compute sum/count using valid answered values and round only for presentation. Per-lecture means stay separate; no pooled Course/instructor score is included. Date filters on `lectureDate` are inclusive ISO calendar dates; timestamps such as publication/closure/note changes use UTC instants and display in the configured course timezone (initially Asia/Bangkok). UI dates must not shift when the browser has another timezone.
+For ratings, compute sum/count using valid answered values and round only for presentation. F-09 supports meaningful Course/own-instructor feedback summaries per compatible metric and response mode, as well as per-lecture trends. Start with owned Sections, exclude each unreleasable question before aggregation, then weight by answered observations (`sum of visible scores / sum of visible answered counts`), not an unweighted mean of lecture means. Label Course/Section context, mode, contributing-lecture/answer counts and selection/date range. A student answering multiple lectures contributes multiple observations, not multiple unique students. No composite overall instructor-quality score, cross-owner ranking, hidden-data pooling or mixing incompatible scales is included. Date filters use inclusive ISO lecture dates; other timestamps use UTC with Asia/Bangkok display. UI dates must not shift with browser timezone.
 
-## 12. Teaching Improvement Notes
+## 12. Teaching Improvement Notes — simplified PD-02 scope
 
-F-10 is an owner-private reflection/action workflow attached to the existing Closed-results screen. The initial implementation has no student visibility, sharing toggle, discussion, notification, automatic feedback import or AI synthesis. This keeps raw feedback from being republished and keeps the Sprint 3 workload bounded. It supports recording an instructor's response to feedback; communicating that response to students is a deferred scope decision.
+F-10 is one private issue/action note attached to the existing Closed-results screen, not a workflow-management subsystem. No student sharing, publication, discussion, notification, automatic feedback import, reflection requirement, reversal reason or detailed status history is included. For anonymous surveys, only releasable quantitative data may inform the note; raw text is never exposed or used for prefill. For identified surveys, the owner may interpret permitted comments without automatically copying raw quotations or identifying student details.
 
 | Field | Planned validation / exposure |
 | --- | --- |
 | issueSummary | Required, trimmed nonblank, 1–2,000 Unicode code points, plain text. |
 | plannedAction | Required, trimmed nonblank, 1–2,000 code points, plain text. |
-| outcomeReflection | Optional up to 2,000; nonblank required to enter Applied. Does not certify effectiveness. |
-| status | Planned or Applied; create Planned only. |
-| revision | Server integer starting at 1; request supplies the last-read revision when updating; increment once per committed edit. |
-| appliedAt | Server UTC timestamp when entering Applied; cleared when returning to Planned; previous transition remains in history. |
-| ownerId / surveyId | Resolved/validated through authenticated survey ownership, never a permission grant from the request. |
+| status | Planned or Applied; default Planned on creation. A normal edit can select either valid status without special transition prerequisites. |
+| revision | Server integer starting at 1; updates supply the last-read revision and increment once on a committed edit. |
+| createdAt / updatedAt | Server UTC timestamps. Preserve createdAt; update updatedAt on successful edits. |
+| appliedAt | Current-state timestamp: set on entering Applied, retain during edits that remain Applied, clear when set back to Planned. No separate transition record or reason. |
+| ownerId / surveyId | Resolve/validate through authenticated survey ownership, not a client permission grant. |
 
-| Transition | Preconditions | Atomic effects |
-| --- | --- | --- |
-| None → Planned | Owned Closed survey with visible results; no existing note; valid issue/action. | Create note and creation status-history entry. |
-| Planned → Planned or Applied → Applied | Correct revision; valid fields; Applied still has nonblank reflection. | Edit fields, increment revision; no fake status-change row. |
-| Planned → Applied | Correct revision and nonblank outcome reflection. | Set Applied/appliedAt, increment revision, append transition. |
-| Applied → Planned | Correct revision and nonblank return reason up to 500 code points. | Clear current appliedAt, increment revision, append transition/reason. |
+Create requires an owned Closed survey with accessible results; anonymous surveys need at least one releasable quantitative question. Unique surveyId prevents concurrent duplicate notes. Update requires owner access and the correct revision; invalid fields/status/missing revision are validation failures, stale edits and duplicate creation return 409. Persist body/status/timestamps/revision in one transaction. Re-selecting the same status does not recreate appliedAt or imply another action event.
 
-Do not allow an arbitrary status value, a missing revision on PATCH, creation against an unowned/open/suppressed survey, or two notes after concurrent create. Missing revision is a validation error; stale revision or duplicate note returns 409. If the note exists but survey access fails, do not reveal that existence. Read and write guards both require current result visibility; use the same centralized policy as results/export rather than a second inconsistent threshold implementation.
-
-Keep the author's unsent edits in component memory on a conflict, offer reload and deliberate reapply, and do not silently resubmit with the new revision. No server-side note autosave/history of every body edit is promised. Status history records the actor/time/transition, not a copy of raw student feedback or credentials. No hard-delete API is included; correction uses normal edit/status behavior.
-
-Privacy defaults: never populate a note with a raw student comment automatically; no student name/answer-bundle link; exclude all note content/status/history from respondent endpoints, aggregate CSV and trend exports. A later shared-notes design must define a separately reviewable public summary, audience eligibility, redaction, publication/retraction and corresponding access tests before scope acceptance.
+Preserve the owner's unsent edits on conflict and offer reload/deliberate reapply, not an automatic overwrite. No hard-delete, autosave or body/status-history feature is promised. Notes remain excluded from respondent, other-owner, CSV and analytics payloads. Applied means the instructor recorded an action, not that learning improvement was independently verified. Detailed contracts/tests belong to F-10/Sprint 3.
 
 ## 13. API projection, export and failure safety
 
-All result consumers call one ownership/state/privacy policy and one aggregate projection. Owner access alone does not override Closed-state or anonymous-threshold rules. Do not retrieve broad raw records and hide fields only in React. Parameterize queries; validate sort/filter identifiers against an allowlist rather than interpolating request strings into SQL.
+All result consumers call one ownership/state/privacy policy with separate survey-access and per-question release decisions. Owner access or survey count alone does not override Closed-state, anonymous text prohibition or per-question quantitative guards. Do not retrieve broad raw records and hide fields only in React. Parameterize queries; validate sort/filter identifiers against an allowlist rather than interpolating request strings into SQL.
 
 | Response projection | Permitted content | Explicit omissions |
 | --- | --- | --- |
@@ -443,10 +445,10 @@ All result consumers call one ownership/state/privacy policy and one aggregate p
 | Own identified submission | Own stored answers and status within eligible survey. | Other bundles and private notes. |
 | Own anonymous submission status | Submitted boolean and survey/context ID. | Answer bundle ID/content/timing or a recovery token joining identity to answers. |
 | Published owner results | Survey/context/state and total submitted count. | Scores, distributions, text, individual participants and notes. |
-| Closed owner results | Authorized aggregates and plain-text comments, or count plus suppression reason. | Respondent identity, per-bundle ID/timestamp, participation list, hidden suppressed values. |
-| Private note | Note body/status/revision and permitted status history to its owner only. | No copying into any other result/student/export payload. |
+| Closed owner results | Authorized per-question aggregates; plain-text comments only for identified surveys; generic suppression labels where needed. | Raw anonymous text at any count; identity/bundle/timing/participation data; suppressed means, bins and answered counts. |
+| Private note | Issue/action/status/revision and essential timestamps to its owner only. | No status history, reflection/reversal workflow or copying into any other result/student/export payload. |
 
-Aggregate CSV uses a fixed schema: Course code, Section/term, lecture title/date, survey ID/title/mode, question ID/category/prompt/type, answered count, mean where applicable, and rating score or choice-option counts. These are per-question aggregate rows, not per-person rows. Include denominator metadata and a documented format version; no names, student IDs, raw answers/comments, notes or authentication data. Required-flag/metric metadata may accompany compatible analysis but do not imply instrument validity.
+Aggregate CSV uses a fixed schema: Course code, Section/term, lecture title/date, survey ID/title/mode, question ID/category/prompt/type, answered count, mean where applicable, and rating score or choice-option counts. These are per-question aggregate rows, not per-person rows. Omit hidden question statistics entirely or include a metadata-only suppressed row with null numeric cells; do not export its answered count. Include permitted denominator metadata and a documented format version; no names, student IDs, raw answers/comments, notes or authentication data. Required-flag/metric metadata may accompany compatible analysis but do not imply instrument validity.
 
 Quote fields and escape embedded quotes/delimiters/newlines. Neutralize spreadsheet-formula prefixes in user-authored text cells (including leading control/whitespace cases) under a reviewed export policy, preserving real numeric aggregate cells as numeric values. Test formula-like titles, Thai text, commas, quotes, multiline prompts and null means. Ordinary CSV quoting alone is not a formula-injection defense; no universal protection for every reader/save-and-reopen transformation is claimed. Use a server-generated safe filename and `text/csv; charset=utf-8` with attachment disposition; the feature contract records whether a UTF-8 BOM is included for the target spreadsheet reader and any compatibility caveats.
 
@@ -456,11 +458,11 @@ Unexpected transaction/database failures roll back and return safe errors; const
 
 ## 14. Schema evolution, reproducible fixtures and operability
 
-Proposed increments are additive: S1 User/Course/Section/Membership/Lecture/Survey/Question/Eligibility/Participation/ResponseBundle/Answer plus session store; S2 adds template/version/metric/options and anonymous-mode enforcement; S3 adds notes/status history and history-query indexes. Keep existing question snapshots authoritative when adding template metadata. No automatic prompt-based metric backfill and no anonymous relabelling of identified historical answers.
+Proposed increments are additive: S1 User/Course/Section/Membership/Lecture/Survey/Question/Eligibility/Participation/ResponseBundle/Answer plus session store; S2 adds template/version/metric/options and anonymous-mode enforcement; S3 adds the simple ImprovementNote entity and history-query indexes; no note-status-history table. Keep existing question snapshots authoritative when adding template metadata. No automatic prompt-based metric backfill and no anonymous relabelling of identified historical answers.
 
 Index ownership/context/history lookup paths (`Section.ownerId`, `Lecture.sectionId/lectureDate`, `Survey.lectureId/status`, question survey/order), eligibility/participation composite keys, Answer bundle/question and note survey ID. Validate actual query plans before adding broader indexes for the NFR-04 load target. Results remain derived; no separate stale materialized dashboard is required.
 
-Demonstration/test fixtures must include: two owner Sections in the same Course; a student in one Section only; a student eligible for more than one lecture; no-answer/optional-answer surveys; 1/5/invalid rating boundaries; another owner's Draft; concurrent submit/close scenarios; anonymous Closed surveys at four and five submissions; source starter versions with a customized independent copy; comparable/incomparable lecture metrics; and Planned/Applied notes plus stale revisions. These are future fixture requirements, not existing generated evidence.
+Demonstration/test fixtures must include: two owner Sections in the same Course; a student in one Section only; a student eligible for more than one lecture; no-answer/optional-answer surveys; 1/5/invalid rating boundaries; another owner's Draft; concurrent submit/close scenarios; anonymous surveys with total submissions five/ten but question answers four/five/two, sparse bins, and raw text never present in owner projections; source starter versions with a customized independent copy; comparable/incomparable lecture metrics; and Planned/Applied notes plus stale revisions. These are future fixture requirements, not existing generated evidence.
 
 Run migrations explicitly before serving the new code; record applied schema version and fail safely if required schema/configuration is unavailable. Never regenerate demo data on application startup or perform destructive reset during deploy. A rollback must use code compatible with the current schema or a reviewed forward correction; do not promise destructive migration rollback without a data recovery plan.
 
@@ -474,12 +476,14 @@ For Lab 5, separate development, test and deployed database credentials, least-p
 | Survey lifecycle | State/definition validation. | Draft edit versus publish locks, one survey per lecture, ownership, snapshot and close/submit ordering. | Owner create/publish/close with persisted state. |
 | Response | Type/required/Unicode validation. | Atomic save/rollback, unique concurrent participation, wrong-question rejection and restart retrieval. | Student answer/confirmation/own identified readback and rejection. |
 | Results | Mean/count/optional denominator. | Shared authorization/projection, no hidden identity data, no-answer and Closed-state policy. | Labelled charts/tables, no false zero, text display. |
-| Anonymous | Privacy helper/threshold logic. | Storage/API/log/export inspection, own-status separation, four/five boundary and metadata risks. | Truthful disclosure, status-only self view, suppressed results. |
-| Starter/copy | Definition/metric invalidation helpers. | Atomic independent copy, immutable versions, customizations and no copied responses/notes. | Preview → use starter → customize → publish. |
-| Trend | Comparable-metric and denominator rules. | Owner scope before aggregate, exclude hidden data and incompatible metrics. | Filtered lecture series with scale/context/counts. |
-| Notes | Field/status transition rules. | Private ownership, state/threshold guard, unique create, revision conflict and atomic status history. | Review results → create/edit Planned → Applied; conflict and unauthorized cases. |
+| Anonymous | Question-level thresholds, sparse-bin release and raw-text exclusion helpers. | Identity/answer separation, collection-policy enforcement, optional/sparse cases and identical UI/API/CSV/analytics omissions. | Truthful disclosure, status-only self view, per-question suppressed results. |
+| Starter/copy | Definition/metric invalidation helpers. | Immutable version/mutable revision snapshots, concurrent source edit/retirement, atomic independent copy and no copied responses/notes. | Preview → use starter → customize → publish; source-changed refresh. |
+| Trend | Compatible-metric, answer-weighted sum/count and denominator rules. | Own Sections only, question-level release before aggregate, no hidden text/statistics or incompatible pooling. | Filtered lecture series and labelled Course/own-instructor per-metric feedback summaries. |
+| Notes | Issue/action/status validation and current-state timestamps. | Private ownership/result access, unique create, atomic revision-safe edits and unchanged survey/results. | Create/edit private note, simple Planned/Applied choice; conflicts and unauthorized cases. |
 
 F-01–05 require their complete AC/STS/DoD before implementation under Issue #5. F-06–10 need a feature contract before their own work starts, but their full endpoint details and executable tests are not required for Deliverable 1. The new system descriptions provide enough entities, ownership, dependencies and planned verification to allocate them now; they do not replace feature-level design, substantive teammate review or actual evidence.
+
+Section 8 proposal P15 is selected as a small SYS-04/S3 usability evaluation, not a product service or additional feature. Instructors inspect implemented Closed results and identify/record a useful action; students explain eligibility, one-time participation and the actual privacy disclosure. The [sprint plan §11](sprints/plan.md) records bounded recruitment/tasks/observations and limitations. Keep observed usability evidence separate from automated tests, mandatory Lab 6 UAT and claims of teaching effectiveness. No session result is currently available. Proposal attribution is the owner's summary of the teammate's report; no full-report access is claimed.
 
 ## Reference links
 

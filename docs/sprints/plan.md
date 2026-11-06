@@ -1,6 +1,6 @@
 # LECTRA — Three-Sprint Plan
 
-Version: 0.2 (2026-11-06). Status: revised planning draft for team review.
+Version: 0.4 (2026-11-06). Status: consolidated planning draft with Section 8 proposal dispositions; actual Sprint 1 capacity and assignments are not confirmed.
 Related issue: [#4](https://github.com/Maibokdaimhai/LECTRA/issues/4).
 References: [SRS](../srs.md), [features](../features.md), [traceability](../traceability.md), [SDS](../system-sds.md).
 
@@ -47,7 +47,7 @@ Included: F-06 anonymous mode, F-07 versioned Starter Questionnaire with indepen
 
 Dependencies: accepted Sprint 1 increment, reviewed feature contracts, anonymous threat-boundary resolution, existing lifecycle/eligibility/aggregation. F-07/F-08 must preserve identified behavior and anonymous protections. Work on Lab 5 delivery proceeds alongside bounded features, not as a substitute for them.
 
-Completion outcome: integrated identified/anonymous workflows, one-time participation without an owner-visible answer join, threshold-controlled results/export, seeded four-category starter preview/copy/customization, immutable source versions, single-choice summaries, tested eligibility subsets and copy isolation, reviewed release with updated traceability. Metric provenance is recorded before S3 comparisons; no retroactive grouping of custom S1 questions by title.
+Completion outcome: integrated identified/anonymous workflows, one-time participation without an owner-visible answer join, no owner-facing anonymous raw text, question-level quantitative release in results/export, an explicitly agreed text collection policy, concise four-category starter preview/copy/customization, immutable versions/consistent source snapshots, choice summaries, subset controls and updated traceability. Metric provenance precedes S3 comparisons; no retroactive grouping by title.
 
 Proposed work order: resolve F-06 privacy contract early; implement F-07's copy boundary/version seed alongside the existing editor; integrate extra question/subset validation; have F-08 consume the same guarded result projection. F-06 and F-07 can proceed independently after their contracts but require a combined regression before release. Do not serialize all expansion behind CSV export or add a separate template application service/microservice.
 
@@ -65,7 +65,7 @@ Dependencies: integrated Sprint 2, reviewed F-09 contract defining comparability
 
 By 29 Nov: show Sprint 3 contracts, implemented working history/filtering progress and a bounded private-note create/read flow integrated with Sprint 1/2, actual verification evidence and explicit remaining work. A placeholder page or seeded note without a working authorized flow is not implemented progress. This is the team's proposed working checkpoint; the instructor requires genuine Sprint 3 progress, not this exact feature split.
 
-F-10 outcome: owner reviews available Closed results, records issue/action in one private Planned note, edits with revision checks, marks Applied with reflection, and can deliberately return to Planned with a reason. Verify student/other-owner rejection, anonymous threshold, duplicate creation, stale edits, unchanged results and no note leakage into CSV/trends. No shared-note workflow is promised.
+F-10 outcome: owner records issue/action in one private note on an accessible Closed survey, edits with revision protection and selects Planned/Applied without a reflection, reversal reason or detailed history. Retain essential timestamps only. Verify ownership/result-access guards, unique create, stale edits, unchanged results and no note leakage into CSV/analytics. No shared-note workflow is promised.
 
 Lab 7, due 29 Nov: obtain instructor/TA approval for a change to existing behavior. Trace impact to requirements/design/contracts/tests/code, retain the changed-behavior failing test before correction, implement/review/redeploy, and run regression. Record five dated metrics with sources and an action-oriented interpretation plus retrospective/readiness checks. Planned baseline features alone do not satisfy this maintenance requirement.
 
@@ -74,6 +74,8 @@ Final outcome by 13 Dec: whole baseline implemented or honestly disclosed with a
 ## 5. Two-person work and review allocation
 
 Actual student names, IDs and assignments remain pending team input. The following is a rotation proposal, not a contribution record or evidence that either person has done the work.
+
+BASE-01 is a review finding about feasibility, not a new instructor requirement to collect private schedules. Following the owner's clarification, keep this planning lightweight: names/private academic calendars are not prerequisites for reviewing the product baseline. Do not invent actual availability or pretend that equal task counts imply equal effort. Confirm concrete implementer/reviewer availability and bounded tasks in Issue #5 before calling the Sprint 1 implementation plan final.
 
 | Work package | Proposed implementer/author | Proposed reviewer | Shared responsibility |
 | --- | --- | --- | --- |
@@ -89,11 +91,25 @@ Actual student names, IDs and assignments remain pending team input. The followi
 
 Each author prepares/updates contracts and tests as well as code. The teammate provides substantive review, not self-approval or an AI substitute. Identify actual pair work in Issues/PRs. Equal commit counts are not required; understanding and meaningful participation are.
 
+Coarse effort model, for discussion rather than a commitment or actual time record:
+
+| Work group | Complexity | Illustrative focused person-hours | Allocation / dependency |
+| --- | --- | --- | --- |
+| Setup/database seed plus F-01 identity/session/access | High | 8–14 | Proposed A leads identity, B reviews; shared foundation first. |
+| F-02 context plus F-03 Draft/publish/close | High | 10–16 | Proposed B leads; depends on foundation and identity for runtime checks. |
+| F-04 validation/persistence/concurrency | High | 8–12 | Proposed A leads, pair on races; needs published survey rules. |
+| F-05 results and scale-labelled UI | Medium | 4–6 | Proposed B leads; needs answer fixtures and results/access rules. |
+| S1 contracts, cross-feature E2E/integration, teammate review/fixes, release and PDF evidence | High / shared | 10–16 | Both; feature estimates include their local rule/API tests, while this row covers shared checks/docs/review. |
+
+The illustrative base totals 40–64 person-hours; a 20% uncertainty reserve gives roughly 48–77 person-hours, not elapsed hours or claimed available capacity. Actual remaining effort, skill/reuse and team availability are unknown. Re-estimate small tasks in Issue #5; do not present 6–8 Nov as proven feasible based on this model. Reserve the last scheduled work block for integration/review/release/PDF and keep buffer available rather than allocating every hour to coding. If the team's capacity cannot support the scope, escalate the delivery risk and record agreed adjustments; mandatory auth/persistence/access/testing cannot be silently removed.
+
+Critical path: shared setup/schema → F-01/F-02 → F-03 publish lifecycle → F-04 response transaction → F-05 integrated results → system checks/review → release/PDF. Contracts and safe seed work can proceed alongside each other; reviews need the other person's available time and cannot be assumed instantaneous. This addresses planning structure only, not actual capacity confirmation.
+
 ## 6. Git, evidence and implementation gates
 
 `Issue → feature/fix branch from staging → teammate-reviewed PR into staging → integration/system tests → reviewed staging-to-main release PR → recorded tag/commit → deployment after Lab 5`.
 
-The initial `main` baseline is the empty README commit `a0af019`. These documents are prepared on `docs/1-4-product-baseline`, branched from `staging`. The project owner authorized committing/pushing this documentation and opening its PR into `staging` on 2026-11-06. That authorization does not include merge or implementation. Use Conventional Commits and no `codex/` branch prefix; further actions require authorization within their scope. A branch or PR alone is not evidence of teammate review or an accepted release.
+The initial baseline is README commit `a0af019`; planning work uses `docs/1-4-product-baseline` and PR #7 into `staging`. By default the two team members manage Git operations, commits, branches and PRs themselves. The owner subsequently renewed explicit permission for the assistant to commit/push this consolidated documentation on the existing branch only; merge and substantive teammate review remain with the team. Conventional Commits/no-`codex/` still applies. A branch or PR is not proof of teammate approval or accepted release.
 
 Before coding a feature: accept the applicable baseline, resolve blocking decisions, record/version its feature contract and STS, then begin rule TDD. Do not backfill the preimplementation history. Issue #6's evidence outline may proceed in parallel; completing that plan is not completing Part F.
 
@@ -106,7 +122,7 @@ Before coding a feature: accept the applicable baseline, resolve blocking decisi
 | Anonymous complexity | Elaborate/review privacy early; implement in S2. Do not enable an unverified anonymous label or postpone all design to S3. |
 | Product extensions increase S2/S3 workload | Keep one seeded starter and private single-note workflow; no template admin, shared publishing, discussion or AI. Review actual capacity before contracts; any approved reduction/reallocation is recorded, not silently dropped. |
 | Misleading course/instructor analytics | Scope to owned Sections, compatible metrics and per-lecture counts; no ranking, unlabelled pooling or suppressed-data inference. |
-| Note privacy or concurrent updates | Reuse Closed-results guards; private default; unique survey note, revision precondition and atomic status history. |
+| Note privacy or concurrent updates | Reuse result-access guards; private default; unique survey note and atomic revision/essential timestamp update, without detailed history. |
 | Stack version incompatibility | Pin compatible versions and verify migrations/session/hash/runtime behavior before coding against specific APIs. |
 | Lab work overlaps sprint features | Track delivery/UAT/maintenance evidence separately while using the same evolving application/repository. |
 | Partner UAT delays or no legitimate defect | Arrange early; report access/delay issues promptly and request TA guidance/exercise where applicable. |
@@ -126,7 +142,7 @@ All planned application work is unimplemented; no application build/test/UAT/dep
 | Owned lecture understanding | S3 F-09. | Compatible per-lecture ratings; no university dashboard, ranking or new scoring model. |
 | Owner-requested teaching action record | S3 F-10. | One private note in existing results; no shared publication, discussion or automation. |
 
-No actual availability estimate has been supplied by either student; these windows are planning targets rather than validated capacity. Before accepting implementation Issues, record each student's available sessions and small task estimates, reserve time for the other student's review, and reduce speculative work before mandatory verification. If baseline work no longer fits, record a proposed scope/sprint change with impact and seek instructor agreement when required; do not mark unfinished work complete.
+No actual availability estimate has been supplied by either student; these windows remain targets rather than validated capacity. The owner requested a proportionate approach, so detailed allocation/availability and task estimates are a preimplementation Issue #5 follow-up rather than a request for personal schedules in this PR. Retain review/integration buffer and record any scope/sprint impact; do not mark capacity as confirmed or silently drop mandatory verification.
 
 ## 10. Preimplementation and release gates
 
@@ -138,4 +154,25 @@ No actual availability estimate has been supplied by either student; these windo
 | Sprint release | Integrated checks, accepted behavior, documented setup, reviewed staging-to-main PR and immutable release reference. | Not achieved by a docs-only PR or initial README commit. |
 | Deliverable 1 handoff | Complete A–E plus selected real F evidence in one readable PDF; both students, navigation pages, assessed commit, limitations and safe setup. | Future assembly/evidence work; no completed PDF claimed. |
 
+BASE-03/04/06 handoff to Issue #5: finalize encoded/decoded F-04 limits, distinguish F-02 context APIs from F-09 search, and freeze/store/return F-03/F-05 scale labels and interpretation. BASE-02/05/07 detailed privacy/collection, copy snapshot and starter verification precedes the corresponding Sprint 2 implementation. BASE-08 detailed simplified-note contracts precede F-10/Sprint 3. Section 8 Innovation Opportunities P10/P05/P14/P15 now have individual dispositions in the review register; they are not four formal Suggestions. Full source verification remains OPEN-11, and the separate Initial Review item REV-08 is reflected by these explicit pre-contract handoffs.
+
 Prepare the PDF/evidence outline while implementation proceeds so commands/versions/TDD outputs/reviews are captured when they happen. Do not wait until the final day to reconstruct or invent them. The final report must include all required Parts A–F; this PR's planning depth is not a substitute for working Sprint 1.
+
+## 11. P15 — Bounded feedback-cycle usability evaluation
+
+Selected disposition: Incorporate into existing SYS-04/Sprint 3 QA, not a new feature, instructor mandate or Sprint 1 task. Source is the owner's summary of Section 8 in the teammate's Comprehensive Review; the full report has not been accessed directly. P10/P05 remain in their existing bounded features; P14 remains simplified/private with sharing deferred.
+
+Purpose: evaluate whether an instructor can use Closed feedback to identify a concrete teaching action, and whether a student understands eligibility, one-time submission and the implemented privacy policy. This complements technical/accessibility verification and independent UAT rather than replacing either.
+
+Scope proposal: aim for one or two participants per role (two to four short sessions total), using synthetic data and the actual implemented release. Role-representative participants are preferred; if only proxies are available, record that limitation. Plan approximately 15–20 minutes per session plus one short synthesis block; these are planning targets, not claimed participation or measured effort. Confirm feasibility during S3 planning rather than expanding the baseline into a research platform.
+
+| Role / task | Observation to record | Interpretation boundary |
+| --- | --- | --- |
+| Instructor inspects an accessible Closed survey and identifies one useful next-lecture action. | Whether an action is identified, which permitted result supports it, time to identify it, assistance needed and misinterpretations. | Useful action is a qualitative observation, not proof of improved teaching outcomes or a validated evaluation instrument. |
+| Instructor records that action in the private note, if F-10 is implemented. | Task completion/confusion, issue/action distinction and understanding of private visibility/status. | Do not test or claim a sharing workflow that is outside scope; do not use raw anonymous text. |
+| Student discovers an eligible survey and explains participation. | Correct understanding of eligibility, once-only submission and closed-survey behavior; help needed. | Do not turn participation into attendance/grade measurement. |
+| Student explains what an owner can see in identified versus anonymous mode. | Correct/incorrect statements about identity linkage, raw text and suppressed quantitative data; unclear disclosure wording. | Run only against the actual agreed/implemented anonymous collection policy; do not imply perfect anonymity. |
+
+Record session ID, actual participant role/proxy status, synthetic scenario, release commit, task, observed result, time where measured, assistance, comprehension notes and resulting Issue/action. Report counts with actual denominators and disclose recruitment limitations; do not invent sessions, transcripts or statistical confidence. Keep feedback records minimal and non-identifying where practical.
+
+Use findings to improve copy/layout or create a bounded defect/enhancement with normal traceability and review; recheck affected tasks after a fix. Existing NFR-07 and FR-07/FR-14 user goals provide context, but this small exploratory study does not create a new numeric NFR or release threshold. Lab 6's required four UAT cases, independent execution and legitimate defect/re-test evidence remain separate; do not substitute these sessions for mandatory lab evidence or claim that an early S1 UAT tested unimplemented S3 notes.
