@@ -4,6 +4,8 @@ Version: 0.4 (2026-11-06). Status: consolidated planning draft with Section 8 pr
 Related issue: [#4](https://github.com/Maibokdaimhai/LECTRA/issues/4).
 References: [SRS](../srs.md), [features](../features.md), [traceability](../traceability.md), [SDS](../system-sds.md).
 
+Operational follow-up: [Sprint 1 delivery tracker](sprint-1/tracker.md) records the dated GitHub issue/assignee snapshot, execution gates and required evidence for Issue #8. Its setup is not proof of application, test, review or release completion.
+
 ## 1. Dates and planning authority
 
 The instructor's dates below come from the two supplied PDFs. Proposed internal dates are team planning choices. Use the course's stated 23:59 deadlines and Asia/Bangkok for team scheduling, subject to any later course announcement.
