@@ -1,6 +1,6 @@
 # LECTRA - Product Definition of Done
 
-Version 0.1, 2026-11-06. Proposed under [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5). **Not yet adopted or teammate-reviewed.** Applies to F-01-F-05 and the integrated Sprint 1 product; later features extend it through a versioned review. Scope/register: [Part E](README.md). Protocol/ID/data conventions: [shared contract](shared-contract.md).
+Version 0.1, 2026-11-06. Proposed under [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5). **Not yet adopted; PR #29 received changes-requested review, with re-review pending.** Applies to F-01-F-05 and the integrated Sprint 1 product; later features extend it through a versioned review. Scope/register: [Part E](README.md). Protocol/ID/data conventions: [shared contract](shared-contract.md).
 
 ## 1. Authority and how to apply this document
 

@@ -17,6 +17,8 @@ Instructor sources are `group_work_specs_v1.pdf` sections 5.2 and 8.2, and `proj
 
 Minimum foundation for #17 is the reviewed F-01 contract plus shared accepted DoD/conventions and the needed User/session subset of #15/#16. Do not wait for an unrelated future result screen or unimplemented survey seed to authenticate a synthetic account. Domain migrations/fixtures still wait for their applicable reviewed feature/schema design.
 
+#16 is phased within one additive migration history: first User/auth_session and synthetic login accounts after #15/#10/shared review; then Course/Section/Membership/Lecture under #11, survey/question/eligibility under #12, response constraints under #13 and any results-related schema detail under #14. Each phase needs its applicable accepted contract and real verification, not acceptance of every later phase in advance. #17 consumes the verified first subset without waiting for #16 to close. #16 closes only when its whole S1 scope is actually implemented/verified. The [tracker execution gates](tracker.md) use this same distinction.
+
 ## 2. Document register and truthful readiness
 
 | Work package | Current artifact | Lead / planned reviewer | Current boundary |
