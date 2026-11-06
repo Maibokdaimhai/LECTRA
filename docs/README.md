@@ -13,6 +13,7 @@ Status: consolidated planning revision for PR [#7](https://github.com/Maibokdaim
 | [System SDS](system-sds.md) | Architecture, data, transactions, identity/access, UI theme, API conventions, starter/history/notes, delivery and verification design. | Part C / #3 |
 | [Three-sprint plan](sprints/plan.md) | Sprint outcomes, timing, lab overlap, two-person rotation, risks and implementation/release gates. | Part D / #4 |
 | [Baseline review](baseline-review.md) | BASE-01–08, PD-01–03, individually dispositioned Section 8 P10/P05/P14/P15, separate Initial Review REV-08 and source limitations. | Planning review, not teammate approval or Part F evidence |
+| [Sprint 1 board/review workflow](sprints/sprint-1/workflow.md) | Verified Kanban arrangement and configured teammate Write access, branch/PR routing, substantive review, local verification and release/evidence handoff; includes the proposed PR template. | Issue #9; teammate use confirmation and human review/integration remain pending |
 
 ## Current scope at a glance
 
