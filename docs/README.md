@@ -13,6 +13,7 @@ Status: consolidated planning revision for PR [#7](https://github.com/Maibokdaim
 | [System SDS](system-sds.md) | Architecture, data, transactions, identity/access, UI theme, API conventions, starter/history/notes, delivery and verification design. | Part C / #3 |
 | [Three-sprint plan](sprints/plan.md) | Sprint outcomes, timing, lab overlap, two-person rotation, risks and implementation/release gates. | Part D / #4 |
 | [Baseline review](baseline-review.md) | BASE-01–08, PD-01–03, individually dispositioned Section 8 P10/P05/P14/P15, separate Initial Review REV-08 and source limitations. | Planning review, not teammate approval or Part F evidence |
+| [Deliverable 1 evidence plan](deliverable-1/evidence-plan.md), [PDF outline](deliverable-1/report-outline.md) and [register](deliverable-1/evidence-register.md) | A-F assembly/capture plan, demo specifications, draft AC mappings and unfilled actual-run/review/release/contribution records. | #6 planning only; #26 supplies actual evidence/PDF, no runtime PASS or completed release claimed |
 
 ## Current scope at a glance
 
