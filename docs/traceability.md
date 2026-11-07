@@ -56,7 +56,7 @@ Requirements are defined in [SRS](srs.md); features/responsibilities in [invento
 
 ## Coverage gaps and change status
 
-Every baseline FR/BR/NFR currently has a planned responsibility and verification allocation. This is planned coverage only. F-01 has draft AC/STS IDs under #10 as mapped below; the other Sprint 1 feature contracts remain to be written. No executed application tests/results, teammate contract approval or accepted Sprint 1 release is claimed.
+Every baseline FR/BR/NFR has a planned responsibility/verification allocation. F-01/F-02/F-03/F-05 document packages merged via PR #29/#31/#32/#33; F-04 is a new local draft below. Complete cross-feature mapping/agreements remain #5 follow-through. #15 records actual tooling checks separately; no F-01-F-05 runtime acceptance test or accepted Sprint 1 release is claimed.
 
 Unresolved gates are in [decisions](decisions.md). Common Part E coordination now has draft [register](sprints/sprint-1/README.md), [conventions](sprints/sprint-1/shared-contract.md) and [Product DoD](sprints/sprint-1/product-dod.md), supporting NFR-03/05/07/08 and SYS-01-04. They add no FR/BR/NFR IDs and do not close #5 or prove human adoption. No approved requirement removal or completed test is claimed. After contracts are written, extend this matrix with AC/test IDs; after execution, add actual file/test name, command or run, tested commit, result and evidence location.
 
@@ -76,6 +76,8 @@ All rows are F-01 / Sprint 1. The [feature contract](sprints/sprint-1/f-01-authe
 | NFR-08 / SYS-02 | AC-F01-20 | TEST-F01-M03: actual preimplementation contract/test-design version, substantive human review/integration and release-SHA-linked verification under #25/#26. |
 
 ## Instructor-theme coverage cross-check
+
+F-04 draft mapping: [contract](sprints/sprint-1/f-04-responses.md) AC-F04-01–25 -> [STS](sprints/sprint-1/f-04-responses-sts.md) TEST-F04-U01–U06/I01–I21/E01–E04/H01–H03/M01–M02, covering FR-05/06, BR-01–08/10/11/14 and NFR-01/02/05/07. All 36 are Planned/Not run; actual files/commands/implementation SHA/results remain unavailable. Full bidirectional AC/test mapping is in the paired files; no new requirement IDs or runtime PASS is added. #15 setup safety/liveness/driver/browser checks are reported only in [workspace verification](sprints/sprint-1/workspace-verification.md).
 
 | Instructor outcome | LECTRA requirements / allocation | Limit of current evidence |
 | --- | --- | --- |

@@ -229,13 +229,13 @@ Each actual case result records requirement/feature/AC/STS, test file/name/level
 
 | Item | Owner / required agreement before affected code | Current boundary |
 | --- | --- | --- |
-| Shared IDs, safe errors, canonical UUID/query policy and Product DoD | Both #5 owners plus #10/#11 reviewers; reconcile accepted PR #29 or later version. | Provisional reference only; no copied shared files or human adoption. |
+| Shared IDs, safe errors, canonical UUID/query policy and Product DoD | Both #5 owners plus #10/#11 reviewers; use merged PR #29 or a later accepted version. | Shared documentation is merged; remaining F-02-specific interface/normalization/error choices still need coordinated adoption before affected code. |
 | Trusted auth/role/session/Origin behavior and UI shells | F-01 #10/#17 and F-02 #11/#18. | Consume F-01; no auth implementation or new session rule. |
 | Academic schema, seed, collation and consistent read transaction | #16 with #11; #15 verifies pinned Prisma/PostgreSQL support. | One reviewed migration history; F-02 can use empty Survey tables before F-03 runtime exists, but cannot query absent schema. |
 | Survey/ref fields and questionnaire read/management target | F-03 #12/#19 with #11; agree exact target UI routes and schema before F-02 handoff code. | F-02 returns context/reference only; F-03 owns detail/state/write/eligibility publication. |
 | Participation relation and own-submission target | F-04 #13/#20 with #11. | Shared own-status meaning is EXISTS Participation; F-04 owns atomic writes/readback; H02 remains pending until real routes exist. |
 | Results navigation | F-05 #14/#21 with #11. | No results/count/comment payload added to discovery. |
-| Tracker's all-contract database gate | Both #5 owners / #16 coordinator, later shared-file edit. | Current tracker section 3 gates #16 on #10-#14 schema contracts; provisional PR #29 proposes staged User/session then applicable domain subsets. Agree/document sequencing; do not silently weaken either gate here. |
+| Phased database gate | Both #5 owners / #16 coordinator; use merged Tracker section 3. | Initial User/session subset requires #15, reviewed #10 and shared conventions; later context/domain increments require their applicable reviewed contracts. Full #16 closure still requires the whole S1 scope. PR #29 is merged, so the earlier all-contract-start gate/provisional-reference wording is superseded. |
 | Shared trace/register/index updates | Coordinated follow-up after acceptance. | Link these two files, AC/STS mappings and TEST-F01-H01 ownership later; shared files intentionally unchanged. |
 
 F-02 contracts/test design can be reviewed now without working auth or other feature code. Runtime verification needs real F-01 and the schema/fixtures actually exercised; final end-to-end handoffs need the target features. Unresolved agreements prevent their dependent implementation, not documentation progress. Course/Section/Lecture/member CRUD, history filters, anonymous mode, templates, CSV, notes and analytics remain excluded.

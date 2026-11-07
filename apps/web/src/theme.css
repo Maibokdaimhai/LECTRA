@@ -1,0 +1,20 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-text: #0f172a;
+  --color-primary: #1d4ed8;
+  --color-accent: #0f766e;
+  --color-border-control: #64748b;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+main { margin: 48px auto; width: min(440px, calc(100% - 32px)); }
+.workspace-card { padding: 32px; background: var(--color-surface); border: 1px solid #cbd5e1; border-radius: 16px; }
+h1 { margin: 8px 0 16px; font-size: 2rem; }
+p { line-height: 1.6; overflow-wrap: anywhere; }
+.eyebrow { color: var(--color-accent); font-size: .8rem; font-weight: 700; letter-spacing: .08em; }
+button { background: var(--color-primary); color: white; border: 0; border-radius: 8px; min-height: 44px; padding: 10px 20px; font: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }

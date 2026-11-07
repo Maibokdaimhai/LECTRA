@@ -23,12 +23,12 @@ Minimum foundation for #17 is the reviewed F-01 contract plus shared accepted Do
 
 | Work package | Current artifact | Lead / planned reviewer | Current boundary |
 | --- | --- | --- | --- |
-| #5 common foundation | This register; [shared contract](shared-contract.md); [Product DoD](product-dod.md) | Shared Issue owners; Maibokdaimhai's current AI-assisted draft, R1NNE0 planned review | Proposed sources in this change; actual publication refs in #5/PR, no human acceptance yet. |
-| F-01 / #10 | [Authentication contract](f-01-authentication.md); [STS](f-01-authentication-sts.md) | Maibokdaimhai / R1NNE0 | Contract draft: 20 AC, 47 planned cases, no app tests or approval. |
-| F-02 / #11 | No feature contract/STS authored in this change | R1NNE0 / Maibokdaimhai | Context/discovery details remain the child Issue's work. No placeholder link or completed status. |
-| F-03 / #12 | No feature contract/STS authored in this change | R1NNE0 / Maibokdaimhai | Draft/lifecycle/publication/scale details remain pending. |
-| F-04 / #13 | No feature contract/STS authored in this change | Maibokdaimhai / R1NNE0 | Response transaction/own retrieval contract remains pending; shared transport direction below is not its complete AC/STS. |
-| F-05 / #14 | No feature contract/STS authored in this change | R1NNE0 / Maibokdaimhai | Results/projection/denominator contract remains pending. |
+| #5 common foundation | This register; [shared contract](shared-contract.md); [Product DoD](product-dod.md) | Shared Issue owners; review records in PR #29 | Shared documentation merged via PR #29; cross-feature agreement/traceability follow-through remains under #5. New edits here are not yet reviewed. |
+| F-01 / #10 | [Authentication contract](f-01-authentication.md); [STS](f-01-authentication-sts.md) | Maibokdaimhai / R1NNE0 | PR #29 approved/merged for documentation; 20 AC/47 planned cases. No implemented auth or executed feature tests. |
+| F-02 / #11 | [Context contract](f-02-context-discovery.md); [STS](f-02-context-discovery-sts.md) | R1NNE0 / Maibokdaimhai | PR #31 GitHub-approved/merged; review text is generic, so substantive-review evidence still needs real human follow-through. Interface agreements remain precode gates. |
+| F-03 / #12 | [Survey contract](f-03-survey-authoring.md); [STS](f-03-survey-authoring-sts.md) | R1NNE0 / Maibokdaimhai | PR #32 approved/merged for documentation; actual schema/interface/lock agreement and implementation verification remain separate. |
+| F-04 / #13 | [Response contract](f-04-responses.md); [STS](f-04-responses-sts.md) | Maibokdaimhai / R1NNE0 | New local draft: 25 AC/36 planned cases, no human review or F-04 execution. |
+| F-05 / #14 | [Results contract](f-05-results.md); [STS](f-05-results-sts.md) | R1NNE0 / Maibokdaimhai | PR #33 approved/merged for documentation; rounding/wire/query/privacy agreements and real implementation remain separate gates. |
 
 Assignments above reflect the existing owner-authorized GitHub allocation; review names are plans, not sent review requests or completed work. Both members own design/code/tests for their bounded features and review the other's work. Actual time/availability and estimates are unconfirmed; no private schedule collection or equal-commit/Issue-count target is required. Before making a firm implementation commitment, each lead confirms the next bounded task and actual review opportunity in its Issue. Unknown capacity does not block drafting this common foundation or count as consent/availability.
 
@@ -50,7 +50,7 @@ The [shared contract](shared-contract.md) gives the conventions and cross-featur
 
 | Umbrella acceptance area | Evidence prepared by this change | What remains before #5 can close |
 | --- | --- | --- |
-| Feature/requirement/permission/workflow links | Shared boundary matrix; existing inventory/traceability; F-01 draft. | F-02-F-05 concrete contracts and consistency/review. |
+| Feature/requirement/permission/workflow links | Shared boundary matrix, inventory/traceability and merged F-01/F-02/F-03/F-05 contracts; draft F-04. | F-04 substantive review, cross-feature agreements and final consistency/traceability. |
 | UI/API/data detail and explicit no-change layers | Shared protocol/schema/UI conventions; F-01 exact contract. | Each remaining child supplies exact layer details, constraints and migrations. |
 | Stable observable AC | Naming rules; F-01 AC-F01-01 through AC-F01-20. | All other feature AC, including negative/boundary/access cases. |
 | STS and AC coverage | Required STS structure; F-01 mapping with 47 planned cases. | Each remaining STS and cross-feature coverage audit. No executed result inferred. |
@@ -60,12 +60,12 @@ The [shared contract](shared-contract.md) gives the conventions and cross-featur
 | Product DoD | [Product DoD draft](product-dod.md), scoped separately for docs, features and release. | Actual teammate adoption/review of this version and later evidence of compliance. |
 | Preimplementation version/review history | Proposed source; actual publication refs recorded in #5/#10 and PR. | Real substantive opposite-member review and accepted contract versions before code. |
 
-Keep #5 Open. This change prepares the shared prerequisite; it does not declare #10-#14 complete. Record accepted document commits/review links when real, and preserve later justified revisions. #6 plans evidence/PDF capture; #26 assembles actual evidence; neither is replaced by this register.
+Keep #5 Open. Shared/F-01/F-02/F-03/F-05 documentation has merged, while #13 is a new draft and cross-feature agreements/complete traceability still need coordination. Merge/approval metadata is not executed feature verification. Record accepted source versions and substantive review evidence accurately. #6 plans evidence/PDF capture; #26 assembles actual evidence; neither is replaced by this register.
 
 ## 5. Current work and next bounded actions
 
 - Review the shared conventions/DoD and F-01 alignment. Resolve disagreements here before implementation rather than create competing per-feature meanings.
-- Continue #10 review/versioning; the other member can draft #11/#12/#14 using this foundation, while #13 covers responses. Do not send a teammate message or fabricate their agreement on their behalf.
+- Review #13 and coordinate the already merged #10/#11/#12/#14 interfaces; no message, agreement or human review is fabricated on behalf of either student.
 - #15 records actual runtime/lockfile/test commands and bounded setup results; #16 coordinates one migration history and safe fixtures. Existing F-01 candidates remain uninstalled/unverified proposals.
 - After each accepted contract and available prerequisites, do only that feature's implementation and capture meaningful tests/history. Review/integrate, then run cross-feature checks before release.
 

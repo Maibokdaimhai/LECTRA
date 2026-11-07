@@ -1,6 +1,6 @@
 # Sprint 1 - Shared Engineering Contract
 
-Version 0.1, 2026-11-06. Proposed common conventions for [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5), alongside the [contract register](README.md) and [Product DoD](product-dod.md). Human team adoption is pending. These conventions coordinate child contracts; they are not a complete F-02-F-05 design/AC/STS or runtime evidence.
+Version 0.1, 2026-11-06; status updated 2026-11-07. Common documentation for [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5), alongside the [contract register](README.md) and [Product DoD](product-dod.md), approved/merged via PR #29. Additional proposed wire/normalization/schema choices in child contracts still need coordinated review before affected code. These conventions do not prove implementation or executed product verification.
 
 ## 1. Authority, scope and naming
 
