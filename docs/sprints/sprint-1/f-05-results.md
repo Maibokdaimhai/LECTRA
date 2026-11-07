@@ -1,6 +1,6 @@
 # F-05 — Identified Aggregate Results and Privacy Projections
 
-Version 0.1 · 2026-11-07 · Issue #14 · Sprint 1 · **Proposed engineering contract; not implemented or accepted.**
+Version 0.2 · 2026-11-07 · Issue #14 · Sprint 1 · **Proposed engineering contract; not implemented or accepted.**
 
 ## 1. Purpose, scope and source status
 
@@ -8,7 +8,7 @@ Specify the Survey Owner's results view before implementing F-05: count only whi
 
 Sources: [SRS](../../srs.md) §§2–7, [Feature Inventory](../../features.md) F-05, [Traceability](../../traceability.md), [System SDS](../../system-sds.md) §§2–6,11,13–15, [decisions](../../decisions.md), [Sprint Plan](../plan.md) §2, [tracker](tracker.md) §§2–4 and [workflow](workflow.md) §§3–8. The supplied Issue #14 attachment defines this task. The remote Issue page was unavailable; no additional remote checklist is assumed.
 
-No shared contract, Product DoD or F-01–F-04 feature files exist in this checkout at drafting. Prior-session PR #29 material at `fc64e2cc16557d77d67ef278d56e05c86c2621fc` is a provisional reference: [shared conventions](https://github.com/Maibokdaimhai/LECTRA/blob/fc64e2cc16557d77d67ef278d56e05c86c2621fc/docs/sprints/sprint-1/shared-contract.md) and [Product DoD](https://github.com/Maibokdaimhai/LECTRA/blob/fc64e2cc16557d77d67ef278d56e05c86c2621fc/docs/sprints/sprint-1/product-dod.md). It could not be freshly retrieved. Prior-session F-02/F-03 drafts are also proposals, absent locally and without an accepted version here. Use the actual baseline as authority; resolve §12 against the eventual accepted adjacent contracts before dependent code. Do not copy or merge unrelated proposal files.
+PR #29 has merged into the current staging baseline. Use its local [shared conventions](shared-contract.md), [F-01 contract](f-01-authentication.md), [Product DoD](product-dod.md) and [contract register](README.md), together with the local [F-02 contract](f-02-context-discovery.md), rather than the earlier PR #29 proposal snapshot. Authentication errors and phased Issue #16 dependencies follow these staging sources and the Tracker. Resolve remaining F-05-specific agreements in §12 against the reviewed adjacent contracts before dependent code; this source alignment does not establish F-05 implementation, executed verification or teammate acceptance.
 
 Scope excludes anonymous collection/suppression policies, single-choice, CSV/export, filters/history/trends, overall instructor scores, Teaching Improvement Notes, response retrieval/submission and lifecycle mutations. BR-16 is covered by identity-free identified comments and keeping this JSON view distinct from future aggregate-only export. This feature does not implement the later export/privacy extensions.
 
@@ -33,8 +33,9 @@ F-01 supplies an authenticated User ID and a freshly trusted OWNER role; no body
 
 | Actor / resource | Result |
 | --- | --- |
-| No valid session, including expired/logged-out session | 401 UNAUTHENTICATED after the shared Origin perimeter |
-| Authenticated RESPONDENT, including an eligible participant | 403 ROLE_FORBIDDEN, before Survey lookup |
+| Missing, forged, revoked or invalid-state session, missing/invalid User, or expired session whose row is missing/pruned | 401 AUTH_REQUIRED after the shared Origin perimeter |
+| Loaded authenticated session identifiable at/past its absolute deadline | 401 SESSION_EXPIRED after the shared Origin perimeter; missing/pruned expiry instead uses AUTH_REQUIRED |
+| Authenticated RESPONDENT, including an eligible participant | 403 FORBIDDEN_ROLE, before Survey lookup |
 | OWNER; missing/inaccessible Survey | Identical 404 NOT_FOUND; no existence/state/count disclosure |
 | OWNER; own DRAFT | 409 RESULTS_NOT_AVAILABLE; no response count, questions or fabricated zero statistics |
 | OWNER; own PUBLISHED, IDENTIFIED | 200 count-only projection (§4) |
@@ -113,15 +114,16 @@ Construct explicit allowlisted representations; do not return broad ORM rows and
 
 ### 4.3 Errors, security and precedence
 
-Use the baseline server-side session/absolute expiry and shared F-01 middleware; F-05 does not regenerate/extend sessions or implement login. Proposed PR #29 Origin rule: reject explicit foreign or `null` Origin with 403 ORIGIN_FORBIDDEN; protected same-origin safe GET may omit Origin and does not require a CSRF token. Unsupported unsafe methods still pass the shared Origin/session/applicable CSRF checks before 405; they must not become mutation handlers. No permissive CORS exception.
+Use the baseline server-side session/absolute expiry and shared F-01 middleware; F-05 does not regenerate/extend sessions or implement login. Follow the staging shared/F-01 Origin rule: reject explicit foreign or `null` Origin with 403 ORIGIN_FORBIDDEN; protected same-origin safe GET may omit Origin and does not require a CSRF token. Unsupported unsafe methods still pass the shared Origin/session/applicable CSRF checks before 405; they must not become mutation handlers. No permissive CORS exception.
 
 Order: shared Origin/transport checks → session → supported method/applicable CSRF → OWNER role → UUID/body/query validation → scoped Survey lookup → state/mode policy → result queries and serialization. Thus a Respondent's otherwise valid request is 403 without a lookup, an Owner's malformed UUID/query is 422, and a well-formed inaccessible ID is 404 regardless of its actual state. Do not leak Draft existence through a premature 409.
 
 | HTTP / error.code | Trigger | Response / effect |
 | --- | --- | --- |
 | 400 MALFORMED_REQUEST | HTTP/transport syntax rejected by shared middleware | Safe error, no result data |
-| 401 UNAUTHENTICATED | Missing/expired/revoked session | Clear private client data; login handoff |
-| 403 ROLE_FORBIDDEN / ORIGIN_FORBIDDEN / CSRF_INVALID | Role, Origin or applicable unsafe-method CSRF denial | No resource metadata; CSRF does not apply to supported GET |
+| 401 AUTH_REQUIRED | Missing, forged, revoked or invalid-state session, missing/invalid User, or missing/pruned expired session row | Clear private client data; login handoff |
+| 401 SESSION_EXPIRED | Server identifies a loaded authenticated session at/past its absolute deadline; missing/pruned expiry instead uses AUTH_REQUIRED | Same private-state cleanup and login handoff |
+| 403 FORBIDDEN_ROLE / ORIGIN_FORBIDDEN / CSRF_INVALID | Authenticated wrong role, Origin or applicable unsafe-method CSRF denial | No resource metadata; CSRF does not apply to supported GET |
 | 404 NOT_FOUND | Missing or foreign-owner Survey | Same safe message: “Survey not available.” |
 | 405 METHOD_NOT_ALLOWED | Unsupported method on results route after security checks | Allow: GET; no write |
 | 409 RESULTS_NOT_AVAILABLE | Own Draft | Safe unavailable state, no counts/results |
@@ -248,7 +250,7 @@ The STS specifies **28 cases: 6 unit, 14 API/real PostgreSQL, 4 selected UI/E2E,
 
 Meaningful TDD candidates: known-answer optional denominator/bin/rounding assertions; Published projection containing no question data; same-Course foreign-owner rejection. Capture real intended-behavior RED before implementation and GREEN afterward with actual test names/versions/output. Import crashes or invented retrospective history are not rule failures. Unit results alone cannot prove real PostgreSQL authorization/snapshot behavior or browser escaping.
 
-Provisional Product DoD 01–10 require implemented AC/layers, recorded preimplementation design, meaningful unit tests, real API/database tests, selected E2E/accessibility, genuine RED/GREEN, security/disclosure, actual tested SHA/commands/counts, substantive teammate review/integration, and reproducible setup/docs. Confirm exact accepted wording under #5. Release DoD 11–12 (accepted reviewed main release and A–F PDF) remain #25/#26 responsibilities, not satisfied by this feature package.
+The staging [Product DoD](product-dod.md) 01–10 require implemented AC/layers, recorded preimplementation design, meaningful unit tests, real API/database tests, selected E2E/accessibility, genuine RED/GREEN, security/disclosure, actual tested SHA/commands/counts, substantive teammate review/integration, and reproducible setup/docs. Record the shared version applied under #5. Release DoD 11–12 (accepted reviewed main release and A–F PDF) remain #25/#26 responsibilities, not satisfied by this feature package.
 
 Record actual test file/name, AC/STS ID, command, environment/DB version, tested commit, observed result, pass/fail/skip counts, safe artifacts and real reviewer feedback when available. Do not include raw feedback/tokens in public run logs. A documentation-only link/formula/traceability check is not application execution.
 
@@ -256,18 +258,20 @@ Record actual test file/name, AC/STS ID, command, environment/DB version, tested
 
 Tracker snapshot assigns Issue #14 and implementation #21 to R1NNE0, with the other member Maibokdaimhai as planned reviewer; no review occurrence/availability is claimed. #10/#17 supply trusted identity, #11/#18 owned context/discovery, #12/#19 lifecycle/frozen definitions, #13/#20 atomic responses and BR-11, #15 tooling, #16 migrations/seeds, #22/#23 integrated API/E2E, #24 reproducible instructions, #25 release and #26 evidence/PDF. Current tracker gates remain authoritative until a coordinated revision; this contract does not authorize Git/GitHub actions or mark any gate Done.
 
+Follow the Tracker's phased Issue #16 policy: the initial User/session foundation requires working #15 setup, reviewed #10 and accepted shared conventions/DoD, not unrelated #11–#14 contracts or full #16 completion. Subsequent domain migrations require their respective reviewed feature contracts and verification within one additive migration history. Full #16 completion requires the complete Sprint 1 schema, migrations, seed, constraints and verification. F-05 implementation #21 still requires its own reviewed #14 contract, applicable verified schema dependencies and actual persisted F-03/F-04 lifecycle/answer behavior from #19/#20; the initial auth foundation alone cannot satisfy these prerequisites.
+
 BR-14 pre-answer disclosure is a joint F-03/F-04 obligation; F-05 consumes mode and gives the Owner's truthful notice. BR-16 future aggregate CSV must omit these text comments. F-06 will add accepted anonymous safeguards; F-07 adds choices/metric provenance; F-09 adds compatible history analysis and F-10 private notes. None is implemented or made a prerequisite for this identified S1 results view.
 
 ## 12. Open agreements and recommended shared updates
 
 | Agreement | Required resolution before dependent code | Coordination |
 | --- | --- | --- |
-| Shared version/conventions | Confirm accepted PR #29/shared DoD version, UUID/errors, Origin handling/no-store; approve mean as two-decimal string and exact half-up rule | #5/#10/#14 and teammate |
+| Shared version/conventions | Record the staging shared/F-01/DoD versions used; follow their authentication errors, UUID and Origin/no-store conventions. Resolve F-05-specific mean-as-string and exact half-up agreements without treating the merged PR #29 as a provisional dependency | #5/#10/#14 and teammate |
 | Owned navigation/context | Reconcile actual accepted F-02/F-03 routes and §4 context/date/scale serialization; preserve separate discovery/definition/results responsibilities | #11/#12/#14 |
 | Schema/query subset | Confirm composite FKs, participation/bundle uniqueness, typed answers, exact numeric conversion, UTF-8 C collation and query indexes; no competing summary schema | #16/#13/#14 |
 | Submission/Close/read snapshot | Verify real F-03/F-04 Survey-lock ordering and committed-only F-05 reads; handoff H01 must use actual routes, not a mock lock harness | #12/#13/#14 |
 | Comment/privacy interface | Confirm unlabelled per-question string arrays/order, no participant/bundle/time projection, safe rendering/log policy; full S1 comment read without silent truncation | #14 reviewer; future #6 evidence uses safe artifacts |
-| Dependency gate | Current tracker §3 gates #16 execution on recorded #10–#14 contracts. Any proposed staged schema subset needs explicit coordinated approval; do not infer it from unmerged PR #29 | #5/#16/tracker maintainers |
+| Dependency gate | Follow Tracker §3 and §11 above: initial #16 User/session work needs working #15, reviewed #10 and accepted shared conventions; later domain increments need their respective reviewed contracts. Full #16 closes only after all S1 schema/migrations/seed/constraints/verification are complete. #21 needs reviewed #14, applicable verified schema and actual #19/#20 persisted behavior, not merely the initial auth subset | #5/#16/#14; tracker maintainers |
 
 Recommended later edits, **not performed**: add links to both F-05 documents under F-05 in `docs/README.md` and `docs/features.md`; add AC-F05-01–22/planned STS references to F-05 mappings in `docs/traceability.md`; after acceptance, reference exact rounding/projection/query agreements from `docs/system-sds.md` §§6.2,11,13; add reviewed #14 version/#21 evidence links in `tracker.md` without prematurely changing completion claims. Add the adopted rounding/wire rule to shared conventions only through coordinated review; do not silently treat this proposal as an existing shared decision.
 
