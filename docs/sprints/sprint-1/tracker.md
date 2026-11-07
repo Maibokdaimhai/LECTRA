@@ -56,8 +56,9 @@ Each individual lead owns relevant design/contracts, code, tests and documents, 
 
 | Work | Inputs / completion gates | What may proceed before those gates finish |
 | --- | --- | --- |
-| #16 database | #15 workspace plus recorded #10–#14 schema/constraint contracts and cross-feature consistency under #5. | Schema design, fixture planning and contract review; no pretend migration evidence. |
-| #17 F-01 | Reviewed/versioned #10, working #15/#16 foundations. | Intended-behavior test design after contract recording. |
+| #16 initial User/session database foundation | Working #15 setup, reviewed/versioned #10 User/session design and shared conventions/DoD under #5. No #11–#14 or full #16 closure gate for this subset. | Schema/fixture planning and review before these inputs; once ready, migrate/test only the accepted User/session subset and synthetic login accounts. |
+| #16 subsequent domain migrations and full completion | Each context/survey/response/results schema increment needs its applicable reviewed #11–#14 contract and cross-feature consistency under #5. All required S1 schema/seed/constraints/checks are needed before #16 itself is complete. | Draft domain designs independently; no implementation of unreviewed domain rules or claim that the initial auth subset completes #16. |
+| #17 F-01 | Reviewed/versioned #10, accepted shared conventions/DoD, working #15 and verified #16 User/session subset. Full #16 completion and unrelated #11–#14 contracts are not prerequisites. | Intended-behavior test design after contract recording; no premature feature implementation/verification claims. |
 | #18 F-02 | Reviewed/versioned #11; #17 trusted identity and #16 context seed. | Context/access case design and UI specification. |
 | #19 F-03 | Reviewed/versioned #12; #17/#18 identity/context and #16 constraints. | State/validation test design, including Draft-edit/publication races. |
 | #20 F-04 | Reviewed/versioned #13; #17–#19; database uniqueness/transaction rules. | Rule tests after contract recording; no late reconstruction of failing-before evidence. |
@@ -67,7 +68,7 @@ Each individual lead owns relevant design/contracts, code, tests and documents, 
 | #25 release | #9 workflow, actual #22/#23 results, #24 reproduction and fulfilled DoD; separately authorized reviewed release actions. | Review the readiness checklist; no merge/tag/release authorization from this tracker. |
 | #26 PDF | #5 contracts, #6 evidence plan, actual application/review/test evidence and #25 immutable assessed release. | Capture and organize evidence when it occurs, then assemble readable final A–F content. |
 
-Critical path: shared setup/schema → identity/context → publication → response transaction → results → integrated verification/review → accepted release → assessed PDF. Work on contract/evidence plans can overlap; a teammate's review time is a real dependency. Future features F-06–F-10, anonymous collection, starter/export/history/notes and Lab 5–7 completion are not added to S1.
+Critical path: shared setup and reviewed User/session subset → identity; reviewed context/domain schema increments → context/publication → response transaction → results → integrated verification/review → accepted release → assessed PDF. #16 is an incrementally delivered foundation Issue, not a requirement to finish every domain contract before authentication can start. Keep one additive migration history; verify each accepted subset and do not mark the full Issue complete early. Work on contract/evidence plans can overlap; a teammate's review time is a real dependency. Future features F-06–F-10, anonymous collection, starter/export/history/notes and Lab 5–7 completion are not added to S1.
 
 ## 4. Readiness gates — evidence required before marking complete
 

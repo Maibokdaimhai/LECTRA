@@ -331,6 +331,8 @@ API prefix `/api`; JSON bodies; server-generated IDs; session cookie rather than
 
 Candidate endpoint families, to be finalized with payloads in Issue #5:
 
+Issue #5 now has a proposed [shared engineering contract](sprints/sprint-1/shared-contract.md), [Product DoD](sprints/sprint-1/product-dod.md) and [contract register](sprints/sprint-1/README.md). They coordinate IDs, wire/error/pagination shapes, migration ownership, body/Unicode sizing, frozen scales, UI states and verification boundaries. These are reviewable team details, not accepted runtime configuration or replacements for each feature's exact contract. The existing SRS scope/security/privacy rules remain unchanged.
+
 | Family | Planned paths |
 | --- | --- |
 | Session | `GET /api/auth/session`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` |

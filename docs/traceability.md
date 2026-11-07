@@ -56,9 +56,24 @@ Requirements are defined in [SRS](srs.md); features/responsibilities in [invento
 
 ## Coverage gaps and change status
 
-Every baseline FR/BR/NFR currently has a planned responsibility and verification allocation. This is planned coverage only. Sprint 1 feature contracts, stable AC/test IDs, actual tests/results, teammate review and accepted release evidence do not yet exist and must not be marked complete.
+Every baseline FR/BR/NFR currently has a planned responsibility and verification allocation. This is planned coverage only. F-01 has draft AC/STS IDs under #10 as mapped below; the other Sprint 1 feature contracts remain to be written. No executed application tests/results, teammate contract approval or accepted Sprint 1 release is claimed.
 
-Unresolved gates are in [decisions](decisions.md). No approved requirement removal or completed test is claimed. After contracts are written, extend this matrix with AC/test IDs; after execution, add actual file/test name, command or run, tested commit, result and evidence location.
+Unresolved gates are in [decisions](decisions.md). Common Part E coordination now has draft [register](sprints/sprint-1/README.md), [conventions](sprints/sprint-1/shared-contract.md) and [Product DoD](sprints/sprint-1/product-dod.md), supporting NFR-03/05/07/08 and SYS-01-04. They add no FR/BR/NFR IDs and do not close #5 or prove human adoption. No approved requirement removal or completed test is claimed. After contracts are written, extend this matrix with AC/test IDs; after execution, add actual file/test name, command or run, tested commit, result and evidence location.
+
+## F-01 draft contract trace (Issue #10)
+
+All rows are F-01 / Sprint 1. The [feature contract](sprints/sprint-1/f-01-authentication.md) contains the full stable 20-AC-to-test map; the [STS](sprints/sprint-1/f-01-authentication-sts.md) defines 47 planned cases with levels, inputs/preconditions, action and expected outcome. Shared Product DoD and teammate acceptance remain #5 gates. Actual test file/name, tested implementation SHA/run, observed result and evidence location for every row are **Not run / not available**; these draft specifications do not constitute Part F.
+
+| Requirement / responsibility | Draft AC links | Planned verification / boundary |
+| --- | --- | --- |
+| FR-01 / SYS-01 | AC-F01-01, 03-09, 16-17, 19 | Bootstrap/login/me/logout, hash/session persistence, absolute expiry, restart/replay and UI session-loss cases: TEST-F01-I01, I03-I09, I16-I21, I24, I26-I28, E01-E03, E05; unit policy cases. |
+| BR-01 / SYS-03 | AC-F01-02, 06-12 | Strict input/identity trust, CSRF/Origin, session/role/scoped guard cases: TEST-F01-U01-U04, U07, I06-I17, I25. |
+| BR-02 / SYS-03 | AC-F01-08, 12 | TEST-F01-U04, I09-I12, I15 establish trusted identity/guard behavior; H01-H04 require real F-02-F-05 routes/DB under dependent work and #22. No full ownership/cross-response coverage is claimed from a harness. |
+| NFR-01 / SYS-03 | AC-F01-05, 08-14, 18-19 | Credential/guard/failure/cache/log/throttle checks in TEST-F01-U03-U06, I02, I09-I19, I21-I26, E02-E05 and actual domain H01-H04. |
+| NFR-03 / SYS-01 | AC-F01-11, 17 | TEST-F01-I02, I20, I24-I25, M02; #15/#16 must provide actual runtime/lockfile/schema/setup evidence before implementation readiness is accepted. |
+| NFR-05 / SYS-02 | AC-F01-20; all behavior AC | All AC map to STS; TEST-F01-M03 audits actual unit/API-DB/selected UI results and real TDD history later. Existing planned counts are not runner results. |
+| NFR-07 / SYS-04 | AC-F01-15-16 | TEST-F01-E01-E05 and M01; actual keyboard/viewport/state checks at 360px/1280px, with supplementary SDS reflow/zoom review. |
+| NFR-08 / SYS-02 | AC-F01-20 | TEST-F01-M03: actual preimplementation contract/test-design version, substantive human review/integration and release-SHA-linked verification under #25/#26. |
 
 ## Instructor-theme coverage cross-check
 
