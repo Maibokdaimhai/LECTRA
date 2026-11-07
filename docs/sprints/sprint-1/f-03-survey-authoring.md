@@ -1,6 +1,6 @@
 # F-03 — Survey Authoring, Publication and Closing
 
-Version 0.1 · 2026-11-07 · Issue #12 · Sprint 1 · **Proposed engineering contract; not implemented or accepted.**
+Version 0.2 · 2026-11-07 · Issue #12 · Sprint 1 · **Proposed engineering contract; not implemented or accepted.**
 
 ## 1. Purpose, authority and scope
 
@@ -8,7 +8,7 @@ Specify F-03 before application implementation: an Owner selects an owned Lectur
 
 Authority: [SRS](../../srs.md) §§2–7, [Feature Inventory](../../features.md), [Traceability](../../traceability.md), [System SDS](../../system-sds.md) §§2–6,11,13–15, [decisions](../../decisions.md), [Sprint Plan](../plan.md), [tracker](tracker.md) §§2–4 and [workflow](workflow.md) §§3–8. The supplied Issue #12 task is the issue-scope source; the remote Issue page could not be retrieved. Instructor deliverable expectations require preimplementation feature UI/API/data design, observable AC and planned unit/integration/E2E specifications; implementation, executed evidence and teammate acceptance remain later gates.
 
-The current tree has no F-01/shared, F-02, F-04 or F-05 feature contracts. Previously inspected PR #29 proposals at commit `fc64e2cc16557d77d67ef278d56e05c86c2621fc` supply provisional [shared conventions](https://github.com/Maibokdaimhai/LECTRA/blob/fc64e2cc16557d77d67ef278d56e05c86c2621fc/docs/sprints/sprint-1/shared-contract.md), [F-01](https://github.com/Maibokdaimhai/LECTRA/blob/fc64e2cc16557d77d67ef278d56e05c86c2621fc/docs/sprints/sprint-1/f-01-authentication.md) and [Product DoD](https://github.com/Maibokdaimhai/LECTRA/blob/fc64e2cc16557d77d67ef278d56e05c86c2621fc/docs/sprints/sprint-1/product-dod.md). The F-02 draft discussed in the preceding session is a provisional interface reference without an immutable publication reference; it has not been retrieved from this tree or accepted here. Agreements in §11 must be resolved before dependent implementation; no unmerged proposal overrides the baseline.
+The updated staging baseline supplies local [shared conventions](shared-contract.md), [F-01](f-01-authentication.md), [Product DoD](product-dod.md), [contract register](README.md) and [F-02](f-02-context-discovery.md). F-03 follows their authentication/transport definitions and the Tracker's phased Issue #16 policy; it no longer depends on the earlier PR #29 proposal snapshot. F-04/F-05 feature contracts remain separate dependencies. Resolve F-03-specific schema/interface agreements in §11 before dependent implementation; the presence of these documents is not implementation, executed verification or acceptance of this F-03 contract.
 
 | Requirement | F-03 obligation / boundary | Acceptance criteria |
 | --- | --- | --- |
@@ -160,15 +160,16 @@ Every protected success/error response uses `Cache-Control: no-store`. Safe vali
 
 ### 5.3 Security perimeter, errors and precedence
 
-Consume F-01's trusted session and shared middleware, including absolute session expiry, regenerated login session and logout invalidation; F-03 neither creates sessions nor extends expiry. Provisional PR #29 convention: same-origin cookies; reject explicit foreign or `null` Origin on every protected route, require exact configured Origin plus session synchronizer CSRF token on unsafe methods, and allow omitted Origin on a safe same-origin GET. Missing/invalid CSRF is 403. No permissive CORS override or reliance on disabled UI controls.
+Consume F-01's trusted session and shared middleware, including absolute session expiry, regenerated login session and logout invalidation; F-03 neither creates sessions nor extends expiry. Follow the staging shared/F-01 convention: same-origin cookies; reject explicit foreign or `null` Origin on every protected route, require exact configured Origin plus session synchronizer CSRF token on unsafe methods, and allow omitted Origin on a safe same-origin GET. Missing/invalid CSRF is 403 CSRF_INVALID. No permissive CORS override or reliance on disabled UI controls.
 
 Order: (1) shared Origin/transport perimeter, (2) session authentication, (3) unsafe-method CSRF, (4) route method then role, (5) syntactic path/body validation, (6) ownership/eligibility-scoped resource lookup, then (7) locked state, expectedRevision, semantic definition, eligibility in that order. Transport errors can precede authentication; malformed JSON cannot be interpreted as a business operation. Known field types/lengths are checked in step 5; nonblank publishability and related-row question identity are step 7. Thus a valid-shaped edit of a Published survey is 409, while malformed JSON is 400, and a wrong-role well-formed request is 403 before record lookup. An inaccessible record with valid syntax is always 404. Tests use otherwise valid requests to isolate each boundary.
 
 | HTTP / code | Trigger / applicable endpoints | Persistent effect |
 | --- | --- | --- |
 | 400 MALFORMED_JSON | JSON parse failure on a JSON body | None |
-| 401 UNAUTHENTICATED | Missing, expired or invalid session; all six routes | None; follow F-01 cleanup |
-| 403 ORIGIN_FORBIDDEN / CSRF_INVALID / ROLE_FORBIDDEN | Shared Origin/CSRF checks; Respondent management | None |
+| 401 AUTH_REQUIRED | Missing, forged, revoked or invalid-state session, missing/invalid User, or expired session whose row is missing/pruned; all six routes | None; follow F-01 private-state cleanup |
+| 401 SESSION_EXPIRED | Server identifies a loaded authenticated session at/past its absolute deadline; missing/pruned expiry instead uses AUTH_REQUIRED | None; same F-01 private-state cleanup |
+| 403 ORIGIN_FORBIDDEN / CSRF_INVALID / FORBIDDEN_ROLE | Shared Origin/CSRF checks; authenticated Respondent management | None |
 | 404 NOT_FOUND | Missing or inaccessible scoped Lecture/Survey; Respondent Draft/ineligible read | None; identical safe message |
 | 405 METHOD_NOT_ALLOWED | Unsupported method for a recognized route | None; Allow header |
 | 409 SURVEY_ALREADY_EXISTS | Create collides on Survey.lectureId, including race | No second Survey |
@@ -176,8 +177,9 @@ Order: (1) shared Origin/transport perimeter, (2) session authentication, (3) un
 | 409 REVISION_CONFLICT | Draft save/delete/publish expectedRevision is stale | None; GET to reconcile |
 | 422 INVALID_REQUEST / INVALID_DEFINITION | Bad UUID/schema, extra keys, question IDs, field limits, scale/type or publishability | None; safe fields where applicable |
 | 422 ELIGIBILITY_EMPTY / ELIGIBILITY_INVALID | Publication snapshot empty or contains invalid non-Respondent membership | No partial snapshot/transition; no identities in error |
-| 413 PAYLOAD_TOO_LARGE | More than endpoint's raw byte ceiling | None |
-| 415 UNSUPPORTED_MEDIA_TYPE | Mutation not application/json (UTF-8), or non-identity Content-Encoding | None |
+| 413 BODY_TOO_LARGE | More than endpoint's raw byte ceiling | None |
+| 415 UNSUPPORTED_CONTENT | Mutation not application/json (optional UTF-8 charset), or non-identity Content-Encoding | None |
+| 503 AUTH_SERVICE_UNAVAILABLE | F-01 session-store or trusted User lookup unavailable before domain handling | No domain mutation; no authentication fallback |
 | 503 SERVICE_UNAVAILABLE / 500 INTERNAL_ERROR | Known database unavailability / unexpected failure | Known failed transaction rolls back; uncertain commit outcome reconciled by GET/discovery (§7), never blindly retried |
 
 Error shape: `{ "error": { "code": "REVISION_CONFLICT", "message": "The survey changed. Reload before trying again." } }`; optional `fields` maps allowed field paths to safe fixed messages. Do not include revision/current record details on 404, SQL, stack traces, tokens or answer content. Logs use operation/correlation ID and safe error class, not request bodies or session secrets. Map only the expected uniqueness constraint to SURVEY_ALREADY_EXISTS; other database faults are not validation errors.
@@ -292,13 +294,13 @@ Tracker snapshot: Issue #12 lead R1NNE0, planned reviewer Maibokdaimhai; no revi
 
 | Agreement / gate | Required decision before dependent code | Owner / next coordination |
 | --- | --- | --- |
-| Shared conventions adoption | Confirm PR #29 version, ID/error/projection conventions, UUIDs, normalization, Origin/CSRF and 8/256 KiB limits; no silent change to shared middleware | #5/#10 with #12 reviewer |
+| Shared conventions alignment | Record the staging shared/F-01/DoD versions used; apply their authentication/transport codes and session distinctions. Review remaining F-03-specific projection, normalization and body-limit agreements without changing shared middleware silently | #5/#10 with #12 reviewer |
 | F-02 interface | Reconcile actual accepted #11 contract with §5.2 context serialization, selected-Lecture/create/existing links, role projections and UI routes; no duplicated discovery handler | #11/#12 |
 | Schema subset | Approve §6 constraints, stable question IDs, reorder staging, redundant ownership invariant, Eligibility FKs, role fixtures and locking SQL/Prisma integration | #16/#12; no F-03 migrations |
 | F-04 lock and answers | Adopt the same Survey lock and BR-11 ordering, frozen required/type/scale/IDs, disclosure and validation handoff; actual submit route/status contract remains #13, not invented here | #12/#13/#16 |
 | F-05 meaning/privacy | Preserve frozen IDs/scale and closed response set; F-05 count/results projections, never identified account links to owner | #12/#14 |
-| Dependency order | Current tracker §3 requires #10–#14 contracts before #16 execution; proposed staged schema subsets in PR #29 are not accepted authority here. Follow existing gate until a coordinated update is approved | #5/#16/tracker maintainers |
+| Dependency order | Follow Tracker §3: initial #16 User/session migration and synthetic login seed require working #15, reviewed #10 and accepted shared conventions/DoD. Later domain migrations require their respective reviewed feature contracts. #17 may start against the verified initial subset without full #16 completion or unrelated #11–#14 contracts. F-03 implementation #19 still requires reviewed #12, #17/#18 identity/context and its applicable verified #16 schema/constraints; full #16 closes only after its entire S1 scope is evidenced | #5/#16/#12; tracker maintainers |
 
-Recommended later shared-file changes (not performed): add these two contract links under F-03 in `docs/README.md`; link AC-F03-01–26 and the STS in the F-03 row of `docs/traceability.md` and the contract reference in `docs/features.md`; after review, reference §6–7's accepted revision/snapshot/reorder details from `docs/system-sds.md` §§2–3,11; update `tracker.md` #12/#19/#16 contract/evidence references and status only on actual review/implementation evidence. Any staged-schema gate change must be explicit in tracker §3/shared conventions, with #16's review, rather than inferred from this document. No existing shared file is changed by this package.
+Recommended later shared-file changes (not performed): add these two contract links under F-03 in `docs/README.md`; link AC-F03-01–26 and the STS in the F-03 row of `docs/traceability.md` and the contract reference in `docs/features.md`; after review, reference §6–7's accepted revision/snapshot/reorder details from `docs/system-sds.md` §§2–3,11; update `tracker.md` #12/#19/#16 contract/evidence references and status only on actual review/implementation evidence. Keep subsequent dependency updates consistent with the existing phased Tracker policy and record each reviewed/verified schema subset without claiming full #16 completion early. No existing shared file is changed by this package.
 
 Ready to submit for independent specification and teammate review once the paired document checks are complete. This is not authorization to code against unresolved shared/schema/handoff agreements, mark tests passed, or close delivery gates.
