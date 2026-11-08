@@ -37,11 +37,13 @@ export type StoredQuestion = {
     required: boolean;
     position: number;
 };
-export function parseAnswers(value: unknown, questions: StoredQuestion[]) {
+export function parseAnswerEnvelope(value: unknown) {
     const parsed = z.object({ answers: z.array(z.object({ questionId: id, value: z.union([z.number(), z.string()]) }).strict()).max(10) }).strict().safeParse(value);
-    if (!parsed.success)
-        fail(422, 'INVALID_ANSWERS');
-    const entries = parsed.data!.answers;
+    if (!parsed.success) fail(422, 'INVALID_REQUEST');
+    return parsed.data!;
+}
+export function parseAnswers(value: unknown, questions: StoredQuestion[]) {
+    const entries = parseAnswerEnvelope(value).answers;
     const seen = new Set<string>();
     const answers: {
         questionId: string;

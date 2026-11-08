@@ -157,12 +157,15 @@ it('F-04/F-05: concurrent duplicate submits persist exactly one result; privacy 
     const body = { answers: [{ questionId: ratingId, value: 5 }, { questionId: textId, value: '<script>private content</script>\nNext lesson' }] };
     const results = await Promise.all([mutation(student, 'post', `/api/surveys/${surveyId}/responses`, body), mutation(student, 'post', `/api/surveys/${surveyId}/responses`, body)]);
     expect(results.map(r => r.status).sort()).toEqual([201, 409]);
+    const malformed = await mutation(student, 'post', `/api/surveys/${surveyId}/responses`, {answers: [], studentId: fixtureId(12)}).expect(422);
+    expect(malformed.body.error.code).toBe('INVALID_REQUEST');
     const own = await student.agent.get(`/api/surveys/${surveyId}/my-submission`).expect(200);
     expect(own.body.data.submitted).toBe(true);
     expect(own.body.data.answers).toEqual(body.answers);
     await student.agent.get(`/api/surveys/${surveyId}/my-submission?studentId=${fixtureId(12)}`).expect(422);
     const owner = await login();
     const live = await owner.agent.get(`/api/surveys/${surveyId}/results`).expect(200);
+    expect(live.headers['cache-control']).toBe('private, no-store');
     expect(live.body.data.responseCount).toBe(1);
     expect(live.body.data.questions).toBeUndefined();
     await student.agent.get(`/api/surveys/${surveyId}/results`).expect(403);

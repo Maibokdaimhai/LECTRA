@@ -70,7 +70,7 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
     const clear = (res: Response) => res.clearCookie(cookieName, cookie);
     let dummy: Promise<string> | undefined;
     app.use('/api', (req, res, next) => {
-        res.set('Cache-Control', 'no-store');
+        res.set('Cache-Control', req.path.endsWith('/results') ? 'private, no-store' : 'no-store');
         const unsafe = !['GET', 'HEAD', 'OPTIONS'].includes(req.method);
         const supplied = req.headers.origin;
         let validOrigin = false;

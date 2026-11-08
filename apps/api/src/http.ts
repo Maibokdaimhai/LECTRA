@@ -39,8 +39,8 @@ export function errorHandler(error: unknown, _req: Request, res: Response, _next
         res.status(503).json({ error: { code: 'SERVICE_UNAVAILABLE', message: 'The service is temporarily unavailable.' } });
         return;
     }
-    if (code === 'P2002' || code === '23505') {
-        res.status(409).json({ error: { code: 'CONFLICT', message: 'The requested change conflicts with existing data.' } });
+    if (code === '23505' && ['Participation_pkey', 'ResponseBundle_surveyId_identifiedStudentId_key'].includes((error as { constraint?: string }).constraint ?? '')) {
+        res.status(409).json({ error: { code: 'RESPONSE_ALREADY_SUBMITTED', message: 'A response has already been submitted.' } });
         return;
     }
     res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Request could not be completed.' } });

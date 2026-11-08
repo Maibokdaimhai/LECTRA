@@ -3,7 +3,7 @@ import type { Pool, PoolClient } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { authenticated, role, csrf } from './auth.js';
 import { exact, fail, uuid, HttpError } from './http.js';
-import { mean, parseAnswers, parseDefinition, validatePublication } from './feedback-rules.js';
+import { mean, parseAnswers, parseAnswerEnvelope, parseDefinition, validatePublication } from './feedback-rules.js';
 type Row = Record<string, any>;
 const disclosure = 'This survey is identified. Your answers remain linked to your account in storage. The survey owner sees summaries and unlabelled written feedback after closing, without your account identifier. Your written content may still identify you. Small groups can also make summaries identifiable.';
 const scale = (q: Row) => q.type === 'TEXT' ? null : ({ min: q.ratingMin, max: q.ratingMax, minLabel: q.ratingMinLabel, maxLabel: q.ratingMaxLabel, interpretation: q.scaleInterpretation });
@@ -213,6 +213,7 @@ export function setupFeedback(app: Express, pool: Pool) {
     });
     app.post('/api/surveys/:id/responses', authenticated, csrf, role('RESPONDENT'), async (req, res) => {
         query(req, []);
+        parseAnswerEnvelope(req.body);
         const data = await transaction(pool, async (db) => {
             const row = await scope(db, req, true);
             state(row, 'PUBLISHED');
