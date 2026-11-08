@@ -41,3 +41,12 @@ test('real owner → student → closed results, persistent readback, rejection 
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:`.local/evidence/results-${info.project.name}.png`});
 });
+test('bootstrap uses one real session request under React StrictMode and supports keyboard login',async({page})=>{
+  let bootstraps=0;page.on('request',request=>{if(new URL(request.url()).pathname==='/api/auth/session')bootstraps++;});
+  await page.goto('/');await expect(page.getByRole('button',{name:'Log in',exact:true})).toBeEnabled();
+  expect(bootstraps).toBe(1);
+  await page.getByLabel('Email',{exact:true}).fill('owner.1@example.test');
+  await page.getByLabel('Password',{exact:true}).fill(process.env.SEED_OWNER_PASSWORD!);
+  await page.getByLabel('Password',{exact:true}).press('Enter');
+  await expect(page.getByRole('button',{name:'Log out',exact:true})).toBeVisible();
+});

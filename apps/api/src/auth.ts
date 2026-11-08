@@ -24,7 +24,20 @@ export const csrf: RequestHandler = (req, _res, next) => { if (!validToken(req.h
 export function setupAuth(app: Express, config: AppConfig, now: () => number = Date.now) {
   const pool = new Pool({ connectionString: config.DATABASE_URL, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
   const Store = connectPgSimple(session);
-  const store = new Store({ pool, tableName: 'auth_session', createTableIfMissing: false, disableTouch: true, pruneSessionInterval: false });
+  class AbsoluteStore extends Store {
+    override set(sid: string, value: session.SessionData, callback?: (error?: unknown) => void) {
+      const deadline=value.authExpiresAt ?? value.guestExpiresAt;
+      if(typeof deadline!=='number'||!Number.isSafeInteger(deadline)){callback?.(new Error('Invalid session deadline'));return;}
+      super.set(sid,value,error=>{
+        if(error){callback?.(error);return;}
+        // Upstream rounds up to seconds. Correct the persisted timestamp before save acknowledgement.
+        // A concurrent destroy must remain destroyed; UPDATE never recreates the SID.
+        void pool.query("UPDATE auth_session SET expire=(to_timestamp($2::double precision / 1000) AT TIME ZONE 'UTC') WHERE sid=$1",[sid,deadline]).then(()=>callback?.(),()=>callback?.(new Error('Session persistence unavailable')));
+      });
+    }
+  }
+  pool.on('error',()=>{console.error('Authentication database connection unavailable.');});
+  const store = new AbsoluteStore({ pool, tableName: 'auth_session', createTableIfMissing: false, disableTouch: true, pruneSessionInterval: false, errorLog: ()=>console.error('Session store operation failed.') });
   const secure = config.APP_ORIGIN.startsWith('https:');
   const cookieName = secure ? '__Host-lectra.sid' : 'lectra.sid';
   const cookie = { httpOnly: true, secure, sameSite: 'lax' as const, path: '/' };
@@ -56,7 +69,7 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
       if (Buffer.isBuffer(req.body)) { try { req.body = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(req.body)); } catch { fail(400, 'MALFORMED_JSON'); } }
       const s = req.session;
       const isAuth = Boolean(s.userId);
-      const authLive = isAuth && typeof s.userId === 'string' && /^[a-f0-9-]{36}$/.test(s.userId) && tokenShape(s.csrfToken) && liveAuth(s, now());
+      const authLive = isAuth && typeof s.userId === 'string' && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(s.userId) && tokenShape(s.csrfToken) && liveAuth(s, now());
       const guestLive = !isAuth && tokenShape(s.csrfToken) && Number.isSafeInteger(s.guestCreatedAt) && Number.isSafeInteger(s.guestExpiresAt) && s.guestCreatedAt! <= now() && s.guestExpiresAt === s.guestCreatedAt! + GUEST_LIFETIME && now() < s.guestExpiresAt!;
       if (authLive) {
         let found;

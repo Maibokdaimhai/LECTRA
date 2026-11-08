@@ -27,7 +27,7 @@ function page(req: Request, allowed: string[] = []) {
 }
 async function transaction<T>(pool: Pool, action: (db: PoolClient) => Promise<T>, read = false): Promise<T> {
   const db = await pool.connect();
-  try { await db.query(read ? 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY' : 'BEGIN'); const result = await action(db); await db.query('COMMIT'); return result; }
+  try { await db.query(read ? 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY' : 'BEGIN'); await db.query("SET LOCAL lock_timeout='5s'"); await db.query("SET LOCAL statement_timeout='10s'"); const result = await action(db); await db.query('COMMIT'); return result; }
   catch (error) { await db.query('ROLLBACK'); throw error; } finally { db.release(); }
 }
 async function scope(db: PoolClient, req: Request, lock = false) {

@@ -10,7 +10,7 @@ import { createApp } from '../../src/app.js';
 import { seedSyntheticDatabase } from '../../../../scripts/seed-database.js';
 import { fixtureId } from '../../../../prisma/fixtures.js';
 const origin = 'http://127.0.0.1:5173';
-const password = randomBytes(24).toString('base64url');
+const password = process.env.RESTART_PASSWORD ?? randomBytes(24).toString('base64url');
 const secret = randomBytes(32).toString('base64url');
 const options = { testUrl: process.env.TEST_DATABASE_URL, developmentUrl: process.env.DATABASE_URL, allowName: process.env.ALLOW_TEST_DATABASE };
 const expected = assertTestDatabase(options);
@@ -217,8 +217,38 @@ it('F-05: corrupted persisted type/denominator data fails closed rather than pro
 it('F01-store: persisted and cookie expiry never extend past the exact absolute millisecond deadline',async()=>{
   clock=Math.floor(Date.now()/1000)*1000+123;
   const client=await login();const deadline=Date.parse(client.logged.body.data.expiresAt);
-  const stored=(await pool.query(`SELECT extract(epoch FROM expire AT TIME ZONE 'UTC')*1000 AS ms,sess FROM auth_session WHERE sess->>'userId'=$1`,[fixtureId(1)])).rows;
+  const cookie=String(client.logged.headers['set-cookie']![0]).split(';')[0]!;
+  const sid=decodeURIComponent(cookie.slice(cookie.indexOf('=')+1)).slice(2).split('.')[0]!;
+  const stored=(await pool.query(`SELECT extract(epoch FROM expire AT TIME ZONE 'UTC')*1000 AS ms,sess FROM auth_session WHERE sid=$1`,[sid])).rows;
   expect(stored).toHaveLength(1);expect(Number(stored[0].ms)).toBe(deadline);
   await client.agent.get('/api/auth/me').expect(200);
-  expect(Number((await pool.query(`SELECT extract(epoch FROM expire AT TIME ZONE 'UTC')*1000 AS ms FROM auth_session WHERE sess->>'userId'=$1`,[fixtureId(1)])).rows[0].ms)).toBe(deadline);
+  expect(Number((await pool.query(`SELECT extract(epoch FROM expire AT TIME ZONE 'UTC')*1000 AS ms FROM auth_session WHERE sid=$1`,[sid])).rows[0].ms)).toBe(deadline);
 });
+it('TEST-F01-I19/I21: reads overlapping logout never resurrect the cookie; independent sessions remain usable',async()=>{
+  const a=await login(),b=await login();const cookie=String(a.logged.headers['set-cookie']![0]).split(';')[0]!;
+  const results=await Promise.all([a.agent.get('/api/auth/me'),mutation(a,'post','/api/auth/logout',{})]);
+  expect([200,401]).toContain(results[0]!.status);expect(results[1]!.status).toBe(204);
+  await request(app).get('/api/auth/me').set('Cookie',cookie).expect(401);await b.agent.get('/api/auth/me').expect(200);
+});
+it('F-01: unsupported methods, foreign origins and forged cookies fail without authority',async()=>{
+  await request(app).get('/api/auth/logout').expect(405);
+  await request(app).get('/api/auth/session').set('Origin','null').expect(403);
+  await request(app).get('/api/auth/session').set('Sec-Fetch-Site','cross-site').expect(403);
+  await request(app).get('/api/auth/me').set('Cookie','lectra.sid=s%3Aforged.signature').expect(401);
+  const user=await login();const response=await user.agent.head('/api/courses').expect(405);expect(response.headers.allow).toBe('GET');
+  await user.agent.get(`/api/surveys/${surveyId}/results?studentId=${fixtureId(11)}`).expect(422);
+});
+it('F-03: concurrent Draft edit and publication commit only a consistent frozen revision',async()=>{
+  const owner=await login();
+  const lecture=(await pool.query('INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence) VALUES ($1,\'Edit/publish race\',\'2026-11-09\',1003) RETURNING id',[fixtureId(201)])).rows[0].id;
+  const created=await mutation(owner,'post','/api/surveys',{lectureId:lecture}).expect(201);const id=created.body.data.id;
+  const input={expectedRevision:1,title:'Before publish',questions:[{id:null,type:'RATING',prompt:'Clarity',required:true,ratingScale:{min:1,max:5,minLabel:'Low',maxLabel:'High',interpretation:'Higher means clearer'}}]};
+  const saved=await mutation(owner,'patch',`/api/surveys/${id}`,input).expect(200);
+  const edited={...input,expectedRevision:2,title:'Edited concurrently',questions:saved.body.data.questions.map(({id,prompt,type,required,ratingScale}:QuestionInput)=>({id,prompt,type,required,ratingScale}))};
+  const [edit,publish]=await Promise.all([mutation(owner,'patch',`/api/surveys/${id}`,edited),mutation(owner,'post',`/api/surveys/${id}/publish`,{expectedRevision:2})]);
+  expect([edit.status,publish.status].sort()).toEqual([200,409]);
+  const persisted=(await owner.agent.get(`/api/surveys/${id}`).expect(200)).body.data;
+  if(publish.status===200){expect(persisted.status).toBe('PUBLISHED');expect(persisted.title).toBe('Before publish');}
+  else{expect(persisted.status).toBe('DRAFT');expect(persisted.title).toBe('Edited concurrently');expect(persisted.definitionRevision).toBe(3);}
+});
+type QuestionInput={id:string;prompt:string;type:string;required:boolean;ratingScale:unknown};
