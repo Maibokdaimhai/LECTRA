@@ -13,6 +13,25 @@ describe('test database safety before any SQL', () => {
     { label: 'missing development reference', input: { ...safe, developmentUrl: undefined } },
     { label: 'encoded extra database path', input: { ...safe, testUrl: 'postgresql://fixture@127.0.0.1/lectra_test%2Fdev' } }
   ])('rejects $label', ({ input }) => { expect(() => assertTestDatabase(input)).toThrow('Unsafe test database configuration'); });
+  it('rejects the reviewer regression where a query port resolves to the development target', () => {
+    expect(() => assertTestDatabase({
+      developmentUrl: 'postgresql://fixture@127.0.0.1:5432/lectra_test',
+      testUrl: 'postgresql://fixture@127.0.0.1:5433/lectra_test?port=5432',
+      allowName: 'lectra_test'
+    })).toThrow('Unsafe test database configuration');
+  });
+  it.each(['testUrl', 'developmentUrl'] as const)('rejects routing overrides in %s before any connection', (field) => {
+    for (const query of ['host=127.0.0.1', 'port=5432', '%70ort=5432', 'port=5433&port=5432']) {
+      expect(() => assertTestDatabase({ ...safe, [field]: `${safe[field]}?${query}` })).toThrow('Unsafe test database configuration');
+    }
+  });
+  it('retains harmless non-routing query options for isolated database targets', () => {
+    expect(assertTestDatabase({
+      ...safe,
+      testUrl: `${safe.testUrl}?application_name=lectra_test&sslmode=disable`,
+      developmentUrl: `${safe.developmentUrl}?application_name=lectra_dev`
+    })).toBe('lectra_test');
+  });
   it('does not disclose either connection string on rejection', () => {
     try { assertTestDatabase({ ...safe, testUrl: 'postgresql://private-marker@127.0.0.1/lectra_dev' }); throw new Error('Expected rejection'); }
     catch (error) { expect(String(error)).toContain('Unsafe test database configuration'); expect(String(error)).not.toContain('private-marker'); }
