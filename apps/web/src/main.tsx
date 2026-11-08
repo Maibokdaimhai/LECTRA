@@ -36,15 +36,21 @@ function App() {
   const retainedLogoutToken = useRef('');
   const generation = useRef(0);
   const token = useRef('');
+  const bootstrapFlight = useRef<Promise<Session>|null>(null);
   const bootstrap = useCallback(async () => {
     const version=++generation.current;setLoading(true);
     try {
-      const response=await fetch('/api/auth/session',{credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(15000)});
-      const value=await response.json();if(!response.ok)throw new ApiError(response.status,value.error?.code??'UNAVAILABLE',value.error?.message??'Service unavailable.');
+      // Coalesce StrictMode/visibility callers: ignored responses can still set browser cookies.
+      bootstrapFlight.current ??= (async()=>{
+        const response=await fetch('/api/auth/session',{credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(15000)});
+        const value=await response.json();if(!response.ok)throw new ApiError(response.status,value.error?.code??'UNAVAILABLE',value.error?.message??'Service unavailable.');
+        return value.data as Session;
+      })();
+      const value=await bootstrapFlight.current;
       if(version!==generation.current)return;
-      token.current=value.data.csrfToken;setSession(value.data);setPendingLogout(false);
+      token.current=value.csrfToken;setSession(value);setPendingLogout(false);
     } catch(e) { if(version===generation.current){setError(reason(e));setSession(null);} }
-    finally {if(version===generation.current)setLoading(false);}
+    finally {bootstrapFlight.current=null;if(version===generation.current)setLoading(false);}
   },[]);
   useEffect(()=>{void bootstrap();const controller=new AbortController();fetch('/api/health',{cache:'no-store',signal:controller.signal}).then(r=>{if(!r.ok)throw Error();setHealth('Service connection ready.');}).catch(()=>{if(!controller.signal.aborted)setHealth('Service is unavailable.');});return()=>{controller.abort();generation.current++;};},[bootstrap]);
   useEffect(()=>{
