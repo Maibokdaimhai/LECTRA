@@ -1,6 +1,6 @@
 # LECTRA - Product Definition of Done
 
-Version 0.1, 2026-11-06. Proposed under [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5). **Not yet adopted; PR #29 received changes-requested review, with re-review pending.** Applies to F-01-F-05 and the integrated Sprint 1 product; later features extend it through a versioned review. Scope/register: [Part E](README.md). Protocol/ID/data conventions: [shared contract](shared-contract.md).
+Version 0.1 criteria, status updated 2026-11-07 under [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5). Shared documentation received [R1NNE0 approval on PR #29](https://github.com/Maibokdaimhai/LECTRA/pull/29#pullrequestreview-5807020832) and merged at `9f6d1bff2bc8185d054098cc048670e438118e81`. This records documentation acceptance, not fulfillment of the product DoD or acceptance of new cross-feature proposals. Applies to F-01-F-05 and integrated Sprint 1; later changes require versioned review. Scope/register: [Part E](README.md). Protocol/ID/data conventions: [shared contract](shared-contract.md).
 
 ## 1. Authority and how to apply this document
 
@@ -67,6 +67,6 @@ Do not erase failing output or rewrite the assessed SHA after a later correction
 
 ## 5. Adoption and remaining boundary
 
-Both Issue #5 owners must review this proposal and actual cross-feature alignment. Planned reviewer for the current Maibokdaimhai-authored draft is R1NNE0; no review request or acceptance is fabricated. Once legitimately accepted, each feature references the real Product DoD commit/version. Amend through normal recorded scope/review steps when necessary; do not silently make all later policies retroactive.
+Initial shared-document adoption is recorded by the actual PR #29 approval and merge above. Both Issue #5 owners still need to agree on remaining cross-feature alignment and review subsequent amendments. Each feature references the actual accepted Product DoD version; no new amendment approval is inferred from the initial review. Amend through normal recorded scope/review steps when necessary; do not silently make all later policies retroactive.
 
-Current state: shared source proposed in this change; F-01 contract/STS draft aligned; other feature contracts pending; application/tests/release/PDF unimplemented. Actual publication refs are recorded in #5/#10 and the PR. #5 remains Open until the common agreement and all five actual preimplementation contracts meet its acceptance scope. This file's existence satisfies no application Done claim.
+Current state: shared/F-01/F-02/F-03/F-05 document packages merged; F-04 is a new draft requiring review; tooling setup has its own verification record, while domain implementation/feature tests/release/PDF remain unavailable. #5 remains Open for F-04 acceptance and cross-feature agreements/traceability. This file's existence or a tooling smoke pass satisfies no product Done claim.

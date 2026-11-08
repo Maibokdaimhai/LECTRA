@@ -1,6 +1,6 @@
 # F-01 - Authentication, Sessions and Backend Access Contract
 
-Version 0.3, 2026-11-06: synchronize staging and clarify phased database dependencies after [PR #29 review](https://github.com/Maibokdaimhai/LECTRA/pull/29#pullrequestreview-5803314777); AC and STS IDs unchanged. Status: proposed preimplementation contract for [#10](https://github.com/Maibokdaimhai/LECTRA/issues/10), under [Part E #5](https://github.com/Maibokdaimhai/LECTRA/issues/5). Lead: Maibokdaimhai; reviewer: R1NNE0 (changes requested; re-review pending). No teammate approval, installed dependency, migration, implementation or executed application test is claimed.
+Version 0.3 criteria, status updated 2026-11-07: phased dependency correction received [R1NNE0 approval](https://github.com/Maibokdaimhai/LECTRA/pull/29#pullrequestreview-5807020832), with final conflict-only sync merged via PR #29. AC/STS IDs unchanged. Preimplementation document for [#10](https://github.com/Maibokdaimhai/LECTRA/issues/10), under [Part E #5](https://github.com/Maibokdaimhai/LECTRA/issues/5). Lead Maibokdaimhai, reviewer R1NNE0. Documentation acceptance is not auth implementation, migration or executed F-01 tests.
 
 Product baseline originated at `333a9fc6a6a2905b07087c98eb5f5d931ffec107`. Proposed with the shared prerequisite on `docs/5-sprint1-shared-contracts`; synchronized with `staging` at `b3f644a7ca42c3750a7f673153aeba87d3c6d999`, preserving the merged PR #27 tracker and PR #28 workflow. Actual publication/review versions are recorded in #5/#10 and PR #29; changes-requested review is not approval. Related implementation: [#17](https://github.com/Maibokdaimhai/LECTRA/issues/17); setup [#15](https://github.com/Maibokdaimhai/LECTRA/issues/15); database [#16](https://github.com/Maibokdaimhai/LECTRA/issues/16). Test design: [F-01 STS](f-01-authentication-sts.md). Shared references: [register](README.md), [engineering conventions](shared-contract.md), [Product DoD](product-dod.md).
 
@@ -36,6 +36,8 @@ Registry metadata inspected on 2026-11-06 provides the following candidates. Thi
 | Verification candidates | Vitest 5.1.0; Supertest 7.3.1; @playwright/test 1.65.0 | #15 coordinates Vite 8.3.6/React 19.3.1 and actual peer resolution with the web setup. Candidates share Node 24 support; browser installation/execution has not occurred. |
 
 `pg`, `@prisma/adapter-pg` and `express-rate-limit` are explicit additions to the earlier named stack. No CSRF package, JWT library, Redis service, UI framework or account-administration dependency is required by this proposal. Do not interpret this list as authorization to install packages.
+
+Setup follow-through (#15, 2026-11-07): the local working tree pins Node 24.22.1 and npm 10.9.2 (replacing the npm 11.16.0 candidate above) with one lockfile. [Workspace design](workspace-setup.md) and [actual tooling observations](workspace-verification.md) distinguish installed/native/driver compatibility from unimplemented credential/session behavior. Teammate reproduction, real User/session schema and F-01 AC execution remain separate prerequisites/evidence; no auth test result is inferred from the Argon2 package round trip.
 
 ## 3. Session lifecycle and authority
 
