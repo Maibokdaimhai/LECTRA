@@ -4,8 +4,14 @@
   "private": true,
   "type": "module",
   "packageManager": "npm@10.9.2",
-  "engines": { "node": "24.22.1", "npm": "10.9.2" },
-  "workspaces": ["apps/api", "apps/web"],
+  "engines": {
+    "node": "24.22.1",
+    "npm": "10.9.2"
+  },
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
   "scripts": {
     "preinstall": "node scripts/check-runtime.mjs",
     "setup:local": "node scripts/setup-local.mjs",
@@ -26,10 +32,13 @@
     "db:migrate:dev": "node --env-file=.env --import tsx scripts/database.ts migrate-dev",
     "db:seed:test": "node --env-file=.env.test.local --import tsx scripts/database.ts seed-test",
     "test:db:foundation": "node --env-file=.env.test.local node_modules/vitest/vitest.mjs run --config vitest.foundation.config.ts",
-    "start": "node --env-file=.env apps/api/dist/server.js"
+    "start": "node --env-file=.env apps/api/dist/server.js",
+    "test:features": "node --env-file=.env.test.local node_modules/vitest/vitest.mjs run --config vitest.features.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.65.0",
+    "@types/connect-pg-simple": "7.0.3",
+    "@types/express-session": "1.19.0",
     "@types/node": "24.19.2",
     "@types/supertest": "7.2.1",
     "supertest": "7.3.1",
