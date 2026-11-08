@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 async function signIn(page: Page, email: string) {
     await page.getByLabel('Email', { exact: true }).fill(email);
-    await page.getByLabel('Password', { exact: true }).fill(process.env.SEED_OWNER_PASSWORD!);
+    await page.getByLabel('Password', { exact: true }).fill(email.startsWith('respondent.') ? process.env.SEED_RESPONDENT_PASSWORD! : process.env.SEED_OWNER_PASSWORD!);
     await page.getByRole('button', { name: 'Log in', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Log out', exact: true })).toBeVisible();
 }
