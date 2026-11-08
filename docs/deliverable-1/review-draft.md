@@ -1,0 +1,20 @@
+# Deliverable 1 review-draft assembly
+
+Prepared 2026-11-09 for #26; this is **not** an accepted assessed-release report or a completed submission.
+
+Student roster supplied directly by the project owner:
+
+| Student ID | Name |
+| --- | --- |
+| 67070501022 | Thanawat Suntarawattana |
+| 67070501060 | Songwit Rueangsawat |
+
+The tracked `review-snapshot.json` records exact candidate commit `a501b278940a215344951e32177d1e5607a7ae9a`, the real final commands and 75 selected passing tests. Source/test/configuration hashes are checked separately before publication; later report-only revisions do not silently replace the tested code reference. No immutable assessed main SHA/tag exists for this candidate.
+
+`scripts/build-review-report.py` assembles one PDF containing the complete SRS/scope/decisions (A), inventory/traceability (B), SDS/database design (C), three-sprint plan/workflow/tracker (D), all five full feature contracts/STS plus shared conventions/Product DoD (E), and selected actual checks, excerpts, screenshots and remaining gates (F). Wide tables become labelled records rather than unreadably compressed columns. Historical source statements retain their dates; current candidate outcomes are separately labelled. Unsupported non-BMP fixture glyphs display as explicit Unicode escapes. Mermaid source is retained, not falsely represented as a verified rendered diagram.
+
+Generation requires Python `reportlab` and `pypdf`, plus Unicode regular/bold fonts. This host uses Arial Unicode and Tahoma Bold; another host can supply paths through `LECTRA_REPORT_FONT` and `LECTRA_REPORT_BOLD_FONT`. Run `python3 scripts/build-review-report.py` from the repository root using an environment with those dependencies. No private environment file is read by the builder.
+
+Output is ignored `output/pdf/lectra-deliverable-1-review-draft.pdf`, with the actual chapter/page map in `output/pdf/review-page-map.json`. The generated contents/bookmarks use actual page numbers from the build; no fixed invented page count. Selected UI evidence was captured from real isolated-browser runs and retained in `docs/deliverable-1/figures/`; if absent on another checkout, the builder explicitly marks it missing instead of inventing images. Replace missing images only with actual safe observations. The local draft must not be treated as a self-contained assessed final while release/review/coverage/contributions are still incomplete.
+
+Before final submission: obtain real teammate review/integration and setup reproduction; complete/disposition required planned-case gaps; accept a staging-to-main release through actual review; retain its immutable SHA/tag and run required release checks; confirm actual contributions; update the snapshot and final evidence; regenerate, render and inspect all affected pages and navigation. Do not infer that this draft satisfies #25/#26 or that the original deadline was met.
