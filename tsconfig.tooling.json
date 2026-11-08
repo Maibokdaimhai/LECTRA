@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "module": "ESNext", "moduleResolution": "Bundler", "types": ["node"] },
-  "include": ["vitest.*.config.ts", "playwright.config.ts", "tests/**/*.ts", "scripts/**/*.ts"]
+  "include": ["prisma.config.ts", "vitest.*.config.ts", "playwright.config.ts", "tests/**/*.ts", "scripts/**/*.ts"]
 }

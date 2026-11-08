@@ -11,8 +11,8 @@
     "setup:local": "node scripts/setup-local.mjs",
     "dev": "node --env-file=.env scripts/dev.mjs",
     "dev:smoke": "node scripts/dev.mjs --smoke",
-    "build": "npm run build --workspaces",
-    "typecheck": "npm run typecheck --workspaces && tsc --noEmit -p tsconfig.tooling.json",
+    "build": "npm run db:generate && npm run build --workspaces",
+    "typecheck": "npm run db:generate && npm run typecheck --workspaces && tsc --noEmit -p tsconfig.tooling.json",
     "test": "npm run test:unit && npm run test:api",
     "test:unit": "vitest run --config vitest.unit.config.ts",
     "test:api": "vitest run --config vitest.api.config.ts",
@@ -20,6 +20,12 @@
     "browsers:install": "node scripts/playwright.mjs install chromium",
     "test:e2e": "node scripts/playwright.mjs test",
     "check:orm": "node --env-file=.env.test.local --import tsx scripts/orm-smoke.ts",
+    "db:generate": "prisma generate",
+    "db:validate": "prisma validate",
+    "db:migrate:test": "node --env-file=.env.test.local --import tsx scripts/database.ts migrate-test",
+    "db:migrate:dev": "node --env-file=.env --import tsx scripts/database.ts migrate-dev",
+    "db:seed:test": "node --env-file=.env.test.local --import tsx scripts/database.ts seed-test",
+    "test:db:foundation": "node --env-file=.env.test.local node_modules/vitest/vitest.mjs run --config vitest.foundation.config.ts",
     "start": "node --env-file=.env apps/api/dist/server.js"
   },
   "devDependencies": {

@@ -8,5 +8,6 @@ dist/
 test-results/
 playwright-report/
 coverage/
+apps/api/src/generated/prisma/
 *.tsbuildinfo
 .DS_Store

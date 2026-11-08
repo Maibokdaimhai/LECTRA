@@ -23,6 +23,8 @@ Status: consolidated planning revision for PR [#7](https://github.com/Maibokdaim
 
 ## Current scope at a glance
 
+Issue #16 implementation and actual storage checks: [database foundation/setup](sprints/sprint-1/database-foundation.md) and [verification record](sprints/sprint-1/database-verification.md). These establish persistence prerequisites, not implemented F-01–F-05 workflows or feature STS passes.
+
 - S1: F-01–05; identified lecture survey workflow with real identity, authorization, persistence and verification.
 - S2: F-06 identity/answer separation, no owner-facing anonymous raw text and per-question quantitative privacy; F-07 starter/reuse/choice/subsets; F-08 aggregate CSV. Text collection/storage must be agreed before F-06.
 - S3: F-09 compatible lecture trends and per-metric Course/own-instructor summaries; F-10 simple private issue/action notes with status/timestamps/revision, without detailed history or reversal workflow.
