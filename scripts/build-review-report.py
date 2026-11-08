@@ -96,6 +96,7 @@ para('LECTRA','title');para('Deliverable 1 - Parts A-F','h1');para('REVIEW DRAFT
 para('Theme 10: Review, Feedback, and Survey System. Context: feedback after individual lectures. Course: CPE334 Software Engineering.')
 for s in snapshot['students']:para(s['id']+' - '+s['name'])
 para('Repository: https://github.com/Maibokdaimhai/LECTRA')
+para('Working increment PR: '+snapshot.get('pullRequest','Pending creation'))
 para('Observed candidate source: '+snapshot['testedCommit'])
 para('Assessed main release/tag: **NOT AVAILABLE**. This draft contains complete embedded planning sources and selected actual candidate checks. It does not replace required human review, integrated release verification or final contributions. Source/code and separate report revisions are distinguished.')
 para('Known open boundaries: PR #35 integration; working increment teammate review/integration; complete STS dispositions; teammate setup reproduction; assessed main release and release-linked checks; final contribution confirmation.')
@@ -122,6 +123,7 @@ for term in ['F-02: owner context','F-04: an actual SQL fault']:
  para(term,'h2')
  for line in excerpt.splitlines():story.append(Paragraph(html.escape(normalize(line)).replace(' ','&#160;') or '&#160;',styles['code']))
 para('Selected actual browser evidence','h1')
+para('Figure source commit: '+snapshot.get('figureSourceCommit',snapshot['testedCommit'])+'. These actual synthetic UI captures are candidate evidence, not assessed-release figures.','small')
 for name in ['submission-chromium-wide.png','submission-chromium-narrow.png','results-chromium-wide.png','results-chromium-narrow.png']:
  p=root/'docs/deliverable-1/figures'/name
  if p.exists():

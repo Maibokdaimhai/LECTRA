@@ -11,7 +11,7 @@
       "name": "Songwit Rueangsawat"
     }
   ],
-  "testedCommit": "a501b278940a215344951e32177d1e5607a7ae9a",
+  "testedCommit": "1f7ae02083438fba066185e3823a68f77bde3aa0",
   "verificationSummary": "75 selected automated tests passed: 37 unit, 2 API liveness, 17 real API/PostgreSQL feature scenarios, 9 foundation, 2 PostgreSQL tooling, 4 product browser and 4 inherited browser smoke. Final listed suites reported no failures/skips. Prisma compatibility and actual built-process restart also passed. These counts do not certify every planned STS case or human acceptance.",
   "results": [
     {
@@ -75,14 +75,14 @@
       "command": "node --env-file=.local/sprint1-browser.env scripts/playwright.mjs test --config playwright.features.config.ts",
       "exit": 0,
       "summary": [
-        "4 passed (5.2s)"
+        "4 passed (5.1s)"
       ]
     },
     {
       "command": "npm run test:e2e",
       "exit": 0,
       "summary": [
-        "4 passed (948ms)"
+        "4 passed (957ms)"
       ]
     },
     {
@@ -96,5 +96,7 @@
   "additionalChecks": [
     "Private demo-config generation: PASS; both files mode 0600; repeat refused without changing contents.",
     "Real Closed-summary/own-answer panels captured after final browser pass; synthetic data only."
-  ]
+  ],
+  "pullRequest": "https://github.com/Maibokdaimhai/LECTRA/pull/36",
+  "figureSourceCommit": "a501b278940a215344951e32177d1e5607a7ae9a"
 }

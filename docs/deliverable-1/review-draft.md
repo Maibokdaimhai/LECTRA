@@ -9,7 +9,7 @@ Student roster supplied directly by the project owner:
 | 67070501022 | Thanawat Suntarawattana |
 | 67070501060 | Songwit Rueangsawat |
 
-The tracked `review-snapshot.json` records exact candidate commit `a501b278940a215344951e32177d1e5607a7ae9a`, the real final commands and 75 selected passing tests. Source/test/configuration hashes are checked separately before publication; later report-only revisions do not silently replace the tested code reference. No immutable assessed main SHA/tag exists for this candidate.
+The tracked `review-snapshot.json` records exact candidate commit `1f7ae02083438fba066185e3823a68f77bde3aa0`, the real final commands and 75 selected passing tests. Source/test/configuration hashes are checked separately before publication; later report-only revisions do not silently replace the tested code reference. No immutable assessed main SHA/tag exists for this candidate.
 
 `scripts/build-review-report.py` assembles one PDF containing the complete SRS/scope/decisions (A), inventory/traceability (B), SDS/database design (C), three-sprint plan/workflow/tracker (D), all five full feature contracts/STS plus shared conventions/Product DoD (E), and selected actual checks, excerpts, screenshots and remaining gates (F). Wide tables become labelled records rather than unreadably compressed columns. Historical source statements retain their dates; current candidate outcomes are separately labelled. Unsupported non-BMP fixture glyphs display as explicit Unicode escapes. Mermaid source is retained, not falsely represented as a verified rendered diagram.
 
