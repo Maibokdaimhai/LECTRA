@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { fail } from './http.js';
 const id = z.string().regex(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);
-const text = (max: number) => z.string().transform(s => s.trim()).refine(s => !s.includes('\0') && s.isWellFormed() && [...s].length <= max);
+const wellFormed = (s: string) => !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(s);
+const text = (max: number) => z.string().transform(s => s.trim()).refine(s => !s.includes('\0') && wellFormed(s) && [...s].length <= max);
 const ratingScale = z.object({ min: z.literal(1), max: z.literal(5), minLabel: text(120), maxLabel: text(120), interpretation: text(500) }).strict();
 const question = z.object({ id: id.nullable(), prompt: text(500), type: z.enum(['RATING', 'TEXT']), required: z.boolean(), ratingScale: ratingScale.nullable() }).strict().refine(q => (q.type === 'RATING') === (q.ratingScale !== null));
 const definition = z.object({ expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER), title: text(120), questions: z.array(question).max(10) }).strict();
@@ -30,7 +31,7 @@ export function parseAnswers(value: unknown, questions: StoredQuestion[]) {
     if (q!.type === 'RATING') {
       if (typeof entry.value !== 'number' || !Number.isInteger(entry.value) || entry.value < 1 || entry.value > 5) fail(422, 'INVALID_ANSWERS');
     } else {
-      if (typeof entry.value !== 'string' || !entry.value.isWellFormed() || entry.value.includes('\0') || [...entry.value].length > 2000) fail(422, 'INVALID_ANSWERS');
+      if (typeof entry.value !== 'string' || !wellFormed(entry.value) || entry.value.includes('\0') || [...entry.value].length > 2000) fail(422, 'INVALID_ANSWERS');
       if (typeof entry.value === 'string' && !entry.value.trim()) { if (q!.required) fail(422, 'INVALID_ANSWERS'); continue; }
     }
     answers.push(entry);

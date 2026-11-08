@@ -53,11 +53,11 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
   app.use('/api', (req, res, next) => sessions(req, res, error => next(error ? new HttpError(503, 'AUTH_SERVICE_UNAVAILABLE') : undefined)));
   app.use('/api', async (req, res, next) => {
     try {
-      if (Buffer.isBuffer(req.body)) { try { req.body = JSON.parse(req.body.toString('utf8')); } catch { fail(400, 'MALFORMED_JSON'); } }
+      if (Buffer.isBuffer(req.body)) { try { req.body = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(req.body)); } catch { fail(400, 'MALFORMED_JSON'); } }
       const s = req.session;
       const isAuth = Boolean(s.userId);
-      const authLive = isAuth && liveAuth(s, now());
-      const guestLive = !isAuth && Number.isSafeInteger(s.guestCreatedAt) && Number.isSafeInteger(s.guestExpiresAt) && s.guestCreatedAt! <= now() && s.guestExpiresAt === s.guestCreatedAt! + GUEST_LIFETIME && now() < s.guestExpiresAt!;
+      const authLive = isAuth && typeof s.userId === 'string' && /^[a-f0-9-]{36}$/.test(s.userId) && tokenShape(s.csrfToken) && liveAuth(s, now());
+      const guestLive = !isAuth && tokenShape(s.csrfToken) && Number.isSafeInteger(s.guestCreatedAt) && Number.isSafeInteger(s.guestExpiresAt) && s.guestCreatedAt! <= now() && s.guestExpiresAt === s.guestCreatedAt! + GUEST_LIFETIME && now() < s.guestExpiresAt!;
       if (authLive) {
         let found;
         try { found = await pool.query('SELECT id,role,"displayName" FROM "User" WHERE id=$1', [s.userId]); } catch { fail(503, 'AUTH_SERVICE_UNAVAILABLE'); }
