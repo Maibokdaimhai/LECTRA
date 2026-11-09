@@ -1,5 +1,7 @@
 # Sprint 1 working increment and evidence
 
+**Post-review update (2026-11-09):** R1–R4 from the actual CHANGES_REQUESTED review are addressed in candidate `b094bf9ee3140b90c357f20a20e093020965c727`. See [review fixes and current validation](pr36-review-fixes.md) and [machine-readable results](pr36-review-verification.json). The earlier 75-test report snapshot below remains historical; current selected validation is 97 tests. Renewed human acceptance is still pending.
+
 Prepared 2026-11-09. This is a review candidate for #17-#24, based on the verified database source in PR #35 (`6e80fa0828c8e6e00d604a7cf257cd6e11888da9`). PR #35 is not merged at the recorded check; no teammate implementation approval, integrated staging acceptance, main release, tag or completed PDF submission is claimed. Instructor requirements remain the supplied PDFs; exact session/limit/UI choices come from the accepted LECTRA contracts.
 
 ## Implemented candidate
