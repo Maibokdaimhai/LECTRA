@@ -1,5 +1,7 @@
 # PR #36 review corrections
 
+**Historical first-pass record:** [second-pass corrections and current evidence](pr36-second-pass-fixes.md) cover the later N1–N5 findings. This record retains its actual first-pass source and results.
+
 Recorded 2026-11-09. Source under test: `b094bf9ee3140b90c357f20a20e093020965c727` (also recorded in [verification JSON](pr36-review-verification.json)). This is a staging candidate, not a main release. No new human approval, merge, issue closure or final report submission is claimed.
 
 Review source: [R1NNE0's actual CHANGES_REQUESTED review](https://github.com/Maibokdaimhai/LECTRA/pull/36#pullrequestreview-5826938918), submitted against `eb02e1c`. These are engineering corrections to the accepted LECTRA design; they do not create new instructor requirements.
