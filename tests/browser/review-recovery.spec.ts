@@ -4,14 +4,26 @@ const scale = { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretatio
 const question = { id: 'q1', prompt: 'Clarity', type: 'RATING', required: true, ratingScale: scale };
 const definition = () => ({ id: 'survey', lectureId: 'lecture', title: 'Persisted title', status: 'DRAFT', mode: 'IDENTIFIED', definitionRevision: 1, context: { course: { code: 'CPE334' }, section: { sectionCode: 'A' }, lecture: { title: 'Lecture', lectureDate: '2026-11-09' } }, questions: [question], privacyDisclosure: 'Identified fixture.' });
 async function fixture(page: Page, respondent = false) {
+    if (!/^N[23]:/.test(test.info().title)) page.on('dialog', dialog => dialog.accept());
     let stored = { ...definition(), status: respondent ? 'PUBLISHED' : 'DRAFT' }, missing = false, sessionUser: { id: string; displayName: string; role: string } | null = { id: respondent ? 'student' : 'owner', displayName: 'Fixture user', role: respondent ? 'RESPONDENT' : 'OWNER' };
     let mutation: 'ok' | 'conflict' | 'lost' = 'ok', readsFail = false, mutations = 0, lastPatch: any = null;
+    let submissionReadFails = false, responseOutcome: 'ok' | 'lost-committed' | 'lost-uncommitted' = 'ok';
+    let submission = { surveyId: 'survey', submitted: false, answers: null as { questionId: string; value: number }[] | null };
     await page.route('**/api/**', async route => {
         const req = route.request(), path = new URL(req.url()).pathname;
         const send = (data: unknown, status = 200) => route.fulfill({ status, json: { data } });
         if (path === '/api/health') return send({ status: 'ok' });
         if (path === '/api/auth/session') return send({ authenticated: !!sessionUser, user: sessionUser, csrfToken: 'fixture', expiresAt: null });
-        if (path === '/api/surveys/survey/my-submission') return send({ surveyId: 'survey', submitted: false, answers: null });
+        if (path === '/api/surveys/survey/my-submission') {
+            if (submissionReadFails) return route.fulfill({ status: 503, json: { error: { code: 'SERVICE_UNAVAILABLE', message: 'Unavailable' } } });
+            return send(submission);
+        }
+        if (path === '/api/surveys/survey/responses') {
+            mutations++;
+            if (responseOutcome !== 'lost-uncommitted') submission = { ...submission, submitted: true, answers: req.postDataJSON().answers };
+            if (responseOutcome !== 'ok') return route.abort('failed');
+            return send(submission, 201);
+        }
         if (path === '/api/surveys/survey' && req.method() === 'GET') {
             if (missing) return route.fulfill({ status: 404, json: { error: { code: 'NOT_FOUND', message: 'Unavailable' } } });
             if (readsFail) return route.fulfill({ status: 503, json: { error: { code: 'SERVICE_UNAVAILABLE', message: 'Unavailable' } } });
@@ -27,17 +39,18 @@ async function fixture(page: Page, respondent = false) {
             if (path.endsWith('/publish')) stored = { ...stored, status: 'PUBLISHED' };
             if (path.endsWith('/close')) stored = { ...stored, status: 'CLOSED' };
             if (mutation === 'lost') return route.abort('failed');
+            if (req.method() === 'DELETE') return route.fulfill({ status: 204 });
             return send(stored);
         }
         if (path === '/api/courses') return send({ items: [{ id: 'course', code: 'CPE334' }], pagination: { total: 1, limit: 20, offset: 0 } });
         if (path === '/api/sections') return send({ items: [{ id: 'section', sectionCode: 'A' }], pagination: { total: 1, limit: 20, offset: 0 } });
         if (path === '/api/sections/section/lectures') return send({ items: [{ id: 'lecture', title: 'Lecture', ...(mutations ? { existingSurvey: { id: 'survey' } } : {}) }], pagination: { total: 1, limit: 20, offset: 0 } });
         if (path.endsWith('/results')) return send({ responseCount: 0 });
-        return send({ items: path === '/api/surveys' && !missing ? [{ id: 'survey', title: stored.title, status: stored.status, lecture: { title: 'Lecture' } }] : [], pagination: { total: 1, limit: 20, offset: 0 } });
+        return send({ items: path === '/api/surveys' && !missing ? [{ id: 'survey', title: stored.title, status: stored.status, mode: stored.mode, ...stored.context }] : [], pagination: { total: 1, limit: 20, offset: 0 } });
     });
     await page.goto('/');
     await page.getByRole('button', { name: 'Open survey', exact: true }).click();
-    return { setStored: (value: Partial<typeof stored>) => { stored = { ...stored, ...value }; }, setMutation: (value: typeof mutation) => { mutation = value; }, failReads: (value: boolean) => { readsFail = value; }, setUser: (value: typeof sessionUser) => { sessionUser = value; }, mutations: () => mutations, lastPatch: () => lastPatch };
+    return { setStored: (value: Partial<typeof stored>) => { stored = { ...stored, ...value }; }, setMutation: (value: typeof mutation) => { mutation = value; }, failReads: (value: boolean) => { readsFail = value; }, setUser: (value: typeof sessionUser) => { sessionUser = value; }, mutations: () => mutations, lastPatch: () => lastPatch, setSubmissionFailure: (outcome: typeof responseOutcome, failRead: boolean) => { responseOutcome = outcome; submissionReadFails = failRead; } };
 }
 async function revalidate(page: Page) {
     const response = page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/session');
@@ -159,5 +172,121 @@ test('R2: uncertain create checks the lecture and opens its persisted survey wit
     await expect(page.getByRole('button', { name: 'Create draft', exact: true })).toBeDisabled();
     await page.getByRole('button', { name: 'Check persisted lecture', exact: true }).click();
     await expect(page.getByLabel('Survey title', { exact: true })).toHaveValue('Persisted title');
+    expect(f.mutations()).toBe(1);
+});
+
+test('N1: uncertain committed submission remains blocked until saved status succeeds', async ({ page }) => {
+    const f = await fixture(page, true);
+    await page.getByRole('radio', { name: '4', exact: true }).check();
+    f.setSubmissionFailure('lost-committed', true);
+    await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+    await expect(page.getByText('Submission outcome unknown. Check saved status before trying again.', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toBeDisabled();
+    await page.getByRole('button', { name: 'Check saved status', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toBeDisabled();
+    await expect(page.getByRole('radio', { name: '4', exact: true })).toBeChecked();
+    f.setSubmissionFailure('ok', false);
+    await page.getByRole('button', { name: 'Check saved status', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Submission received', exact: true })).toBeVisible();
+    expect(f.mutations()).toBe(1);
+});
+test('N1: an explicit successful not-submitted read permits a deliberate retry with retained answers', async ({ page }) => {
+    const f = await fixture(page, true);
+    await page.getByRole('radio', { name: '4', exact: true }).check();
+    f.setSubmissionFailure('lost-uncommitted', true);
+    await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toBeDisabled();
+    f.setSubmissionFailure('ok', false);
+    await page.getByRole('button', { name: 'Check saved status', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toBeEnabled();
+    expect(f.mutations()).toBe(1);
+    await expect(page.getByRole('radio', { name: '4', exact: true })).toBeChecked();
+    await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Submission received', exact: true })).toBeVisible();
+    expect(f.mutations()).toBe(2);
+});
+test('N2: back navigation requires explicit discard and cancellation retains draft inputs', async ({ page }) => {
+    const f = await fixture(page);
+    await page.getByLabel('Survey title', { exact: true }).fill('Do not lose this');
+    const dismissed = page.waitForEvent('dialog');
+    const click = page.getByRole('button', { name: 'Back to survey list', exact: true }).click();
+    const dialog = await dismissed; expect(dialog.message()).toContain('Discard'); await dialog.dismiss(); await click;
+    await expect(page.getByLabel('Survey title', { exact: true })).toHaveValue('Do not lose this');
+    page.once('dialog', d => d.accept());
+    await page.getByRole('button', { name: 'Back to survey list', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Open survey', exact: true })).toBeVisible();
+    expect(f.mutations()).toBe(0);
+});
+test('N2: context selection cancellation retains selection and draft; acceptance discards explicitly', async ({ page }) => {
+    await fixture(page);
+    // Establish a selected context while there is no unsaved work.
+    await page.getByLabel('Course', { exact: true }).selectOption('course');
+    await page.getByRole('button', { name: 'Open survey', exact: true }).click();
+    await page.getByLabel('Survey title', { exact: true }).fill('Context draft');
+    const seen = page.waitForEvent('dialog');
+    const change = page.getByLabel('Course', { exact: true }).selectOption('');
+    const dialog = await seen; await dialog.dismiss(); await change;
+    await expect(page.getByLabel('Course', { exact: true })).toHaveValue('course');
+    await expect(page.getByLabel('Survey title', { exact: true })).toHaveValue('Context draft');
+    page.once('dialog', d => d.accept());
+    await page.getByLabel('Course', { exact: true }).selectOption('');
+    await expect(page.getByLabel('Survey title', { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel('Course', { exact: true })).toHaveValue('');
+});
+test('N3: publish and close require confirmation and cancellation sends no mutation', async ({ page }) => {
+    const f = await fixture(page);
+    const seen = page.waitForEvent('dialog');
+    const click = page.getByRole('button', { name: 'Publish survey', exact: true }).click();
+    const dialog = await seen; expect(dialog.message()).toContain('freezes'); expect(dialog.message()).toContain('eligible'); await dialog.dismiss(); await click;
+    expect(f.mutations()).toBe(0);
+    await expect(page.getByLabel('Survey title', { exact: true })).toBeVisible();
+    page.once('dialog', d => d.accept());
+    await page.getByRole('button', { name: 'Publish survey', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Close survey', exact: true })).toBeVisible();
+    const closing = page.waitForEvent('dialog');
+    const closeClick = page.getByRole('button', { name: 'Close survey', exact: true }).click();
+    const closeDialog = await closing; expect(closeDialog.message()).toContain('stops'); expect(closeDialog.message()).toContain('reopened'); await closeDialog.dismiss(); await closeClick;
+    expect(f.mutations()).toBe(1);
+    page.once('dialog', d => d.accept());
+    await page.getByRole('button', { name: 'Close survey', exact: true }).click();
+    await expect(page.getByText('CLOSED', { exact: true })).toBeVisible();
+    expect(f.mutations()).toBe(2);
+});
+test('N5: survey card exposes course, section, lecture date and mode', async ({ page }) => {
+    await fixture(page);
+    await page.getByRole('button', { name: 'Back to survey list', exact: true }).click();
+    const card = page.getByRole('listitem').filter({ hasText: 'Persisted title' });
+    await expect(card).toContainText('CPE334');
+    await expect(card).toContainText('Section A');
+    await expect(card).toContainText('2026-11-09');
+    await expect(card).toContainText('IDENTIFIED');
+});
+
+test('N2: Section and Lecture changes each require explicit discard before unmounting the draft', async ({ page }) => {
+    await fixture(page);
+    await page.getByLabel('Course', { exact: true }).selectOption('course');
+    await page.getByLabel('Section', { exact: true }).selectOption('section');
+    await page.getByLabel('Lecture', { exact: true }).selectOption('lecture');
+    await page.getByRole('button', { name: 'Open survey', exact: true }).click();
+    await page.getByLabel('Survey title', { exact: true }).fill('Retain across context');
+    for (const [label, value] of [['Section', 'section'], ['Lecture', 'lecture']]) {
+        page.once('dialog', d => d.dismiss());
+        await page.getByLabel(label!, { exact: true }).selectOption('');
+        await expect(page.getByLabel(label!, { exact: true })).toHaveValue(value!);
+        await expect(page.getByLabel('Survey title', { exact: true })).toHaveValue('Retain across context');
+    }
+    page.once('dialog', d => d.accept());
+    await page.getByLabel('Lecture', { exact: true }).selectOption('');
+    await expect(page.getByLabel('Survey title', { exact: true })).toHaveCount(0);
+});
+test('N3: Draft deletion also respects the existing contract confirmation', async ({ page }) => {
+    const f = await fixture(page);
+    page.once('dialog', d => d.dismiss());
+    await page.getByRole('button', { name: 'Delete draft', exact: true }).click();
+    expect(f.mutations()).toBe(0);
+    await expect(page.getByLabel('Survey title', { exact: true })).toBeVisible();
+    page.once('dialog', d => d.accept());
+    await page.getByRole('button', { name: 'Delete draft', exact: true }).click();
+    await expect(page.getByText('No surveys available.', { exact: true })).toBeVisible();
     expect(f.mutations()).toBe(1);
 });

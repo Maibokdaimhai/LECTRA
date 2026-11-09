@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+test.beforeEach(async ({ page }) => { page.on('dialog', dialog => dialog.accept()); });
 async function signIn(page: Page, email: string) {
     await page.getByLabel('Email', { exact: true }).fill(email);
     await page.getByLabel('Password', { exact: true }).fill(email.startsWith('respondent.') ? process.env.SEED_RESPONDENT_PASSWORD! : process.env.SEED_OWNER_PASSWORD!);
@@ -43,6 +44,10 @@ test('real owner → student → closed results, persistent readback, rejection 
     await page.getByRole('button', { name: 'Log out', exact: true }).click();
     await signIn(page, 'respondent.11@example.test');
     const row = page.getByRole('listitem').filter({ hasText: `Browser ${info.project.name}` });
+    await expect(row).toContainText('SYN-CPE334');
+    await expect(row).toContainText('Section A');
+    await expect(row).toContainText('2026-11-08');
+    await expect(row).toContainText('IDENTIFIED');
     await row.getByRole('button', { name: 'Open survey', exact: true }).click();
     await expect(page.getByText(/This survey is identified\./)).toBeVisible();
     // Server-required validation preserves the user's unsent text.

@@ -65,9 +65,10 @@ type Item = {
     participation?: {
         submitted: boolean;
     };
-    lecture?: {
-        title: string;
-    };
+    mode?: string;
+    course?: Context['course'];
+    section?: Context['section'];
+    lecture?: Context['lecture'];
 };
 type Collection = {
     items: Item[];
@@ -269,17 +270,18 @@ function App() {
     <button className="secondary" disabled={busy} onClick={() => { void bootstrap(); }}>Check session / reconnect</button></section>}
   </main>;
 }
-function Selector({ path, label, api, onSelect }: {
+function Selector({ path, label, api, onSelect, beforeChange = () => true }: {
     path: string;
     label: string;
     api: Api;
     onSelect: (item: Item | null) => void;
+    beforeChange?: () => boolean;
 }) {
     const [data, setData] = useState<Collection | null>(null), [offset, setOffset] = useState(0), [value, setValue] = useState(''), [error, setError] = useState('');
     useEffect(() => { let current = true; setData(null); setError(''); api<Collection>(`${path}${path.includes('?') ? '&' : '?'}offset=${offset}`).then(d => { if (current)
         setData(d); }).catch(e => { if (current)
         setError(reason(e)); }); return () => { current = false; }; }, [path, offset, api]);
-    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{i.code ?? i.sectionCode ?? i.title}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button disabled={offset === 0} onClick={() => { setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button disabled={offset + 20 >= data.pagination.total} onClick={() => { setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
+    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { if (!beforeChange()) return; setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{i.code ?? i.sectionCode ?? i.title}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button disabled={offset === 0} onClick={() => { if (!beforeChange()) return; setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button disabled={offset + 20 >= data.pagination.total} onClick={() => { if (!beforeChange()) return; setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
 }
 function Workspace({ user, api }: {
     user: User;
@@ -287,6 +289,8 @@ function Workspace({ user, api }: {
 }) {
     const [course, setCourse] = useState<Item | null>(null), [section, setSection] = useState<Item | null>(null), [lecture, setLecture] = useState<Item | null>(null), [selected, setSelected] = useState(''), [revision, setRevision] = useState(0), [error, setError] = useState(''), [busy, setBusy] = useState(false);
     const [createUncertain, setCreateUncertain] = useState(false);
+    const [navigationBlocked, setNavigationBlocked] = useState(false);
+    const beforeNavigate = () => !navigationBlocked || window.confirm('Discard unsaved edits or unresolved changes and leave this survey?');
     async function checkCreated() {
         if (!section || !lecture || busy) return;
         setBusy(true); setError('');
@@ -315,14 +319,14 @@ function Workspace({ user, api }: {
         setBusy(false);
     } }
     return <><h2>{user.role === 'OWNER' ? 'Your classroom feedback' : 'Your eligible surveys'}</h2><ErrorBox message={error}/>
-    {user.role === 'OWNER' && <section className="card selectors"><Selector label="Course" path="/api/courses" api={api} onSelect={i => { setCreateUncertain(false); setCourse(i); setSection(null); setLecture(null); setSelected(''); }}/>
-      {course && <Selector key={course.id} label="Section" path={`/api/sections?courseId=${course.id}`} api={api} onSelect={i => { setCreateUncertain(false); setSection(i); setLecture(null); setSelected(''); }}/>}
-      {section && <Selector key={`${section.id}:${revision}`} label="Lecture" path={`/api/sections/${section.id}/lectures`} api={api} onSelect={i => { setCreateUncertain(false); setLecture(i); setSelected(i?.existingSurvey?.id ?? ''); }}/>}
+    {user.role === 'OWNER' && <section className="card selectors"><Selector beforeChange={beforeNavigate} label="Course" path="/api/courses" api={api} onSelect={i => { setCreateUncertain(false); setCourse(i); setSection(null); setLecture(null); setSelected(''); }}/>
+      {course && <Selector beforeChange={beforeNavigate} key={course.id} label="Section" path={`/api/sections?courseId=${course.id}`} api={api} onSelect={i => { setCreateUncertain(false); setSection(i); setLecture(null); setSelected(''); }}/>}
+      {section && <Selector beforeChange={beforeNavigate} key={`${section.id}:${revision}`} label="Lecture" path={`/api/sections/${section.id}/lectures`} api={api} onSelect={i => { setCreateUncertain(false); setLecture(i); setSelected(i?.existingSurvey?.id ?? ''); }}/>}
       {lecture && !selected && <button onClick={() => void create()} disabled={busy || createUncertain}>{busy ? 'Creating…' : 'Create draft'}</button>}
       {createUncertain && <><p>Creation outcome needs checking before another create attempt.</p><button disabled={busy} onClick={() => void checkCreated()}>Check persisted lecture</button></>}
     </section>}
     {!selected && <SurveyList key={revision} api={api} select={setSelected}/>}
-    {selected && <><button className="secondary" onClick={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}>Back to survey list</button><SurveyDetail key={selected} id={selected} api={api} owner={user.role === 'OWNER'} deleted={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}/></>}
+    {selected && <><button className="secondary" onClick={() => { if (!beforeNavigate()) return; setSelected(''); setLecture(null); setRevision(r => r + 1); }}>Back to survey list</button><SurveyDetail key={selected} id={selected} api={api} owner={user.role === 'OWNER'} navigationBlocked={setNavigationBlocked} deleted={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}/></>}
   </>;
 }
 function SurveyList({ api, select }: {
@@ -334,19 +338,21 @@ function SurveyList({ api, select }: {
         setData(d); }).catch(e => { if (active)
         setError(reason(e)); }); return () => { active = false; }; }, [api, offset, refresh]);
     return <section className="card"><h3>Surveys</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh surveys</button>{!data && !error && <p role="status">Loading surveys…</p>}{data && !data.items.length && <p>No surveys available.</p>}
-    <ul className="survey-list">{data?.items.map(s => <li key={s.id}><div><strong>{s.title || 'Untitled draft'}</strong><p>{s.lecture?.title} · {s.status}{s.participation ? ` · ${s.participation.submitted ? 'Submitted' : 'Not submitted'}` : ''}</p></div><button onClick={() => select(s.id)}>Open survey</button></li>)}</ul>
+    <ul className="survey-list">{data?.items.map(s => <li key={s.id}><div><strong>{s.title || 'Untitled draft'}</strong><p>{s.course?.code} · {s.course?.title} · Section {s.section?.sectionCode} · {s.lecture?.title} · {s.lecture?.lectureDate} · {s.mode} · {s.status}{s.participation ? ` · ${s.participation.submitted ? 'Submitted' : 'Not submitted'}` : ''}</p></div><button onClick={() => select(s.id)}>Open survey</button></li>)}</ul>
     {data && <div className="actions"><button disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - 20))}>Previous page</button><span>{data.pagination.total} surveys</span><button disabled={offset + 20 >= data.pagination.total} onClick={() => setOffset(offset + 20)}>Next page</button></div>}
   </section>;
 }
-function SurveyDetail({ id, api, owner, deleted }: {
+function SurveyDetail({ id, api, owner, deleted, navigationBlocked }: {
     id: string;
     api: Api;
     owner: boolean;
     deleted: () => void;
+    navigationBlocked: (value: boolean) => void;
 }) {
     const [survey, setSurvey] = useState<Survey | null>(null), [error, setError] = useState(''), [busy, setBusy] = useState(false), [refresh, setRefresh] = useState(0);
     const [needsCheck, setNeedsCheck] = useState(false);
     const [editorBlocked, setEditorBlocked] = useState(false);
+    useEffect(() => { navigationBlocked(editorBlocked || needsCheck || busy); return () => navigationBlocked(false); }, [editorBlocked, needsCheck, busy, navigationBlocked]);
     async function reconcile() {
         if (busy) return;
         setBusy(true); setError('');
@@ -362,6 +368,9 @@ function SurveyDetail({ id, api, owner, deleted }: {
     async function action(name: 'publish' | 'close' | 'delete') {
         if (!survey || busy || needsCheck || editorBlocked)
             return;
+        if (name === 'delete' && !window.confirm('Delete this Draft permanently? Its unsaved definition cannot be recovered.')) return;
+        if (name === 'publish' && !window.confirm('Publishing freezes the title, questions, rating scales and eligible student list. This survey is identified. Eligible students can submit once. Publish this survey?')) return;
+        if (name === 'close' && !window.confirm('Closing permanently stops submissions and makes scores and written feedback available to you. This survey cannot be reopened. Close this survey?')) return;
         setBusy(true);
         setError('');
         try {
@@ -386,7 +395,7 @@ function SurveyDetail({ id, api, owner, deleted }: {
     <p className="eyebrow">{survey.context.course.code} · Section {survey.context.section.sectionCode} · {survey.context.lecture.lectureDate}</p><h2>{survey.title || 'Untitled draft'}</h2><p>{survey.context.lecture.title} · <strong>{survey.status}</strong></p>
     <p className="disclosure">{survey.privacyDisclosure}</p>
     {owner && survey.status === 'DRAFT' ? <DraftEditor survey={survey} api={api} saved={setSurvey} publish={() => void action('publish')} busy={busy || needsCheck} blocked={setEditorBlocked}/> : <>
-      {!owner && <ResponseForm key={survey.status} survey={survey} api={api}/>}
+      {!owner && <ResponseForm key={survey.status} survey={survey} api={api} navigationBlocked={navigationBlocked}/>}
       {owner && <><Questionnaire survey={survey}/><ResultsView key={survey.status} id={id} api={api}/>{survey.status === 'PUBLISHED' && <button disabled={busy || needsCheck} onClick={() => void action('close')}>{busy ? 'Closing…' : 'Close survey'}</button>}</>}
     </>}
     {owner && survey.status === 'DRAFT' && <button className="danger" disabled={busy || needsCheck || editorBlocked} onClick={() => void action('delete')}>Delete draft</button>}
@@ -453,31 +462,47 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
       {persisted && <section aria-label="Persisted draft"><h3>Persisted draft</h3><p>{persisted.title} · {persisted.status} · Revision {persisted.definitionRevision}</p><Questionnaire survey={persisted}/><button disabled={checking || busy} type="button" onClick={() => acceptPersisted(false)}>Use persisted draft</button>{persisted.status === 'DRAFT' && <button disabled={checking || busy} type="button" onClick={() => acceptPersisted(true)}>Reapply my edits to revision {persisted.definitionRevision}</button>}</section>}
     </section>}</>;
 }
-function ResponseForm({ survey, api }: {
+function ResponseForm({ survey, api, navigationBlocked }: {
     survey: Survey;
     api: Api;
+    navigationBlocked: (value: boolean) => void;
 }) {
-    const [submission, setSubmission] = useState<Submission | null>(null), [values, setValues] = useState<Record<string, string | number>>({}), [error, setError] = useState(''), [busy, setBusy] = useState(false), [refresh, setRefresh] = useState(0);
+    const [submission, setSubmission] = useState<Submission | null>(null), [values, setValues] = useState<Record<string, string | number>>({}), [error, setError] = useState(''), [busy, setBusy] = useState(false), [unknownOutcome, setUnknownOutcome] = useState(false), [checking, setChecking] = useState(false);
+    useEffect(() => { navigationBlocked(busy || unknownOutcome || checking || Object.keys(values).length > 0); return () => navigationBlocked(false); }, [busy, unknownOutcome, checking, values, navigationBlocked]);
     useEffect(() => { let active = true; api<Submission>(`/api/surveys/${survey.id}/my-submission`).then(v => { if (active)
         setSubmission(v); }).catch(e => { if (active)
-        setError(reason(e)); }); return () => { active = false; }; }, [api, survey.id, refresh]);
+        setError(reason(e)); }); return () => { active = false; }; }, [api, survey.id]);
+    async function checkSaved() {
+        if (busy || checking) return;
+        setChecking(true); setError('');
+        try {
+            const stored = await api<Submission>(`/api/surveys/${survey.id}/my-submission`);
+            setSubmission(stored); setUnknownOutcome(false);
+            if (stored.submitted) setValues({});
+        } catch (e) { setError(reason(e)); }
+        finally { setChecking(false); }
+    }
     async function submit(e: FormEvent) {
         e.preventDefault();
-        if (busy)
+        if (busy || checking || unknownOutcome)
             return;
         setBusy(true);
         setError('');
         try {
             const result = await api<Submission>(`/api/surveys/${survey.id}/responses`, 'POST', { answers: Object.entries(values).map(([questionId, value]) => ({ questionId, value })) });
             setSubmission(result);
+            setUnknownOutcome(false);
             setValues({});
         }
         catch (e) {
             setError(reason(e));
             if (!(e instanceof ApiError) || e.status >= 500 || e.status === 409) {
+                setUnknownOutcome(true);
                 try {
                     const stored = await api<Submission>(`/api/surveys/${survey.id}/my-submission`);
                     setSubmission(stored);
+                    setUnknownOutcome(false);
+                    if (stored.submitted) setValues({});
                 }
                 catch { /* retain inputs, no automatic resend */ }
             }
@@ -487,12 +512,12 @@ function ResponseForm({ survey, api }: {
         }
     }
     if (!submission)
-        return <><ErrorBox message={error}/><p>Checking your submission…</p><button onClick={() => setRefresh(r => r + 1)}>Check saved status</button></>;
+        return <><ErrorBox message={error}/><p>Checking your submission…</p><button disabled={checking} onClick={() => void checkSaved()}>Check saved status</button></>;
     if (submission.submitted)
         return <section><h3>Submission received</h3><p>Your saved answers are read-only.</p>{submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{a.value}</p></div>)}</section>;
     if (survey.status === 'CLOSED')
         return <p>This survey is closed. No submission was recorded for your account.</p>;
-    return <form onSubmit={e => void submit(e)}><ErrorBox message={error}/>{survey.questions.map(q => <fieldset key={q.id!}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/2000 characters</small></>}</fieldset>)}<button disabled={busy}>{busy ? 'Submitting…' : 'Submit feedback'}</button><button type="button" className="secondary" disabled={busy} onClick={() => setRefresh(r => r + 1)}>Check saved status</button></form>;
+    return <form onSubmit={e => void submit(e)}><ErrorBox message={error}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map(q => <fieldset key={q.id!}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/2000 characters</small></>}</fieldset>)}</fieldset><button disabled={busy || checking || unknownOutcome}>{busy ? 'Submitting…' : 'Submit feedback'}</button><button type="button" className="secondary" disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button></form>;
 }
 function ResultsView({ id, api }: {
     id: string;

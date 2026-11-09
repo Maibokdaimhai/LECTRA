@@ -383,3 +383,25 @@ it('R3: invalid and empty membership snapshots leave the Draft and eligibility u
         }
     }
 });
+it('N4: explicitly empty lecture filter fails validation instead of returning all surveys', async () => {
+    const owner = await login();
+    for (const query of ['lectureId=', 'lectureId=%20', 'lectureId=not-a-uuid', `lectureId=&lectureId=${fixtureId(301)}`]) {
+        const response = await owner.agent.get(`/api/surveys?${query}`).expect(422);
+        expect(response.body.error.code).toBe('VALIDATION_FAILED');
+    }
+    const filtered = (await owner.agent.get(`/api/surveys?lectureId=${fixtureId(301)}`).expect(200)).body.data;
+    expect(filtered.items.map((s: { id: string }) => s.id)).toEqual([fixtureId(401)]);
+    await owner.agent.get('/api/surveys').expect(200);
+});
+it('N5: owner and eligible student list projections contain the required survey context', async () => {
+    for (const email of ['owner.1@example.test', 'respondent.11@example.test']) {
+        const client = await login(email);
+        const items = (await client.agent.get('/api/surveys').expect(200)).body.data.items;
+        const survey = items.find((s: { id: string }) => s.id === fixtureId(401));
+        expect(survey.course).toMatchObject({ code: 'SYN-CPE334', title: 'Synthetic Software Engineering' });
+        expect(survey.section).toMatchObject({ sectionCode: 'A', term: 'Synthetic term' });
+        expect(survey.lecture).toMatchObject({ lectureDate: '2026-11-08', title: 'Synthetic lecture one' });
+        expect(survey.mode).toBe('IDENTIFIED');
+        expect(survey.answers).toBeUndefined();
+    }
+});

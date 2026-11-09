@@ -126,7 +126,7 @@ export function setupFeedback(app: Express, pool: Pool) {
         const owner = req.actor!.role === 'OWNER';
         const p = page(req, owner ? ['lectureId'] : []);
         const lecture = p.q.get('lectureId');
-        if (lecture)
+        if (lecture !== null)
             uuid(lecture);
         const data = await transaction(pool, async (db) => {
             if (lecture && !(await db.query('SELECT l.id FROM "Lecture" l JOIN "Section" sec ON sec.id=l."sectionId" WHERE l.id=$1 AND sec."ownerId"=$2', [lecture, req.actor!.userId])).rowCount)
