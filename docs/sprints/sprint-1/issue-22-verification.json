@@ -1,0 +1,104 @@
+{
+  "commit": "40d8ea1eb763a9f8d3d88eae3d0b15a058edfc7a",
+  "results": [
+    {
+      "command": "npm run typecheck",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "npm run test:unit",
+      "exit": 0,
+      "summary": [
+        "Test Files  6 passed (6)",
+        "Tests  37 passed (37)"
+      ]
+    },
+    {
+      "command": "npm run test:api",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/issue22-primary.env node_modules/vitest/vitest.mjs run --config vitest.features.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  32 passed (32)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/issue22-foundation.env node_modules/vitest/vitest.mjs run --config vitest.foundation.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  9 passed (9)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/issue22-primary.env node_modules/vitest/vitest.mjs run --config vitest.db.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/issue22-primary.env --import tsx scripts/orm-smoke.ts",
+      "exit": 0,
+      "summary": [
+        "Prisma 7.10.1 generated-client / PostgreSQL adapter compatibility passed; no domain migration applied."
+      ]
+    },
+    {
+      "command": "node --env-file=.local/issue22-primary.env --import tsx scripts/verify-restart.ts",
+      "exit": 0,
+      "summary": [
+        "Built API process restart: same persisted sessions, absolute deadline, survey, own answers and results verified; no migration or reseed between starts."
+      ]
+    },
+    {
+      "command": "node --env-file=.local/issue22-repeat.env node_modules/vitest/vitest.mjs run --config vitest.features.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  32 passed (32)"
+      ]
+    }
+  ],
+  "date": "2026-11-09",
+  "issue": 22,
+  "baseStagingCommit": "d096a17c57b9ad0f49ec539a96905f729697100b",
+  "primarySelectedTestCount": 82,
+  "counts": {
+    "unit": 37,
+    "apiLiveness": 2,
+    "apiPostgresql": 32,
+    "foundation": 9,
+    "postgresqlTooling": 2
+  },
+  "repeatability": {
+    "independentNewDatabaseApiPostgresqlTests": 32,
+    "notAdditionalDistinctTests": true
+  },
+  "runtime": {
+    "node": "24.22.1",
+    "npm": "10.9.2",
+    "postgresql": "17.11"
+  },
+  "limits": [
+    "No browser/E2E suite is executed by this Issue #22 change; #23 is a separate teammate task.",
+    "The 82 primary passing tests and repeated 32 scenarios are separate accounting; do not report 114 distinct tests.",
+    "Application source, schema, migration, dependency and browser files are unchanged from the integrated staging baseline.",
+    "Partial planned-case mappings do not certify every feature AC/STS or complete Product DoD.",
+    "No main release, post-main checks, renewed teammate approval, tag or final PDF is claimed."
+  ]
+}
