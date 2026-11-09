@@ -132,8 +132,10 @@ function App() {
     const generation = useRef(0);
     const token = useRef('');
     const bootstrapFlight = useRef<Promise<Session> | null>(null);
+    const identity = useRef('');
+    const [verified, setVerified] = useState(true);
     const bootstrap = useCallback(async () => {
-        const version = ++generation.current;
+        const version = generation.current;
         setLoading(true);
         try {
             // Coalesce StrictMode/visibility callers: ignored responses can still set browser cookies.
@@ -147,20 +149,23 @@ function App() {
             const value = await bootstrapFlight.current;
             if (version !== generation.current)
                 return;
+            const nextIdentity = value.user ? `${value.user.id}:${value.user.role}` : '';
+            if (identity.current !== nextIdentity) generation.current++;
+            identity.current = nextIdentity;
             token.current = value.csrfToken;
+            setVerified(true);
             setSession(value);
             setPendingLogout(false);
         }
         catch (e) {
             if (version === generation.current) {
                 setError(reason(e));
-                setSession(null);
+                setVerified(false);
             }
         }
         finally {
             bootstrapFlight.current = null;
-            if (version === generation.current)
-                setLoading(false);
+            setLoading(false);
         }
     }, []);
     useEffect(() => { void bootstrap(); const controller = new AbortController(); fetch('/api/health', { cache: 'no-store', signal: controller.signal }).then(r => { if (!r.ok)
@@ -182,6 +187,7 @@ function App() {
             if (response.status === 401) {
                 generation.current++;
                 token.current = '';
+                identity.current = '';
                 setSession(null);
                 setPassword('');
                 setError('Your session ended. Log in again.');
@@ -205,6 +211,8 @@ function App() {
             }>('/api/auth/login', 'POST', { email, password });
             generation.current++;
             token.current = result.csrfToken;
+            identity.current = `${result.user.id}:${result.user.role}`;
+            setVerified(true);
             setSession({ authenticated: true, ...result });
         }
         catch (e) {
@@ -226,6 +234,7 @@ function App() {
         setPendingLogout(true);
         retainedLogoutToken.current ||= token.current;
         generation.current++;
+        identity.current = '';
         setSession(null);
         setPassword('');
         setError('');
@@ -247,13 +256,15 @@ function App() {
     }
     return <main><header className="brand"><div><p className="eyebrow">LECTURE FEEDBACK</p><h1>LECTRA</h1></div><p role="status">{health}</p></header>
     <ErrorBox message={error}/>
-    {loading ? <p role="status">Checking your session…</p> : pendingLogout ? <section className="card"><h2>Signing out</h2><p>Private content is hidden until sign-out is confirmed.</p><button disabled={busy} onClick={() => void logout()}>Retry sign-out</button></section> : session?.authenticated && session.user ? <>
+    {loading && <p role="status">Checking your session…</p>}
+    {!verified && <button disabled={loading} onClick={() => void bootstrap()}>Check session / reconnect</button>}
+    {loading && !session ? null : pendingLogout ? <section className="card"><h2>Signing out</h2><p>Private content is hidden until sign-out is confirmed.</p><button disabled={busy} onClick={() => void logout()}>Retry sign-out</button></section> : session?.authenticated && session.user ? <>
       <div className="userbar"><span>{session.user.displayName} · {session.user.role === 'OWNER' ? 'Instructor' : 'Student'}</span><button onClick={() => void logout()} disabled={busy}>Log out</button></div>
-      <Workspace key={session.user.id} user={session.user} api={api}/>
+      <fieldset className="workspace" disabled={loading || !verified}><legend className="sr-only">Classroom workspace</legend><Workspace key={`${session.user.id}:${session.user.role}`} user={session.user} api={api}/></fieldset>
     </> : <section className="card login"><h2>Log in</h2><p>Use your privately supplied LECTRA account.</p><form onSubmit={e => void signIn(e)}>
       <label>Email<input type="email" autoComplete="username" value={email} required onChange={e => setEmail(e.target.value)}/></label>
       <label>Password<input type="password" autoComplete="current-password" value={password} required onChange={e => setPassword(e.target.value)}/></label>
-      <button disabled={busy || !token.current || Date.now() < retryAt}>{busy ? 'Logging in…' : 'Log in'}</button>
+      <button disabled={busy || loading || !verified || !token.current || Date.now() < retryAt}>{busy ? 'Logging in…' : 'Log in'}</button>
     </form>{Date.now() < retryAt && <p role="status">Login is temporarily rate limited. Retry after {new Date(retryAt).toLocaleTimeString()}.</p>}
     <button className="secondary" disabled={busy} onClick={() => { void bootstrap(); }}>Check session / reconnect</button></section>}
   </main>;
@@ -275,7 +286,22 @@ function Workspace({ user, api }: {
     api: Api;
 }) {
     const [course, setCourse] = useState<Item | null>(null), [section, setSection] = useState<Item | null>(null), [lecture, setLecture] = useState<Item | null>(null), [selected, setSelected] = useState(''), [revision, setRevision] = useState(0), [error, setError] = useState(''), [busy, setBusy] = useState(false);
-    async function create() { if (!lecture || busy)
+    const [createUncertain, setCreateUncertain] = useState(false);
+    async function checkCreated() {
+        if (!section || !lecture || busy) return;
+        setBusy(true); setError('');
+        try {
+            let offset = 0;
+            while (true) {
+                const data = await api<Collection>(`/api/sections/${section.id}/lectures?offset=${offset}`);
+                const current = data.items.find(item => item.id === lecture.id);
+                if (current) { setLecture(current); setSelected(current.existingSurvey?.id ?? ''); setCreateUncertain(false); return; }
+                offset += data.pagination.limit;
+                if (offset >= data.pagination.total) throw new Error('Lecture no longer available.');
+            }
+        } catch (e) { setError(reason(e)); } finally { setBusy(false); }
+    }
+    async function create() { if (!lecture || busy || createUncertain)
         return; setBusy(true); setError(''); try {
         const result = await api<Survey>('/api/surveys', 'POST', { lectureId: lecture.id });
         setSelected(result.id);
@@ -283,15 +309,17 @@ function Workspace({ user, api }: {
     }
     catch (e) {
         setError(reason(e));
+        setCreateUncertain(true);
     }
     finally {
         setBusy(false);
     } }
     return <><h2>{user.role === 'OWNER' ? 'Your classroom feedback' : 'Your eligible surveys'}</h2><ErrorBox message={error}/>
-    {user.role === 'OWNER' && <section className="card selectors"><Selector label="Course" path="/api/courses" api={api} onSelect={i => { setCourse(i); setSection(null); setLecture(null); setSelected(''); }}/>
-      {course && <Selector key={course.id} label="Section" path={`/api/sections?courseId=${course.id}`} api={api} onSelect={i => { setSection(i); setLecture(null); setSelected(''); }}/>}
-      {section && <Selector key={`${section.id}:${revision}`} label="Lecture" path={`/api/sections/${section.id}/lectures`} api={api} onSelect={i => { setLecture(i); setSelected(i?.existingSurvey?.id ?? ''); }}/>}
-      {lecture && !selected && <button onClick={() => void create()} disabled={busy}>{busy ? 'Creating…' : 'Create draft'}</button>}
+    {user.role === 'OWNER' && <section className="card selectors"><Selector label="Course" path="/api/courses" api={api} onSelect={i => { setCreateUncertain(false); setCourse(i); setSection(null); setLecture(null); setSelected(''); }}/>
+      {course && <Selector key={course.id} label="Section" path={`/api/sections?courseId=${course.id}`} api={api} onSelect={i => { setCreateUncertain(false); setSection(i); setLecture(null); setSelected(''); }}/>}
+      {section && <Selector key={`${section.id}:${revision}`} label="Lecture" path={`/api/sections/${section.id}/lectures`} api={api} onSelect={i => { setCreateUncertain(false); setLecture(i); setSelected(i?.existingSurvey?.id ?? ''); }}/>}
+      {lecture && !selected && <button onClick={() => void create()} disabled={busy || createUncertain}>{busy ? 'Creating…' : 'Create draft'}</button>}
+      {createUncertain && <><p>Creation outcome needs checking before another create attempt.</p><button disabled={busy} onClick={() => void checkCreated()}>Check persisted lecture</button></>}
     </section>}
     {!selected && <SurveyList key={revision} api={api} select={setSelected}/>}
     {selected && <><button className="secondary" onClick={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}>Back to survey list</button><SurveyDetail key={selected} id={selected} api={api} owner={user.role === 'OWNER'} deleted={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}/></>}
@@ -317,11 +345,22 @@ function SurveyDetail({ id, api, owner, deleted }: {
     deleted: () => void;
 }) {
     const [survey, setSurvey] = useState<Survey | null>(null), [error, setError] = useState(''), [busy, setBusy] = useState(false), [refresh, setRefresh] = useState(0);
+    const [needsCheck, setNeedsCheck] = useState(false);
+    const [editorBlocked, setEditorBlocked] = useState(false);
+    async function reconcile() {
+        if (busy) return;
+        setBusy(true); setError('');
+        try { setSurvey(await api<Survey>(`/api/surveys/${id}`)); setNeedsCheck(false); }
+        catch (e) {
+            if (e instanceof ApiError && e.status === 404) { deleted(); return; }
+            setError(reason(e));
+        } finally { setBusy(false); }
+    }
     useEffect(() => { let active = true; setSurvey(null); api<Survey>(`/api/surveys/${id}`).then(s => { if (active)
         setSurvey(s); }).catch(e => { if (active)
         setError(reason(e)); }); return () => { active = false; }; }, [id, api, refresh]);
     async function action(name: 'publish' | 'close' | 'delete') {
-        if (!survey || busy)
+        if (!survey || busy || needsCheck || editorBlocked)
             return;
         setBusy(true);
         setError('');
@@ -337,49 +376,82 @@ function SurveyDetail({ id, api, owner, deleted }: {
         }
         catch (e) {
             setError(reason(e));
+            setNeedsCheck(true);
         }
         finally {
             setBusy(false);
         }
     }
-    return <section className="card"><ErrorBox message={error}/>{!survey ? <><p>Loading survey…</p><button onClick={() => { setError(''); setRefresh(r => r + 1); }}>Reload survey</button></> : <>
+    return <section className="card"><ErrorBox message={error}/>{needsCheck && <><p>The mutation outcome needs checking. No request will be replayed automatically.</p><button disabled={busy} onClick={() => void reconcile()}>Check persisted survey</button></>}{!survey ? <><p>Loading survey…</p><button onClick={() => { setError(''); setRefresh(r => r + 1); }}>Reload survey</button></> : <>
     <p className="eyebrow">{survey.context.course.code} · Section {survey.context.section.sectionCode} · {survey.context.lecture.lectureDate}</p><h2>{survey.title || 'Untitled draft'}</h2><p>{survey.context.lecture.title} · <strong>{survey.status}</strong></p>
     <p className="disclosure">{survey.privacyDisclosure}</p>
-    {owner && survey.status === 'DRAFT' ? <DraftEditor key={survey.definitionRevision} survey={survey} api={api} saved={setSurvey} publish={() => void action('publish')} busy={busy}/> : <>
+    {owner && survey.status === 'DRAFT' ? <DraftEditor survey={survey} api={api} saved={setSurvey} publish={() => void action('publish')} busy={busy || needsCheck} blocked={setEditorBlocked}/> : <>
       {!owner && <ResponseForm key={survey.status} survey={survey} api={api}/>}
-      {owner && <><ResultsView key={survey.status} id={id} api={api}/>{survey.status === 'PUBLISHED' && <button disabled={busy} onClick={() => void action('close')}>{busy ? 'Closing…' : 'Close survey'}</button>}</>}
+      {owner && <><Questionnaire survey={survey}/><ResultsView key={survey.status} id={id} api={api}/>{survey.status === 'PUBLISHED' && <button disabled={busy || needsCheck} onClick={() => void action('close')}>{busy ? 'Closing…' : 'Close survey'}</button>}</>}
     </>}
-    {owner && survey.status === 'DRAFT' && <button className="danger" disabled={busy} onClick={() => void action('delete')}>Delete draft</button>}
+    {owner && survey.status === 'DRAFT' && <button className="danger" disabled={busy || needsCheck || editorBlocked} onClick={() => void action('delete')}>Delete draft</button>}
   </>}</section>;
 }
-function DraftEditor({ survey, api, saved, publish, busy }: {
+function Questionnaire({ survey }: { survey: Survey }) {
+    return <section aria-label="Frozen questionnaire"><h3>{survey.status === 'DRAFT' ? 'Saved questionnaire' : 'Frozen questionnaire'}</h3><p>Read-only · {survey.mode}</p>
+      {survey.questions.map((q, index) => <section key={q.id ?? index}><h4>{index + 1}. {q.prompt}</h4><p>{q.type === 'RATING' ? 'Rating 1–5' : 'Written feedback'} · {q.required ? 'Required' : 'Optional'}</p>{q.ratingScale && <><p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}</p><p>{q.ratingScale.interpretation}</p></>}</section>)}
+    </section>;
+}
+function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     survey: Survey;
     api: Api;
     saved: (s: Survey) => void;
     publish: () => void;
     busy: boolean;
+    blocked: (value: boolean) => void;
 }) {
+    const [baseline, setBaseline] = useState(survey);
+    const [needsCheck, setNeedsCheck] = useState(false), [persisted, setPersisted] = useState<Survey | null>(null), [checking, setChecking] = useState(false);
     const [title, setTitle] = useState(survey.title), [questions, setQuestions] = useState<Question[]>(survey.questions), [dirty, setDirty] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('');
+    useEffect(() => { blocked(saving || needsCheck || checking || dirty); return () => blocked(false); }, [saving, needsCheck, checking, dirty, blocked]);
+    useEffect(() => {
+        if (!dirty && !needsCheck && !saving) { setBaseline(survey); setTitle(survey.title); setQuestions(survey.questions); }
+    }, [survey, dirty, needsCheck, saving]);
     function change(index: number, patch: Partial<Question>) { setDirty(true); setQuestions(q => q.map((v, i) => i === index ? { ...v, ...patch } : v)); }
-    async function save(e: FormEvent) { e.preventDefault(); setSaving(true); setError(''); try {
-        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: survey.definitionRevision, title, questions: questions.map(({ id, prompt, type, required, ratingScale }) => ({ id, prompt, type, required, ratingScale })) });
+    async function checkPersisted() {
+        if (checking || saving) return;
+        setChecking(true); setError('');
+        try { setPersisted(await api<Survey>(`/api/surveys/${survey.id}`)); }
+        catch (e) { setError(reason(e)); } finally { setChecking(false); }
+    }
+    function acceptPersisted(reapply: boolean) {
+        if (!persisted) return;
+        if (reapply) {
+            const ids = new Set(persisted.questions.map(q => q.id));
+            setQuestions(old => old.map(q => ({ ...q, id: q.id && ids.has(q.id) ? q.id : null })));
+            setDirty(true);
+        } else { setTitle(persisted.title); setQuestions(persisted.questions); setDirty(false); }
+        setBaseline(persisted); saved(persisted); setNeedsCheck(false); setPersisted(null); setError('');
+    }
+    async function save(e: FormEvent) { e.preventDefault(); if (saving || busy || needsCheck) return; setSaving(true); setError(''); try {
+        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title, questions: questions.map(({ id, prompt, type, required, ratingScale }) => ({ id, prompt, type, required, ratingScale })) });
+        setBaseline(value); setTitle(value.title); setQuestions(value.questions);
         saved(value);
         setDirty(false);
     }
     catch (e) {
         setError(reason(e));
+        if (!(e instanceof ApiError) || e.status >= 500 || e.status === 409) { setNeedsCheck(true); setPersisted(null); }
     }
     finally {
         setSaving(false);
     } }
-    return <><form onSubmit={e => void save(e)}><ErrorBox message={error}/><label>Survey title<input value={title} onChange={e => { setTitle(e.target.value); setDirty(true); }}/></label>
+    return <><form onSubmit={e => void save(e)}><ErrorBox message={error}/><fieldset disabled={saving || busy || checking}><legend className="sr-only">Draft definition</legend><label>Survey title<input value={title} onChange={e => { setTitle(e.target.value); setDirty(true); }}/></label>
     {questions.map((q, index) => <fieldset key={q.id ?? `new-${index}`}><legend>Question {index + 1}</legend><label>Prompt<input value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><label>Question type<select value={q.type} onChange={e => change(index, { type: e.target.value as Question['type'], ratingScale: e.target.value === 'RATING' ? defaultScale() : null })}><option value="RATING">Rating 1–5</option><option value="TEXT">Written feedback</option></select></label>
       <label className="check"><input type="checkbox" checked={q.required} onChange={e => change(index, { required: e.target.checked })}/>Required</label>
       {q.ratingScale && <div className="scale-editor">{(['minLabel', 'maxLabel', 'interpretation'] as const).map(key => <label key={key}>{key === 'minLabel' ? 'Score 1 label' : key === 'maxLabel' ? 'Score 5 label' : 'Scale interpretation'}<input value={q.ratingScale![key]} onChange={e => change(index, { ratingScale: { ...q.ratingScale!, [key]: e.target.value } })}/></label>)}</div>}
       <div className="actions"><button type="button" disabled={index === 0} onClick={() => { setDirty(true); setQuestions(old => { const items = [...old]; [items[index - 1], items[index]] = [items[index]!, items[index - 1]!]; return items; }); }}>Move question {index + 1} up</button><button type="button" onClick={() => { setDirty(true); setQuestions(old => old.filter((_, i) => i !== index)); }}>Remove question {index + 1}</button></div>
     </fieldset>)}
-    <div className="actions"><button type="button" disabled={questions.length >= 10 || saving} onClick={() => { setDirty(true); setQuestions(q => [...q, { id: null, prompt: '', type: 'RATING', required: true, ratingScale: defaultScale() }]); }}>Add question</button><button disabled={saving || busy}>{saving ? 'Saving…' : 'Save draft'}</button></div>
-  </form><p>{dirty ? 'Unsaved changes. Save before publishing.' : `Saved revision ${survey.definitionRevision}.`}</p><button disabled={dirty || saving || busy} onClick={publish}>Publish survey</button></>;
+    <div className="actions"><button type="button" disabled={questions.length >= 10 || saving} onClick={() => { setDirty(true); setQuestions(q => [...q, { id: null, prompt: '', type: 'RATING', required: true, ratingScale: defaultScale() }]); }}>Add question</button><button disabled={saving || busy || needsCheck}>{saving ? 'Saving…' : 'Save draft'}</button></div>
+  </fieldset></form><p>{dirty ? 'Unsaved changes. Save before publishing.' : `Saved revision ${baseline.definitionRevision}.`}</p><button disabled={dirty || saving || busy || needsCheck} onClick={publish}>Publish survey</button>
+    {needsCheck && <section><p>Your local edits are retained. Check the persisted draft before choosing to discard or reapply them. Removed questions will be recreated with new identifiers only after you explicitly reapply and save.</p><button disabled={checking || saving} onClick={() => void checkPersisted()}>Check persisted draft</button>
+      {persisted && <section aria-label="Persisted draft"><h3>Persisted draft</h3><p>{persisted.title} · {persisted.status} · Revision {persisted.definitionRevision}</p><Questionnaire survey={persisted}/><button disabled={checking || busy} type="button" onClick={() => acceptPersisted(false)}>Use persisted draft</button>{persisted.status === 'DRAFT' && <button disabled={checking || busy} type="button" onClick={() => acceptPersisted(true)}>Reapply my edits to revision {persisted.definitionRevision}</button>}</section>}
+    </section>}</>;
 }
 function ResponseForm({ survey, api }: {
     survey: Survey;

@@ -328,3 +328,58 @@ type QuestionInput = {
     required: boolean;
     ratingScale: unknown;
 };
+it('R3: publication validates and freezes one membership snapshot while membership changes concurrently', async () => {
+    const owner = await login();
+    const lecture = (await pool.query('INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence) VALUES ($1,\'Membership snapshot race\',\'2026-11-09\',1004) RETURNING id', [fixtureId(201)])).rows[0].id;
+    const id = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data.id;
+    await mutation(owner, 'patch', `/api/surveys/${id}`, { expectedRevision: 1, title: 'Membership snapshot race', questions: [{ id: null, type: 'RATING', prompt: 'Clarity', required: true, ratingScale: { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means clearer' } }] }).expect(200);
+    const gate = await pool.connect();
+    let publication: Promise<request.Response> | undefined;
+    // Test-only view delays the first membership read after its statement snapshot is taken.
+    // The writer commits a different valid membership set before that read is released.
+    await pool.query(`ALTER TABLE "Membership" RENAME TO membership_r3_source;
+        CREATE FUNCTION membership_r3_gate() RETURNS boolean LANGUAGE plpgsql VOLATILE AS $$ BEGIN PERFORM pg_advisory_xact_lock(36003); RETURN true; END $$;
+        CREATE VIEW "Membership" AS SELECT * FROM membership_r3_source WHERE membership_r3_gate()`);
+    try {
+        await gate.query('SELECT pg_advisory_lock(36003)');
+        publication = mutation(owner, 'post', `/api/surveys/${id}/publish`, { expectedRevision: 2 }).then(r => r);
+        let waiting = false;
+        const deadline = Date.now() + 3000;
+        while (Date.now() < deadline) {
+            waiting = !!(await pool.query("SELECT 1 FROM pg_stat_activity WHERE wait_event='advisory' AND query LIKE '%Membership%' AND pid<>pg_backend_pid()")).rowCount;
+            if (waiting) break;
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+        expect(waiting).toBe(true);
+        await pool.query('DELETE FROM membership_r3_source WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), fixtureId(12)]);
+        await pool.query('INSERT INTO membership_r3_source ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), fixtureId(13)]);
+        await gate.query('SELECT pg_advisory_unlock(36003)');
+        expect((await publication).status).toBe(200);
+        expect((await pool.query('SELECT "studentId" FROM "SurveyEligibility" WHERE "surveyId"=$1 ORDER BY "studentId"', [id])).rows.map(r => r.studentId)).toEqual([fixtureId(11), fixtureId(12)]);
+    }
+    finally {
+        await gate.query('SELECT pg_advisory_unlock_all()');
+        if (publication) await publication;
+        gate.release();
+        await pool.query('DROP VIEW "Membership"; DROP FUNCTION membership_r3_gate(); ALTER TABLE membership_r3_source RENAME TO "Membership"');
+        await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), fixtureId(13)]);
+        await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2) ON CONFLICT DO NOTHING', [fixtureId(201), fixtureId(12)]);
+    }
+});
+it('R3: invalid and empty membership snapshots leave the Draft and eligibility unchanged', async () => {
+    const owner = await login();
+    for (const [section, sequence, code] of [[fixtureId(203), 1005, 'ELIGIBILITY_EMPTY'], [fixtureId(201), 1006, 'ELIGIBILITY_INVALID']] as const) {
+        const lecture = (await pool.query('INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence) VALUES ($1,\'Rejected membership snapshot\',\'2026-11-09\',$2) RETURNING id', [section, sequence])).rows[0].id;
+        const id = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data.id;
+        await mutation(owner, 'patch', `/api/surveys/${id}`, { expectedRevision: 1, title: 'Rejected snapshot', questions: [{ id: null, type: 'RATING', prompt: 'Clarity', required: true, ratingScale: { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means clearer' } }] }).expect(200);
+        if (code === 'ELIGIBILITY_INVALID') await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [section, fixtureId(2)]);
+        try {
+            const response = await mutation(owner, 'post', `/api/surveys/${id}/publish`, { expectedRevision: 2 }).expect(422);
+            expect(response.body.error.code).toBe(code);
+            expect((await pool.query('SELECT status,"publishedAt" FROM "Survey" WHERE id=$1', [id])).rows[0]).toEqual({ status: 'DRAFT', publishedAt: null });
+            expect((await pool.query('SELECT 1 FROM "SurveyEligibility" WHERE "surveyId"=$1', [id])).rowCount).toBe(0);
+        } finally {
+            if (code === 'ELIGIBILITY_INVALID') await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [section, fixtureId(2)]);
+        }
+    }
+});

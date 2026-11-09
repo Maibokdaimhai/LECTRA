@@ -33,6 +33,12 @@ test('real owner → student → closed results, persistent readback, rejection 
     await expect(page.getByText('Saved revision 2.', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Publish survey', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Close survey', exact: true })).toBeVisible();
+    const frozen = page.getByRole('region', { name: 'Frozen questionnaire', exact: true });
+    await expect(frozen).toContainText('Understanding');
+    await expect(frozen).toContainText('Higher means clearer');
+    await expect(frozen).toContainText('Next time');
+    await expect(frozen).toContainText('Optional');
+    await expect(frozen.locator('input, textarea, select')).toHaveCount(0);
     await expect(page.getByText('Scores and written feedback become available after closing.', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Log out', exact: true }).click();
     await signIn(page, 'respondent.11@example.test');
@@ -57,6 +63,8 @@ test('real owner → student → closed results, persistent readback, rejection 
     await signIn(page, 'owner.1@example.test');
     await row.getByRole('button', { name: 'Open survey', exact: true }).click();
     await page.getByRole('button', { name: 'Close survey', exact: true }).click();
+    await expect(frozen).toContainText('Understanding');
+    await expect(frozen.locator('input, textarea, select')).toHaveCount(0);
     await expect(page.getByText('5.00', { exact: true })).toBeVisible();
     await expect(page.getByText('<script>window.feedbackExecuted=true</script> More examples.', { exact: true })).toBeVisible();
     expect(await page.evaluate(() => ('feedbackExecuted' in window))).toBe(false);

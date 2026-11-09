@@ -34,6 +34,7 @@
     "test:db:foundation": "node --env-file=.env.test.local node_modules/vitest/vitest.mjs run --config vitest.foundation.config.ts",
     "start": "node --env-file=.env apps/api/dist/server.js",
     "test:features": "node --env-file=.env.test.local node_modules/vitest/vitest.mjs run --config vitest.features.config.ts",
+    "test:e2e:recovery": "node scripts/playwright.mjs test --config playwright.recovery.config.ts",
     "test:e2e:features": "node --env-file=.local/browser.env scripts/playwright.mjs test --config playwright.features.config.ts",
     "demo:config": "node --env-file=.env.test.local --import tsx scripts/demo-config.ts",
     "demo:migrate": "node --env-file=.local/demo-setup.env --import tsx scripts/database.ts migrate-test",

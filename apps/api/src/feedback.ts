@@ -194,11 +194,18 @@ export function setupFeedback(app: Express, pool: Pool) {
             sameRevision(row, rev);
             const qs = (await questions(db, row.id)).map(questionView);
             validatePublication({ title: row.title, questions: qs });
-            if ((await db.query('SELECT 1 FROM \"Membership\" m JOIN \"User\" u ON u.id=m.\"studentId\" WHERE m.\"sectionId\"=$1 AND u.role<>\'RESPONDENT\'', [row.sectionId])).rowCount)
-                fail(422, 'ELIGIBILITY_INVALID');
-            const count = await db.query('INSERT INTO "SurveyEligibility" ("surveyId","studentId") SELECT $1,m."studentId" FROM "Membership" m JOIN "User" u ON u.id=m."studentId" AND u.role=\'RESPONDENT\' WHERE m."sectionId"=$2', [row.id, row.sectionId]);
-            if (!count.rowCount)
-                fail(422, 'ELIGIBILITY_EMPTY');
+            // Validate and insert from one materialized statement snapshot. Concurrent membership
+            // edits cannot change the set between validation and the eligibility insertion.
+            const snapshot = (await db.query(`WITH members AS MATERIALIZED (
+                SELECT m."studentId",u.role FROM "Membership" m JOIN "User" u ON u.id=m."studentId" WHERE m."sectionId"=$2
+            ), inserted AS (
+                INSERT INTO "SurveyEligibility" ("surveyId","studentId")
+                SELECT $1,"studentId" FROM members WHERE NOT EXISTS (SELECT 1 FROM members WHERE role<>'RESPONDENT')
+                RETURNING "studentId"
+            ) SELECT (SELECT count(*) FROM members WHERE role<>'RESPONDENT')::int AS invalid,
+                (SELECT count(*) FROM inserted)::int AS inserted`, [row.id, row.sectionId])).rows[0];
+            if (snapshot.invalid) fail(422, 'ELIGIBILITY_INVALID');
+            if (!snapshot.inserted) fail(422, 'ELIGIBILITY_EMPTY');
             const updated = (await db.query('UPDATE "Survey" SET status=\'PUBLISHED\',"publishedAt"=now() WHERE id=$1 RETURNING status,"publishedAt"', [row.id])).rows[0];
             Object.assign(row, updated);
             return definitionView(db, row, true);
