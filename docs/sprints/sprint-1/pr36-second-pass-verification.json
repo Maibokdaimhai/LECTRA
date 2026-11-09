@@ -1,0 +1,108 @@
+{
+  "commit": "af36beb600615b318fb6665a11ae9b9944ff3666",
+  "results": [
+    {
+      "command": "npm run typecheck",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "npm run test:unit",
+      "exit": 0,
+      "summary": [
+        "Test Files  6 passed (6)",
+        "Tests  37 passed (37)"
+      ]
+    },
+    {
+      "command": "npm run test:api",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/pr36-pass2-final.env node_modules/vitest/vitest.mjs run --config vitest.features.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  21 passed (21)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/pr36-pass2-foundation.env node_modules/vitest/vitest.mjs run --config vitest.foundation.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  9 passed (9)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/pr36-pass2-final.env node_modules/vitest/vitest.mjs run --config vitest.db.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/pr36-pass2-final.env --import tsx scripts/orm-smoke.ts",
+      "exit": 0,
+      "summary": [
+        "Prisma 7.10.1 generated-client / PostgreSQL adapter compatibility passed; no domain migration applied."
+      ]
+    },
+    {
+      "command": "node --env-file=.local/pr36-pass2-browser.env scripts/playwright.mjs test --config playwright.features.config.ts",
+      "exit": 0,
+      "summary": [
+        "4 passed (5.0s)"
+      ]
+    },
+    {
+      "command": "npm run test:e2e:recovery",
+      "exit": 0,
+      "summary": [
+        "36 passed (14.0s)"
+      ]
+    },
+    {
+      "command": "npm run test:e2e",
+      "exit": 0,
+      "summary": [
+        "4 passed (979ms)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/pr36-pass2-final.env --import tsx scripts/verify-restart.ts",
+      "exit": 0,
+      "summary": [
+        "Built API process restart: same persisted sessions, absolute deadline, survey, own answers and results verified; no migration or reseed between starts."
+      ]
+    }
+  ],
+  "date": "2026-11-09",
+  "context": "PR #36 second-pass review N1\u2013N5, preserving R1\u2013R4; staging candidate, no renewed approval or assessed release",
+  "selectedAutomatedTests": 115,
+  "counts": {
+    "unit": 37,
+    "apiLiveness": 2,
+    "realApiPostgresql": 21,
+    "foundation": 9,
+    "postgresqlTooling": 2,
+    "realProductBrowser": 4,
+    "isolatedHttpBrowser": 36,
+    "inheritedBrowserSmoke": 4
+  },
+  "limits": [
+    "HTTP-fixture browser regressions are separate from real API/PostgreSQL journeys.",
+    "No exhaustive STS/AC coverage, human usability certification, merge, tag or final submission is claimed.",
+    "The earlier PDF and original review-snapshot.json remain dated pre-review artifacts."
+  ]
+}

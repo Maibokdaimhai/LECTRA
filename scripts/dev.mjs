@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 const smoke = process.argv.includes('--smoke');
-const apiPort = smoke ? 3101 : Number(process.env.PORT ?? 3001);
-const webPort = smoke ? 4173 : 5173;
+const features = process.argv.includes('--features');
+const apiPort = smoke ? 3101 : features ? 3102 : Number(process.env.PORT ?? 3001);
+const webPort = smoke ? 4173 : features ? 4174 : 5173;
 const env = {
   ...process.env,
   PORT: String(apiPort),

@@ -2,7 +2,8 @@ import { createApp } from './app.js';
 import { readConfig } from './config.js';
 try {
   const config = readConfig(process.env);
-  const server = createApp().listen(config.PORT, '127.0.0.1', () => {
+  const app = createApp(config);
+  const server = app.listen(config.PORT, '127.0.0.1', () => {
     console.info(`LECTRA API listening on port ${config.PORT}`);
   });
   server.on('error', () => { console.error('API failed to listen.'); process.exitCode = 1; });
@@ -11,7 +12,7 @@ try {
   const stop = () => {
     if (stopping) return;
     stopping = true;
-    server.close(() => { if (!forced) process.exitCode = 0; });
+    server.close(() => { Promise.resolve(app.locals.close?.()).then(() => { if (!forced) process.exitCode = 0; }, () => { process.exitCode = 1; }); });
     server.closeIdleConnections();
     const deadline = setTimeout(() => { forced = true; server.closeAllConnections(); process.exitCode = 1; }, 5000);
     deadline.unref();
