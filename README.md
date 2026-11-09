@@ -2,7 +2,7 @@
 
 Lecture Evaluation, Classroom Thoughts, Reviews & Analytics - CPE334 lecture feedback project.
 
-Current implementation is **workspace/tooling only (#15)**: React/Vite web, Express liveness API, build/typecheck/unit/API/real-PostgreSQL/browser smoke commands. Login, surveys, responses, results and domain migrations/seed are not implemented. F-04 contract/STS are draft documents under #13. [Engineering docs](docs/README.md).
+Current implementation includes workspace/tooling (#15) and the Sprint 1 database foundation (#16): Prisma schema, versioned PostgreSQL/session constraints, guarded synthetic seed and storage tests. Login, surveys, responses and results UI/API workflows are not implemented. [Engineering docs](docs/README.md) and [database foundation/setup](docs/sprints/sprint-1/database-foundation.md).
 
 ## Prerequisites and install
 
@@ -14,7 +14,7 @@ npm run setup:local
 npm run dev
 ```
 
-`setup:local` creates ignored mode-0600 `.env`, `.env.test.local` and `.local/postgres.env` with synthetic random local secrets. It refuses to overwrite any existing configuration. Review examples in `.env.example` / `.env.test.example`; never commit actual secrets. Web: `http://127.0.0.1:5173`; API loopback port 3001, proxied through same-origin `/api`. Ctrl+C stops both services. In this setup, liveness does not connect to the database and does not prove authentication/DB readiness. No frontend role selector or fake product data is provided.
+`setup:local` creates ignored mode-0600 `.env`, `.env.test.local` and `.local/postgres.env` with synthetic random local secrets. It refuses to overwrite any existing configuration. Review examples in `.env.example` / `.env.test.example`; never commit actual secrets. Web: `http://127.0.0.1:5173`; API loopback port 3001, proxied through same-origin `/api`. Ctrl+C stops both services. Liveness does not connect to the database and does not prove authentication/DB readiness. No frontend role selector or fake product data is provided. Build/typecheck generate the real Prisma client before compiling; generated source is ignored.
 
 ## Disposable PostgreSQL tooling checks
 
@@ -27,7 +27,7 @@ npm run test:db
 npm run check:orm
 ```
 
-The test runner validates `TEST_DATABASE_URL`, explicit `ALLOW_TEST_DATABASE` matching `lectra_test`/`lectra_test_*`, and a different canonical development target **before SQL**. Keep `.env.test.local`'s DATABASE_URL aligned with the actual development target if you edit configuration. No reset/migration/seed scripts are provided by this setup. DB tests use temporary transaction probes; ORM check generates an ignored temporary probe client and runs a read, without a domain migration. #16 supplies real User/session/domain migrations, seed and generated client integration.
+The test runner validates `TEST_DATABASE_URL`, explicit `ALLOW_TEST_DATABASE` matching `lectra_test`/`lectra_test_*`, and a different canonical development target **before SQL**. Keep `.env.test.local`'s DATABASE_URL aligned with the actual development target if you edit configuration. Existing tooling DB tests use temporary transaction probes; ORM smoke generates an ignored probe client and reads without domain migration. Issue #16 adds separate guarded migration/seed commands and a foundation suite: see [database setup](docs/sprints/sprint-1/database-foundation.md). That suite requires an additional explicit opt-in and a new empty test DB; do not pre-migrate it or reset any existing database. No reset command is provided.
 
 When finished, stop/remove **only the container created by the command above**; its disposable test data is intentionally lost:
 
