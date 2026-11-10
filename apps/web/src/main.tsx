@@ -395,7 +395,11 @@ function SurveyDetail({ id, api, owner, deleted, navigationBlocked }: {
     <p className="eyebrow">{survey.context.course.code} · Section {survey.context.section.sectionCode} · {survey.context.lecture.lectureDate}</p><h2>{survey.title || 'Untitled draft'}</h2><p>{survey.context.lecture.title} · <strong>{survey.status}</strong></p>
     <p className="disclosure">{survey.privacyDisclosure}</p>
     {owner && survey.status === 'DRAFT' ? <DraftEditor survey={survey} api={api} saved={setSurvey} publish={() => void action('publish')} busy={busy || needsCheck} blocked={setEditorBlocked}/> : <>
-      {!owner && <ResponseForm key={survey.status} survey={survey} api={api} navigationBlocked={navigationBlocked}/>}
+      {!owner && <ResponseForm survey={survey} api={api} navigationBlocked={navigationBlocked} refreshSurvey={async () => {
+        const latest = await api<Survey>(`/api/surveys/${id}`);
+        setSurvey(latest);
+        return latest;
+      }}/>}
       {owner && <><Questionnaire survey={survey}/><ResultsView key={survey.status} id={id} api={api}/>{survey.status === 'PUBLISHED' && <button disabled={busy || needsCheck} onClick={() => void action('close')}>{busy ? 'Closing…' : 'Close survey'}</button>}</>}
     </>}
     {owner && survey.status === 'DRAFT' && <button className="danger" disabled={busy || needsCheck || editorBlocked} onClick={() => void action('delete')}>Delete draft</button>}
@@ -462,23 +466,33 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
       {persisted && <section aria-label="Persisted draft"><h3>Persisted draft</h3><p>{persisted.title} · {persisted.status} · Revision {persisted.definitionRevision}</p><Questionnaire survey={persisted}/><button disabled={checking || busy} type="button" onClick={() => acceptPersisted(false)}>Use persisted draft</button>{persisted.status === 'DRAFT' && <button disabled={checking || busy} type="button" onClick={() => acceptPersisted(true)}>Reapply my edits to revision {persisted.definitionRevision}</button>}</section>}
     </section>}</>;
 }
-function ResponseForm({ survey, api, navigationBlocked }: {
+function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
     survey: Survey;
     api: Api;
     navigationBlocked: (value: boolean) => void;
+    refreshSurvey: () => Promise<Survey>;
 }) {
     const [submission, setSubmission] = useState<Submission | null>(null), [values, setValues] = useState<Record<string, string | number>>({}), [error, setError] = useState(''), [busy, setBusy] = useState(false), [unknownOutcome, setUnknownOutcome] = useState(false), [checking, setChecking] = useState(false);
+    const lifecycleNeedsCheck = useRef(false);
     useEffect(() => { navigationBlocked(busy || unknownOutcome || checking || Object.keys(values).length > 0); return () => navigationBlocked(false); }, [busy, unknownOutcome, checking, values, navigationBlocked]);
     useEffect(() => { let active = true; api<Submission>(`/api/surveys/${survey.id}/my-submission`).then(v => { if (active)
         setSubmission(v); }).catch(e => { if (active)
         setError(reason(e)); }); return () => { active = false; }; }, [api, survey.id]);
+    async function recoverSubmission() {
+        let latest: Survey | undefined;
+        if (lifecycleNeedsCheck.current) {
+            latest = await refreshSurvey();
+            lifecycleNeedsCheck.current = false;
+        }
+        const stored = await api<Submission>(`/api/surveys/${survey.id}/my-submission`);
+        setSubmission(stored); setUnknownOutcome(false);
+        if (stored.submitted || latest?.status === 'CLOSED' || survey.status === 'CLOSED') setValues({});
+    }
     async function checkSaved() {
         if (busy || checking) return;
         setChecking(true); setError('');
         try {
-            const stored = await api<Submission>(`/api/surveys/${survey.id}/my-submission`);
-            setSubmission(stored); setUnknownOutcome(false);
-            if (stored.submitted) setValues({});
+            await recoverSubmission();
         } catch (e) { setError(reason(e)); }
         finally { setChecking(false); }
     }
@@ -496,13 +510,12 @@ function ResponseForm({ survey, api, navigationBlocked }: {
         }
         catch (e) {
             setError(reason(e));
+            if (e instanceof ApiError && e.status === 409 && e.code === 'INVALID_STATE')
+                lifecycleNeedsCheck.current = true;
             if (!(e instanceof ApiError) || e.status >= 500 || e.status === 409) {
                 setUnknownOutcome(true);
                 try {
-                    const stored = await api<Submission>(`/api/surveys/${survey.id}/my-submission`);
-                    setSubmission(stored);
-                    setUnknownOutcome(false);
-                    if (stored.submitted) setValues({});
+                    await recoverSubmission();
                 }
                 catch { /* retain inputs, no automatic resend */ }
             }
@@ -516,7 +529,7 @@ function ResponseForm({ survey, api, navigationBlocked }: {
     if (submission.submitted)
         return <section><h3>Submission received</h3><p>Your saved answers are read-only.</p>{submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{a.value}</p></div>)}</section>;
     if (survey.status === 'CLOSED')
-        return <p>This survey is closed. No submission was recorded for your account.</p>;
+        return <><ErrorBox message={error}/><p>{unknownOutcome ? 'This survey is closed. Check saved status to confirm whether your submission was recorded.' : 'This survey is closed. No submission was recorded for your account.'}</p>{unknownOutcome && <button disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button>}</>;
     return <form onSubmit={e => void submit(e)}><ErrorBox message={error}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map(q => <fieldset key={q.id!}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/2000 characters</small></>}</fieldset>)}</fieldset><button disabled={busy || checking || unknownOutcome}>{busy ? 'Submitting…' : 'Submit feedback'}</button><button type="button" className="secondary" disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button></form>;
 }
 function ResultsView({ id, api }: {

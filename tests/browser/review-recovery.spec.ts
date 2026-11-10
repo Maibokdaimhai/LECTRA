@@ -7,7 +7,7 @@ async function fixture(page: Page, respondent = false) {
     if (!/^N[23]:/.test(test.info().title)) page.on('dialog', dialog => dialog.accept());
     let stored = { ...definition(), status: respondent ? 'PUBLISHED' : 'DRAFT' }, missing = false, sessionUser: { id: string; displayName: string; role: string } | null = { id: respondent ? 'student' : 'owner', displayName: 'Fixture user', role: respondent ? 'RESPONDENT' : 'OWNER' };
     let mutation: 'ok' | 'conflict' | 'lost' = 'ok', readsFail = false, mutations = 0, lastPatch: any = null;
-    let submissionReadFails = false, responseOutcome: 'ok' | 'lost-committed' | 'lost-uncommitted' = 'ok';
+    let submissionReadFails = false, responseOutcome: 'ok' | 'lost-committed' | 'lost-uncommitted' | 'closed' = 'ok';
     let submission = { surveyId: 'survey', submitted: false, answers: null as { questionId: string; value: number }[] | null };
     await page.route('**/api/**', async route => {
         const req = route.request(), path = new URL(req.url()).pathname;
@@ -20,6 +20,7 @@ async function fixture(page: Page, respondent = false) {
         }
         if (path === '/api/surveys/survey/responses') {
             mutations++;
+            if (responseOutcome === 'closed') return route.fulfill({ status: 409, json: { error: { code: 'INVALID_STATE', message: 'Collection has ended.' } } });
             if (responseOutcome !== 'lost-uncommitted') submission = { ...submission, submitted: true, answers: req.postDataJSON().answers };
             if (responseOutcome !== 'ok') return route.abort('failed');
             return send(submission, 201);
@@ -288,5 +289,27 @@ test('N3: Draft deletion also respects the existing contract confirmation', asyn
     page.once('dialog', d => d.accept());
     await page.getByRole('button', { name: 'Delete draft', exact: true }).click();
     await expect(page.getByText('No surveys available.', { exact: true })).toBeVisible();
+    expect(f.mutations()).toBe(1);
+});
+
+test('DEF-B23-01: failed lifecycle and status reads stay blocked until explicit reconciliation', async ({ page }) => {
+    const f = await fixture(page, true);
+    await page.getByRole('radio', { name: '4', exact: true }).check();
+    f.setStored({ status: 'CLOSED' }); f.setSubmissionFailure('closed', false); f.failReads(true);
+    await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toBeDisabled();
+    await page.getByRole('button', { name: 'Check saved status', exact: true }).click();
+    await expect(page.getByRole('alert')).toContainText('SERVICE_UNAVAILABLE');
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toBeDisabled();
+    f.failReads(false);
+    f.setSubmissionFailure('closed', true);
+    await page.getByRole('button', { name: 'Check saved status', exact: true }).click();
+    await expect(page.getByText('CLOSED', { exact: true })).toBeVisible();
+    await expect(page.getByText('This survey is closed. Check saved status to confirm whether your submission was recorded.', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toHaveCount(0);
+    f.setSubmissionFailure('closed', false);
+    await page.getByRole('button', { name: 'Check saved status', exact: true }).click();
+    await expect(page.getByText('This survey is closed. No submission was recorded for your account.', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Submit feedback', exact: true })).toHaveCount(0);
     expect(f.mutations()).toBe(1);
 });
