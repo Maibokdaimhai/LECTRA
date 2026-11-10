@@ -384,10 +384,8 @@
       "plannedCases": [
         "TEST-F02-I10"
       ],
-      "selectedEvidenceCases": [
-        "TEST-F02-I10"
-      ],
-      "disposition": "Partial mapped evidence; not full AC certification"
+      "selectedEvidenceCases": [],
+      "disposition": "No #22 evidence mapped; retain pending disposition"
     },
     {
       "id": "AC-F02-09",
@@ -2387,14 +2385,9 @@
         "AC-F02-08"
       ],
       "plannedRow": "| TEST-F02-I10 | AC-F02-08 | API/DB | Published eligibility snapshot includes R-A, excludes R-NEW; isolated test membership changes. | Remove R-A's Membership; add R-NEW to Membership; do not edit eligibility. | Read discovery as both after commits. | R-A retains the eligible survey; R-NEW does not gain it. Query must not silently derive eligibility from current enrollment. Unrelated Section data remains inaccessible. |",
-      "evidence": [
-        {
-          "source": "apps/api/tests/features/workflows.test.ts",
-          "scenario": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
-        }
-      ],
-      "disposition": "Partial: selected assertions verified; not full planned matrix",
-      "nextAction": "Review remaining subconditions in the planned row before full feature/STS acceptance."
+      "evidence": [],
+      "disposition": "Not demonstrated by this #22 mapping",
+      "nextAction": "Add explicit discovery assertions after removing a snapshot-eligible member and adding a member outside the snapshot. INT22-03 does not change membership; INT22-02 tests detail/submission rather than discovery. Retain this gap until that behavior is actually verified."
     },
     {
       "id": "TEST-F02-I11",
