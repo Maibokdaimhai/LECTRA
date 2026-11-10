@@ -1,5 +1,7 @@
 # Sprint 1 working increment and evidence
 
+**Integrated setup/release candidate follow-through (2026-11-10):** [fresh setup](setup-and-handoff.md) and [actual checks](setup-verification.json) record author/AI-assisted reproduction from staging `4ff4562` after both #37/#38 merges, followed by exact readiness-test candidate `037cb3f`: 138 selected tests, build/typecheck/ORM/restart and a separate demo/database-stop-start check. These are pre-main observations; [release readiness](release-readiness.md) retains actual peer review, coverage decisions and post-main gates. Earlier records below retain their source dates/versions.
+
 **Issue #22 follow-through (2026-11-09):** [integrated API/database verification](issue-22-api-verification.md) adds eleven real API/PostgreSQL scenarios on a branch from merged staging `d096a17`, with exact [command/SHA results](issue-22-verification.json) and [AC/STS dispositions](issue-22-coverage.json). This supersedes earlier notes that #22 had no follow-through evidence, while browser #23, reproduction #24 and release/PDF #25/#26 remain separate acceptance gates.
 
 **Second-pass update (2026-11-09):** the actual second review confirms R1–R4 resolved and requests N1–N5. The current corrected candidate is `af36beb600615b318fb6665a11ae9b9944ff3666`; [second-pass dispositions](pr36-second-pass-fixes.md) and [exact verification results](pr36-second-pass-verification.json) supersede earlier current-readiness notes. All 115 selected tests and the listed build/restart checks pass; renewed overall approval remains pending.

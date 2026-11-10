@@ -437,6 +437,12 @@ it('INT22-02: frozen eligibility survives live membership changes and definition
     await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), fixtureId(12)]);
     await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), fixtureId(13)]);
     try {
+        // TEST-F02-I10 / AC-F02-08: discovery must use frozen eligibility,
+        // independently of the detail/submission checks below.
+        const previousList = (await previous.agent.get('/api/surveys?limit=100').expect(200)).body.data.items;
+        const addedList = (await added.agent.get('/api/surveys?limit=100').expect(200)).body.data.items;
+        expect(previousList.some((s: { id: string }) => s.id === f.id)).toBe(true);
+        expect(addedList.some((s: { id: string }) => s.id === f.id)).toBe(false);
         const frozen = (await previous.agent.get(`/api/surveys/${f.id}`).expect(200)).body.data;
         expect(frozen.questions[0].ratingScale.interpretation).toBe('Speed, not quality');
         await added.agent.get(`/api/surveys/${f.id}`).expect(404);
