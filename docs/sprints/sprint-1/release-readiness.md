@@ -15,9 +15,11 @@ Actual GitHub PR/review/merge metadata is retained in [release history](release-
 | Integrated F-01–F-05 application | PR #36, including original and second-pass corrections and actual final approval. |
 | Cross-feature API/PostgreSQL verification | PR #37, including corrected unsupported evidence mapping; [its source-bound record](issue-22-api-verification.md). |
 | Real browser journeys / Closed recovery fix | PR #38; [its source-bound record](issue-23-browser-verification.md). |
-| Current setup and candidate checks | This #24/readiness change; [fresh setup](setup-and-handoff.md), [actual command/results/manifest](setup-verification.json). Human review of this change remains pending. |
+| Current setup and candidate checks | PR #39; [fresh setup](setup-and-handoff.md), [actual command/results/manifest](setup-verification.json). R1NNE0 approved source `2801003c1ef292fa90c5190dd89ac0325e40d582`; merged into staging as `b5f6d67eab20aece3307cdad03b41f840cc6a8d5`. |
 
 The current staging graph contains both PR #38 and PR #37: merge `4ff4562` has parents `60736fb` (PR #38 integration) and `b024596` (PR #37 head). Earlier PR base fields alone must not be used to infer missing integration. A later documentation-only commit can identify its own evidence revision while retaining the exact tested application/source version.
+
+PR #39 received [R1NNE0's approval](https://github.com/Maibokdaimhai/LECTRA/pull/39#pullrequestreview-5842618558) at `2026-11-10T20:24:41Z` on source `2801003c1ef292fa90c5190dd89ac0325e40d582` and merged at `2026-11-10T20:25:00Z` as `b5f6d67eab20aece3307cdad03b41f840cc6a8d5`. That merge is the documentation/readiness integration point; it is not the source on which the historical 138-test matrix was executed.
 
 ## Actual integrated candidate verification
 
@@ -37,13 +39,13 @@ The initial clone/demo observations apply to integrated staging `4ff4562`; the f
 | --- | --- | --- |
 | G-01: integrated application and actual feature reviews | Actual merged PRs/reviews observed; candidate source and ancestry recorded | Reviewer confirms accepted scope and no new blocking defect. |
 | G-02: meaningful integration/system/selected browser checks | Current integrated source passed the checks above | Preserve source/count boundaries; rerun affected checks if any source/configuration changes. |
-| G-03: reproducible setup | Actual author/AI-assisted fresh clone and distinct databases verified | Opposite-member PR review of #24, then merge its docs/readiness change into staging. Owner explicitly selected this review route instead of independent teammate installation; do not fabricate the latter. |
+| G-03: reproducible setup | Complete under the owner-approved author-reproduction route: author/AI-assisted fresh clone verified; R1NNE0 approved PR #39 on source `2801003c1ef292fa90c5190dd89ac0325e40d582`; staging merge `b5f6d67eab20aece3307cdad03b41f840cc6a8d5` recorded | Peer-review and staging-integration dependencies complete. No independent teammate installation is claimed. |
 | G-04: applicable AC / Product DoD and remaining gaps | Actual partial coverage, defects/fixes and historical tests are available | Actual release reviewer must resolve or explicitly disposition required uncovered conditions; partial mappings alone do not waive a contract. Record reasons and remaining actions, not a blanket Done claim. |
-| G-05: substantive release review | Not yet observed for staging → main | Review the release PR after #24 integration and G-04 disposition; actual human approval required, no self-approval. |
+| G-05: substantive release review | Not yet observed for staging → main | Review PR #40 after G-04 disposition and synchronization with the resulting staging baseline; actual human approval required, no self-approval. |
 | G-06: accepted immutable main version and post-main checks | Not performed | Merge only after actual review; record actual SHA, run required checks on it and retain the immutable tag. |
 | G-07: assessed PDF / contribution record | Earlier PDF is a pre-review draft | #26 regenerates against actual release and genuine contributions. This gate is not silently marked complete by a release PR. |
 
-Release PR preparation may proceed while the documentation PR is reviewed, but it should remain Draft until G-03/G-04 are addressed. Do not merge a stale snapshot of staging before those accepted changes are included. No automatic release or teammate notification is triggered by these documents.
+PR #39 is approved and merged, completing G-03. PR #40 should remain Draft until G-04 is addressed and its source is updated to the actual resulting staging baseline. Substantive opposite-member release review still precedes main integration. Do not merge a stale snapshot of staging before those accepted changes are included. No automatic release or teammate notification is triggered by these documents.
 
 ## Coverage decisions required from actual review
 
@@ -61,12 +63,13 @@ For each decision record: planned ID/AC, applicability, actual evidence/version,
 
 ## Release execution after actual review
 
-1. Review/merge the #24 documentation/readiness PR into staging. Confirm any G-04 blocking check/fix and its corresponding reviewed retest. Update the release PR to the actual resulting staging head; the feature scope remains identified F-01–F-05.
-2. The opposite member reviews staging → main. Record the actual review URL and reviewed SHA. Do not transfer an old feature approval to the new release PR.
-3. After the authorized reviewed merge, create/use a clean checkout of the **actual merged main SHA**. `git fetch origin main`, `git switch --detach origin/main`, `git rev-parse HEAD` identify it. Record both PR merge SHA and checked-out SHA; do not guess or replace them with a later docs revision.
-4. Install the same lockfile and configure new isolated verification databases. Run the README's build/typecheck/unit/API/feature/foundation/DB/ORM/built-process-restart/mock-browser/smoke/real-browser commands on that actual version. Record all commands, failures/skips/counts and safe selected normal/rejection/forbidden evidence. Any code change needs an appropriate reviewed correction and retest; do not preserve a false green result.
-5. Once required main checks pass, retain an immutable annotated tag pointing at that exact assessed SHA (proposed name `sprint-1`, first verify it is unused; never move an existing tag). Record the actual tag target and publication result. No tag exists merely because this name is proposed.
-6. Keep assessed code SHA/tag distinct from any later report/evidence commit. #26 consumes actual release checks, real reviews/integration/board state, current safe screenshots and confirmed contributions, then renders/inspects the final PDF. No submission or deadline-compliance claim is made here.
+1. Complete the G-04 coverage and Product DoD decisions. Resolve any blocking check/fix and record its corresponding reviewed retest; PR #39 peer review and staging integration are already complete.
+2. Update PR #40 to the actual resulting staging baseline, including the PR #39 documentation/readiness integration at `b5f6d67eab20aece3307cdad03b41f840cc6a8d5` and any subsequent accepted G-04 changes. The feature scope remains identified F-01–F-05.
+3. Obtain substantive opposite-member review of staging → main before proceeding toward main integration. Record the actual review URL and reviewed SHA. Do not transfer PR #39 or an old feature approval to the release PR.
+4. After the authorized reviewed merge, create/use a clean checkout of the **actual merged main SHA**. `git fetch origin main`, `git switch --detach origin/main`, `git rev-parse HEAD` identify it. Record both PR merge SHA and checked-out SHA; do not guess or replace them with a later docs revision.
+5. Install the same lockfile and configure new isolated verification databases. Run the README's build/typecheck/unit/API/feature/foundation/DB/ORM/built-process-restart/mock-browser/smoke/real-browser commands on that actual version. Record all commands, failures/skips/counts and safe selected normal/rejection/forbidden evidence. Any code change needs an appropriate reviewed correction and retest; do not preserve a false green result.
+6. Once required main checks pass, retain an immutable annotated tag pointing at that exact assessed SHA (proposed name `sprint-1`, first verify it is unused; never move an existing tag). Record the actual tag target and publication result. No tag exists merely because this name is proposed.
+7. Keep assessed code SHA/tag distinct from any later report/evidence commit. #26 consumes actual release checks, real reviews/integration/board state, current safe screenshots and confirmed contributions, then renders/inspects the final PDF. No submission or deadline-compliance claim is made here.
 
 ## Selected current candidate figures
 
@@ -74,4 +77,4 @@ For each decision record: planned ID/AC, applicability, actual evidence/version,
 
 ## Current disposition
 
-#24: author reproduction and documentation prepared; actual peer review/integration pending under the owner-approved route. #25: integrated staging verified and a concrete release handoff prepared; actual review, main merge/tag and required post-main verification remain pending. These records support preparation without falsely closing the full release issue.
+#24: setup verification and documentation completed under the owner-approved author-reproduction route; R1NNE0 approved PR #39, and it merged into staging as `b5f6d67eab20aece3307cdad03b41f840cc6a8d5`. No independent teammate installation is claimed. #25 remains open pending release acceptance: G-04 coverage/Product DoD decisions, G-05 substantive staging-to-main review, G-06 main merge/immutable tag/post-main verification and G-07 final assessed PDF/contribution record remain pending. The Sprint 1 release is not complete.

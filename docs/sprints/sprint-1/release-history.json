@@ -1,6 +1,6 @@
 {
-  "recordedDateBangkok": "2026-11-10",
-  "source": "Read-only GitHub API observations; actual metadata, not invented review or contribution",
+  "recordedDateBangkok": "2026-11-11",
+  "source": "Read-only GitHub API observations; actual metadata, not invented review or contribution; PR #39 metadata supplied as verified by the project owner",
   "pullRequests": [
     {
       "number": 7,
@@ -328,6 +328,28 @@
           "sourceSha": "4527ba5b26973fd14d42e3d1415c07632510315f",
           "url": "https://github.com/Maibokdaimhai/LECTRA/pull/38#pullrequestreview-5836366253",
           "submittedAt": "2026-11-10T03:33:56Z"
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/39",
+      "title": "docs: verify fresh setup and prepare Sprint 1 release readiness",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "headBranch": "docs/24-setup-release-readiness",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-10T20:25:00Z",
+      "sourceSha": "2801003c1ef292fa90c5190dd89ac0325e40d582",
+      "mergeSha": "b5f6d67eab20aece3307cdad03b41f840cc6a8d5",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "2801003c1ef292fa90c5190dd89ac0325e40d582",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/39#pullrequestreview-5842618558",
+          "submittedAt": "2026-11-10T20:24:41Z"
         }
       ]
     }
