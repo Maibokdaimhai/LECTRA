@@ -1,0 +1,20 @@
+{
+  "recordedDateBangkok": "2026-11-11",
+  "testedCommit": "037cb3f69db4b37b8363b9f4bdca9c277d02624c",
+  "relatedIssue": 25,
+  "plannedCase": "TEST-F02-I10",
+  "acceptanceCriteria": [
+    "AC-F02-08"
+  ],
+  "source": "apps/api/tests/features/workflows.test.ts",
+  "scenario": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable",
+  "observed": [
+    "After publication the previously eligible member is removed from live Membership.",
+    "Another student is added to that Section without changing SurveyEligibility.",
+    "Actual survey-list GET retains the survey for the removed member.",
+    "Actual survey-list GET excludes the survey for the newly added member.",
+    "The full 32-scenario API/PostgreSQL suite passes with these assertions."
+  ],
+  "result": "PASS for the listed actual discovery assertions; not blanket certification of the entire planned feature matrix",
+  "historicalBoundary": "Issue #22 coverage.json retains its honest 104 partial mappings at its old tested source. This is additional evidence on a new source, not a rewrite of the earlier unsupported mapping."
+}
