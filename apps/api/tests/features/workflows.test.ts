@@ -1,5 +1,7 @@
 import { beforeAll, afterAll, beforeEach, afterEach, it, expect } from 'vitest';
 import request from 'supertest';
+import { request as httpRequest } from 'node:http';
+import { once } from 'node:events';
 import { randomBytes } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { Pool } from 'pg';
@@ -403,5 +405,249 @@ it('N5: owner and eligible student list projections contain the required survey 
         expect(survey.lecture).toMatchObject({ lectureDate: '2026-11-08', title: 'Synthetic lecture one' });
         expect(survey.mode).toBe('IDENTIFIED');
         expect(survey.answers).toBeUndefined();
+    }
+});
+
+// Issue #22: fresh per-scenario surveys extend the integrated suite rather than replacing it.
+let integrationSequence = 2200;
+async function integrationDraft(owner: Awaited<ReturnType<typeof login>>, extra: object[] = []) {
+    const lecture = (await pool.query('INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence) VALUES ($1,\'Issue 22 integration\',\'2026-11-09\',$2) RETURNING id', [fixtureId(201), ++integrationSequence])).rows[0].id;
+    const id = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data.id;
+    const body = { expectedRevision: 1, title: 'Issue 22 integration', questions: [{ id: null, type: 'RATING', prompt: 'Required rating', required: true, ratingScale: { min: 1, max: 5, minLabel: 'Slow', maxLabel: 'Fast', interpretation: 'Speed, not quality' } }, ...extra] };
+    const saved = (await mutation(owner, 'patch', `/api/surveys/${id}`, body).expect(200)).body.data;
+    return { id, lecture, body: { ...body, expectedRevision: 2, questions: saved.questions.map(({ id, prompt, type, required, ratingScale }: QuestionInput) => ({ id, prompt, type, required, ratingScale })) }, questions: saved.questions as QuestionInput[] };
+}
+async function responseRows(id: string) {
+    return (await pool.query(`SELECT (SELECT count(*)::int FROM "Participation" WHERE "surveyId"=$1) AS participation,
+        (SELECT count(*)::int FROM "ResponseBundle" WHERE "surveyId"=$1) AS bundles,
+        (SELECT count(*)::int FROM "Answer" WHERE "surveyId"=$1) AS answers`, [id])).rows[0];
+}
+it('INT22-01: concurrent create produces one Draft and one conflict for the same owned lecture', async () => {
+    const owner = await login();
+    const lecture = (await pool.query('INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence) VALUES ($1,\'Concurrent creates\',\'2026-11-09\',$2) RETURNING id', [fixtureId(201), ++integrationSequence])).rows[0].id;
+    const results = await Promise.all([mutation(owner, 'post', '/api/surveys', { lectureId: lecture }), mutation(owner, 'post', '/api/surveys', { lectureId: lecture })]);
+    expect(results.map(r => r.status).sort()).toEqual([201, 409]);
+    expect(results.find(r => r.status === 409)!.body.error.code).toBe('SURVEY_ALREADY_EXISTS');
+    expect((await pool.query('SELECT status,"definitionRevision" FROM "Survey" WHERE "lectureId"=$1', [lecture])).rows).toEqual([{ status: 'DRAFT', definitionRevision: 1 }]);
+});
+it('INT22-02: frozen eligibility survives live membership changes and definitions remain immutable', async () => {
+    const owner = await login(), previous = await login('respondent.12@example.test'), added = await login('respondent.13@example.test');
+    const f = await integrationDraft(owner);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+    await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), fixtureId(12)]);
+    await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), fixtureId(13)]);
+    try {
+        const frozen = (await previous.agent.get(`/api/surveys/${f.id}`).expect(200)).body.data;
+        expect(frozen.questions[0].ratingScale.interpretation).toBe('Speed, not quality');
+        await added.agent.get(`/api/surveys/${f.id}`).expect(404);
+        await mutation(added, 'post', `/api/surveys/${f.id}/responses`, { answers: [{ questionId: f.questions[0]!.id, value: 4 }] }).expect(404);
+        await mutation(previous, 'post', `/api/surveys/${f.id}/responses`, { answers: [{ questionId: f.questions[0]!.id, value: 4 }] }).expect(201);
+        await mutation(owner, 'patch', `/api/surveys/${f.id}`, { ...f.body, title: 'Cannot change' }).expect(409);
+        await mutation(owner, 'delete', `/api/surveys/${f.id}`, { expectedRevision: 2 }).expect(409);
+        expect((await pool.query('SELECT "studentId" FROM "SurveyEligibility" WHERE "surveyId"=$1 ORDER BY "studentId"', [f.id])).rows.map(r => r.studentId)).toEqual([fixtureId(11), fixtureId(12)]);
+        expect((await owner.agent.get(`/api/surveys/${f.id}`).expect(200)).body.data.title).toBe('Issue 22 integration');
+    } finally {
+        await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), fixtureId(13)]);
+        await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), fixtureId(12)]);
+    }
+});
+it('INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities', async () => {
+    const owner = await login(), a = await login('respondent.11@example.test'), b = await login('respondent.12@example.test');
+    const optional = (prompt: string, type = 'RATING') => ({ id: null, prompt, type, required: false, ratingScale: type === 'RATING' ? { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Optional scale' } : null });
+    const f = await integrationDraft(owner, [optional('Optional rating'), optional('Unanswered rating'), optional('Comments', 'TEXT')]);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+    const [required, optionalRating, , text] = f.questions;
+    const ownFlag = async (client: typeof a) => (await client.agent.get('/api/surveys?limit=100').expect(200)).body.data.items.find((s: { id: string }) => s.id === f.id).participation.submitted;
+    expect(await ownFlag(a)).toBe(false); expect(await ownFlag(b)).toBe(false);
+    const aBody = { answers: [{ questionId: text!.id, value: 'Synthetic comment A' }, { questionId: optionalRating!.id, value: 5 }, { questionId: required!.id, value: 1 }] };
+    await mutation(a, 'post', `/api/surveys/${f.id}/responses`, aBody).expect(201);
+    expect(await ownFlag(a)).toBe(true); expect(await ownFlag(b)).toBe(false);
+    expect((await a.agent.get(`/api/surveys/${f.id}/my-submission`).expect(200)).body.data.answers.map((r: { questionId: string }) => r.questionId)).toEqual([required!.id, optionalRating!.id, text!.id]);
+    await mutation(b, 'post', `/api/surveys/${f.id}/responses`, { answers: [{ questionId: required!.id, value: 5 }, { questionId: text!.id, value: ' \n ' }] }).expect(201);
+    expect(await responseRows(f.id)).toEqual({ participation: 2, bundles: 2, answers: 4 });
+    const live = await owner.agent.get(`/api/surveys/${f.id}/results`).expect(200);
+    expect(Object.keys(live.body.data).sort()).toEqual(['responseCount', 'survey']);
+    expect(live.body.data.responseCount).toBe(2);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/close`, {}).expect(200);
+    const result = await owner.agent.get(`/api/surveys/${f.id}/results`).expect(200);
+    expect(result.headers['cache-control']).toBe('private, no-store');
+    const qs = result.body.data.questions;
+    expect(qs[0]).toMatchObject({ answeredCount: 2, mean: '3.00', ratingScale: { minLabel: 'Slow', maxLabel: 'Fast', interpretation: 'Speed, not quality' } });
+    expect(qs[0].distribution.map((r: { count: number }) => r.count)).toEqual([1, 0, 0, 0, 1]);
+    expect(qs[1]).toMatchObject({ answeredCount: 1, mean: '5.00' });
+    expect(qs[2]).toMatchObject({ answeredCount: 0, mean: null });
+    expect(qs[2].distribution.map((r: { count: number }) => r.count)).toEqual([0, 0, 0, 0, 0]);
+    expect(qs[3].comments).toEqual(['Synthetic comment A']);
+    for (const marker of [fixtureId(11), fixtureId(12), 'identifiedStudentId', 'bundleId', 'submittedAt', 'passwordHash', 'csrfToken']) expect(JSON.stringify(result.body)).not.toContain(marker);
+    await mutation(a, 'post', `/api/surveys/${f.id}/responses`, aBody).expect(409);
+    expect(await responseRows(f.id)).toEqual({ participation: 2, bundles: 2, answers: 4 });
+});
+it('INT22-04: faults after each response write stage roll back all rows and permit one valid retry', async () => {
+    const owner = await login(), student = await login('respondent.11@example.test');
+    for (const table of ['Participation', 'ResponseBundle', 'Answer']) {
+        const f = await integrationDraft(owner);
+        await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+        // Fixed test-owned identifier list; no production fault endpoint or interpolated user input.
+        await pool.query(`CREATE FUNCTION int22_fail() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic integration fault'; END $$; CREATE TRIGGER int22_fail AFTER INSERT ON "${table}" FOR EACH ROW EXECUTE FUNCTION int22_fail()`);
+        const payload = { answers: [{ questionId: f.questions[0]!.id, value: 3 }] };
+        try {
+            const response = await mutation(student, 'post', `/api/surveys/${f.id}/responses`, payload).expect(500);
+            expect(response.body).toEqual({ error: { code: 'INTERNAL_ERROR', message: 'Request could not be completed.' } });
+        } finally { await pool.query(`DROP TRIGGER int22_fail ON "${table}"; DROP FUNCTION int22_fail()`); }
+        expect(await responseRows(f.id)).toEqual({ participation: 0, bundles: 0, answers: 0 });
+        expect((await student.agent.get(`/api/surveys/${f.id}/my-submission`).expect(200)).body.data.submitted).toBe(false);
+        await mutation(student, 'post', `/api/surveys/${f.id}/responses`, payload).expect(201);
+        await mutation(student, 'post', `/api/surveys/${f.id}/responses`, payload).expect(409);
+        expect(await responseRows(f.id)).toEqual({ participation: 1, bundles: 1, answers: 1 });
+    }
+});
+it('INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence', async () => {
+    const owner = await login();
+    for (const escaped of [false, true]) {
+        const student = await login('respondent.11@example.test');
+        const f = await integrationDraft(owner, [{ id: null, prompt: 'Text', type: 'TEXT', required: false, ratingScale: null }]);
+        await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+        const encode = (text: string) => {
+            const json = JSON.stringify({ answers: [{ questionId: f.questions[0]!.id, value: 1 }, { questionId: f.questions[1]!.id, value: text }] });
+            return escaped ? json.replace(/[\u007f-\uffff]/g, c => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`) : json;
+        };
+        const post = (raw: string) => student.agent.post(`/api/surveys/${f.id}/responses`).set('Origin', origin).set('X-CSRF-Token', student.token).set('Content-Type', 'application/json').send(raw);
+        for (const invalid of ['😀'.repeat(2001), '\ud800', '\0']) {
+            expect((await post(encode(invalid)).expect(422)).body.error.code).toBe('INVALID_ANSWERS');
+            expect(await responseRows(f.id)).toEqual({ participation: 0, bundles: 0, answers: 0 });
+        }
+        const valid = ' 😀'.repeat(999) + '😀\n'; // Exactly 2,000 code points, retain leading whitespace/newline.
+        expect([...valid].length).toBe(2000);
+        await post(encode(valid)).expect(201);
+        expect((await student.agent.get(`/api/surveys/${f.id}/my-submission`).expect(200)).body.data.answers[1].value).toBe(valid);
+    }
+});
+it('INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data', async () => {
+    const owner = await login(), foreign = await login('owner.2@example.test'), a = await login('respondent.11@example.test'), b = await login('respondent.12@example.test');
+    const f = await integrationDraft(owner);
+    for (const method of ['get', 'patch', 'delete'] as const) {
+        if (method === 'get') await foreign.agent.get(`/api/surveys/${f.id}`).expect(404);
+        else await mutation(foreign, method, `/api/surveys/${f.id}`, method === 'patch' ? f.body : { expectedRevision: 2 }).expect(404);
+    }
+    await mutation(foreign, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(404);
+    await mutation(a, 'patch', `/api/surveys/${f.id}`, f.body).expect(403);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/responses`, { answers: [{ questionId: f.questions[0]!.id, value: 4 }] }).expect(403);
+    await a.agent.post(`/api/surveys/${f.id}/responses`).set('Origin', origin).send({ answers: [] }).expect(403);
+    await request(app).get(`/api/surveys/${f.id}/my-submission`).expect(401);
+    for (const [client, value] of [[a, 1], [b, 5]] as const) await mutation(client, 'post', `/api/surveys/${f.id}/responses`, { answers: [{ questionId: f.questions[0]!.id, value }] }).expect(201);
+    const own = await a.agent.get(`/api/surveys/${f.id}/my-submission`).set('X-User-Id', fixtureId(12)).set('X-Role', 'OWNER').expect(200);
+    expect(own.body.data.answers).toEqual([{ questionId: f.questions[0]!.id, value: 1 }]);
+    expect(Object.keys(own.body.data).sort()).toEqual(['answers', 'submitted', 'surveyId']);
+    expect(Object.keys(own.body.data.answers[0]).sort()).toEqual(['questionId', 'value']);
+    await a.agent.get(`/api/surveys/${f.id}/my-submission?studentId=${fixtureId(12)}`).expect(422);
+    await owner.agent.get(`/api/surveys/${f.id}/my-submission`).expect(403);
+    await a.agent.get(`/api/surveys/${f.id}/results`).expect(403);
+    await foreign.agent.get(`/api/surveys/${f.id}/results`).expect(404);
+    await mutation(foreign, 'post', `/api/surveys/${f.id}/close`, {}).expect(404);
+    expect(await responseRows(f.id)).toEqual({ participation: 2, bundles: 2, answers: 2 });
+});
+it('INT22-07: exact chunked transport ceiling is accepted; oversized, compressed and malformed bodies never write', async () => {
+    const owner = await login(), student = await login('respondent.11@example.test');
+    const f = await integrationDraft(owner);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+    const raw = JSON.stringify({ answers: [{ questionId: f.questions[0]!.id, value: 1 }] });
+    const server = app.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const address = server.address();
+    if (!address || typeof address === 'string') throw Error('Test HTTP listener missing');
+    const cookie = String(student.logged.headers['set-cookie']![0]).split(';')[0]!;
+    const send = (body: string, headers: Record<string, string> = {}) => new Promise<{ status: number; body: any }>((resolve, reject) => {
+        // No Content-Length: two writes exercise the actual chunked HTTP reader.
+        const req = httpRequest({ host: '127.0.0.1', port: address.port, path: `/api/surveys/${f.id}/responses`, method: 'POST', headers: { Origin: origin, Cookie: cookie, 'X-CSRF-Token': student.token, 'Content-Type': 'application/json', ...headers } }, res => {
+            let text = ''; res.setEncoding('utf8'); res.on('data', chunk => { text += chunk; }); res.on('end', () => { try { resolve({ status: res.statusCode!, body: JSON.parse(text) }); } catch (e) { reject(e); } });
+        });
+        req.on('error', reject); req.write(body.slice(0, 100)); req.end(body.slice(100));
+    });
+    try {
+        for (const [body, headers, status, code] of [
+            [raw.padEnd(262145, ' '), {}, 413, 'BODY_TOO_LARGE'],
+            [raw, { 'Content-Encoding': 'gzip' }, 415, 'UNSUPPORTED_CONTENT'],
+            ['{', {}, 400, 'MALFORMED_JSON']
+        ] as const) {
+            const response = await send(body, headers);
+            expect(response.status).toBe(status); expect(response.body.error.code).toBe(code);
+            expect(await responseRows(f.id)).toEqual({ participation: 0, bundles: 0, answers: 0 });
+        }
+        expect((await send(raw.padEnd(262144, ' '))).status).toBe(201);
+        expect(await responseRows(f.id)).toEqual({ participation: 1, bundles: 1, answers: 1 });
+    } finally { await new Promise<void>((resolve, reject) => server.close(e => e ? reject(e) : resolve())); }
+});
+it('INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds', async () => {
+    const owner = await login(), student = await login('respondent.11@example.test');
+    const f = await integrationDraft(owner);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+    const blocker = await pool.connect();
+    const payload = { answers: [{ questionId: f.questions[0]!.id, value: 2 }] };
+    try {
+        await blocker.query('BEGIN'); await blocker.query('SELECT id FROM "Survey" WHERE id=$1 FOR UPDATE', [f.id]);
+        const response = await mutation(student, 'post', `/api/surveys/${f.id}/responses`, payload).expect(503);
+        expect(response.body).toEqual({ error: { code: 'SERVICE_UNAVAILABLE', message: 'The service is temporarily unavailable.' } });
+        expect(await responseRows(f.id)).toEqual({ participation: 0, bundles: 0, answers: 0 });
+    } finally { await blocker.query('ROLLBACK'); blocker.release(); }
+    expect((await student.agent.get(`/api/surveys/${f.id}/my-submission`).expect(200)).body.data.submitted).toBe(false);
+    await mutation(student, 'post', `/api/surveys/${f.id}/responses`, payload).expect(201);
+});
+it('INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results', async () => {
+    const owner = await login(), student = await login('respondent.11@example.test');
+    const f = await integrationDraft(owner);
+    await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+    await pool.query('INSERT INTO "Participation" ("surveyId","studentId") VALUES ($1,$2)', [f.id, fixtureId(11)]);
+    try {
+        const result = await student.agent.get(`/api/surveys/${f.id}/my-submission`).expect(500);
+        expect(Object.keys(result.body)).toEqual(['error']);
+        expect(JSON.stringify(result.body)).not.toContain(fixtureId(11));
+    } finally { await pool.query('DELETE FROM "Participation" WHERE "surveyId"=$1', [f.id]); }
+    await mutation(owner, 'post', `/api/surveys/${f.id}/close`, {}).expect(200);
+    const result = (await owner.agent.get(`/api/surveys/${f.id}/results`).expect(200)).body.data;
+    expect(result.responseCount).toBe(0);
+    expect(result.questions[0]).toMatchObject({ answeredCount: 0, mean: null });
+    expect(result.questions[0].distribution.map((b: { count: number }) => b.count)).toEqual([0, 0, 0, 0, 0]);
+});
+it('INT22-10: held-row barriers exercise both Draft save/publication orders with complete frozen revisions', async () => {
+    const owner = await login();
+    for (const editFirst of [true, false]) {
+        const f = await integrationDraft(owner);
+        const blocker = await pool.connect();
+        try {
+            await blocker.query('BEGIN'); await blocker.query('SELECT id FROM "Survey" WHERE id=$1 FOR UPDATE', [f.id]);
+            const edit = () => mutation(owner, 'patch', `/api/surveys/${f.id}`, { ...f.body, title: 'Concurrent edited definition' }).then(r => r);
+            const publish = () => mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).then(r => r);
+            const first = editFirst ? edit() : publish(); await waitingConnections(1);
+            const second = editFirst ? publish() : edit(); await waitingConnections(2);
+            await blocker.query('COMMIT');
+            const [a, b] = await Promise.all([first, second]);
+            expect([a.status, b.status]).toEqual([200, 409]);
+            expect(b.body.error.code).toBe(editFirst ? 'REVISION_CONFLICT' : 'INVALID_STATE');
+            const stored = (await owner.agent.get(`/api/surveys/${f.id}`).expect(200)).body.data;
+            expect(stored).toMatchObject(editFirst ? { status: 'DRAFT', definitionRevision: 3, title: 'Concurrent edited definition' } : { status: 'PUBLISHED', definitionRevision: 2, title: 'Issue 22 integration' });
+            expect((await pool.query('SELECT count(*)::int AS n FROM "SurveyEligibility" WHERE "surveyId"=$1', [f.id])).rows[0].n).toBe(editFirst ? 0 : 2);
+        } finally { await blocker.query('ROLLBACK'); blocker.release(); }
+    }
+});
+it('INT22-11: scoped pagination retains totals/order at default, final and beyond-last pages and rejects malformed bounds', async () => {
+    const owner = await login(), foreign = await login('owner.2@example.test');
+    // Twenty-five additional persisted Drafts force more than one authorized survey page.
+    await pool.query(`WITH lectures AS (INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        SELECT $1,'Pagination fixture','2026-11-10',5000+n FROM generate_series(1,25) n RETURNING id)
+        INSERT INTO "Survey" ("lectureId","ownerId",title) SELECT id,$2,'Pagination fixture' FROM lectures`, [fixtureId(201), fixtureId(1)]);
+    const first = (await owner.agent.get('/api/surveys?limit=20&offset=0').expect(200)).body.data;
+    expect(first.pagination.limit).toBe(20); expect(first.items).toHaveLength(20);
+    expect(first.items.map((s: { lecture: { sequence: number } }) => s.lecture.sequence)).toEqual(Array.from({ length: 20 }, (_, i) => 5025 - i));
+    const next = (await owner.agent.get('/api/surveys?limit=20&offset=20').expect(200)).body.data;
+    expect(next.pagination.total).toBe(first.pagination.total);
+    expect(next.items.slice(0, 5).map((s: { lecture: { sequence: number } }) => s.lecture.sequence)).toEqual([5005, 5004, 5003, 5002, 5001]);
+    expect(new Set([...first.items, ...next.items].map(s => s.id)).size).toBe(first.items.length + next.items.length);
+    const beyond = (await owner.agent.get('/api/surveys?limit=100&offset=10000').expect(200)).body.data;
+    expect(beyond.items).toEqual([]); expect(beyond.pagination.total).toBe(first.pagination.total);
+    const other = (await foreign.agent.get('/api/surveys').expect(200)).body.data;
+    expect(other.items.some((s: { title: string }) => s.title === 'Pagination fixture')).toBe(false);
+    for (const query of ['limit=0', 'limit=101', 'limit=', 'offset=-1', 'offset=10001', 'offset=01', 'limit=1&limit=2', 'unknown=x']) {
+        expect((await owner.agent.get(`/api/surveys?${query}`).expect(422)).body.error.code).toBe('VALIDATION_FAILED');
     }
 });
