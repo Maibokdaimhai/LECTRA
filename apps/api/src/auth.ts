@@ -51,15 +51,12 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
                 callback?.(new Error('Invalid session deadline'));
                 return;
             }
-            super.set(sid, value, error => {
-                if (error) {
-                    callback?.(error);
-                    return;
-                }
-                // Upstream rounds up to seconds. Correct the persisted timestamp before save acknowledgement.
-                // A concurrent destroy must remain destroyed; UPDATE never recreates the SID.
-                void pool.query("UPDATE auth_session SET expire=(to_timestamp($2::double precision / 1000) AT TIME ZONE 'UTC') WHERE sid=$1", [sid, deadline]).then(() => callback?.(), () => callback?.(new Error('Session persistence unavailable')));
-            });
+            // Persist identity and its exact absolute deadline in one atomic statement.
+            // Never acknowledge failure after an earlier autocommitted session INSERT.
+            void pool.query(`INSERT INTO auth_session (sid, sess, expire)
+                VALUES ($1, $2, to_timestamp($3::double precision / 1000) AT TIME ZONE 'UTC')
+                ON CONFLICT (sid) DO UPDATE SET sess=EXCLUDED.sess, expire=EXCLUDED.expire`,
+                [sid, value, deadline]).then(() => callback?.(), () => callback?.(new Error('Session persistence unavailable')));
         }
     }
     pool.on('error', () => { console.error('Authentication database connection unavailable.'); });
@@ -68,6 +65,18 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
     const cookieName = secure ? '__Host-lectra.sid' : 'lectra.sid';
     const cookie = { httpOnly: true, secure, sameSite: 'lax' as const, path: '/' };
     const clear = (res: Response) => res.clearCookie(cookieName, cookie);
+    async function save(req: Request, res: Response, method: 'save' | 'regenerate' = 'save') {
+        try {
+            await operation(req, method);
+        }
+        catch (error) {
+            // express-session otherwise emits a cookie for the failed in-memory
+            // login and may save it again while ending the error response.
+            Reflect.deleteProperty(req, 'session');
+            clear(res);
+            throw error;
+        }
+    }
     let dummy: Promise<string> | undefined;
     app.use('/api', (req, res, next) => {
         res.set('Cache-Control', req.path.endsWith('/results') ? 'private, no-store' : 'no-store');
@@ -144,19 +153,19 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
         // express-session touches Cookie on response; its getter must remain absolute.
         Object.defineProperty(req.session.cookie, 'expires', { configurable: true, enumerable: true, get: () => new Date(deadline), set: () => undefined });
     }
-    async function guest(req: Request) {
+    async function guest(req: Request, res: Response) {
         if (!req.session || !req.session.csrfToken) {
             // regenerate works through middleware even after a destroyed session via req.sessionStore.
             await new Promise<void>((resolve, reject) => req.sessionStore.regenerate(req, error => error ? reject(new HttpError(503, 'AUTH_SERVICE_UNAVAILABLE')) : resolve()));
             Object.assign(req.session, { csrfToken: token(), guestCreatedAt: now(), guestExpiresAt: now() + GUEST_LIFETIME });
             cap(req, req.session.guestExpiresAt!);
-            await operation(req, 'save');
+            await save(req, res);
         }
     }
     app.get('/api/auth/session', async (req, res) => {
         if (Object.keys(req.query).length)
             fail(422, 'VALIDATION_FAILED');
-        await guest(req);
+        await guest(req, res);
         res.json({ data: { authenticated: Boolean(req.actor), user: req.actor ? safeUser(req.actor) : null, expiresAt: req.actor ? new Date(req.session.authExpiresAt!).toISOString() : null, csrfToken: req.session.csrfToken } });
     });
     const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-8', legacyHeaders: false, handler: (_req, res) => { res.set('Retry-After', '900').status(429).json({ error: { code: 'LOGIN_RATE_LIMITED', message: 'Too many login attempts. Try again later.' } }); } });
@@ -180,10 +189,10 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
         const valid = await argon2.verify(user?.passwordHash ?? await dummy, req.body.password);
         if (!valid || !user)
             fail(401, 'INVALID_CREDENTIALS', 'Email or password is incorrect.');
-        await operation(req, 'regenerate');
+        await save(req, res, 'regenerate');
         Object.assign(req.session, { userId: user.id, authenticatedAt: now(), authExpiresAt: now() + AUTH_LIFETIME, csrfToken: token() });
         cap(req, req.session.authExpiresAt!);
-        await operation(req, 'save');
+        await save(req, res);
         res.json({ data: { user: { id: user.id, displayName: user.displayName, role: user.role }, expiresAt: new Date(req.session.authExpiresAt!).toISOString(), csrfToken: req.session.csrfToken } });
     });
     app.get('/api/auth/me', authenticated, (req, res) => { if (Object.keys(req.query).length)

@@ -62,6 +62,114 @@ it('TEST-F01-I05/I15: generic credential errors, exact schemas and body security
     await agent.post('/api/auth/login').set('Origin', origin).set('Content-Type', 'text/plain').send('x').expect(415);
     await agent.post('/api/auth/login').set('Origin', origin).set('Content-Type', 'application/json').send('x'.repeat(8193)).expect(413);
 });
+it('R40-01 / TEST-F01-I18: an exact-expiry persistence failure cannot leave a login cookie or usable session', async () => {
+    // The old two-statement store committed a rounded INSERT, then failed its
+    // exact-expiry UPDATE. The same trigger rejects the fixed atomic INSERT.
+    clock = Math.floor(Date.now() / 1000) * 1000 + 123;
+    const agent = request.agent(app);
+    const boot = await agent.get('/api/auth/session').expect(200);
+    const guestCookie = String(boot.headers['set-cookie']![0]).split(';')[0]!;
+    const before = (await pool.query("SELECT sid FROM auth_session WHERE sess->>'userId'=$1", [fixtureId(1)])).rows.map(r => r.sid);
+    await pool.query(`CREATE FUNCTION r40_reject_exact_auth_expiry() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN
+          IF NEW.sess->>'userId' IS NOT NULL AND NEW.expire =
+            (to_timestamp((NEW.sess->>'authExpiresAt')::double precision / 1000) AT TIME ZONE 'UTC') THEN
+            RAISE EXCEPTION 'controlled session persistence failure';
+          END IF;
+          RETURN NEW;
+        END $$`);
+    try {
+        await pool.query('CREATE TRIGGER r40_auth_expiry BEFORE INSERT OR UPDATE ON auth_session FOR EACH ROW EXECUTE FUNCTION r40_reject_exact_auth_expiry()');
+        const failed = await agent.post('/api/auth/login').set('Origin', origin).set('X-CSRF-Token', boot.body.data.csrfToken).send({ email: 'owner.1@example.test', password });
+        expect.soft(failed.status).toBe(503);
+        expect.soft(failed.body).toEqual({ error: { code: 'AUTH_SERVICE_UNAVAILABLE', message: 'Request could not be completed.' } });
+        const cookies = failed.headers['set-cookie'] as string[] | undefined;
+        expect.soft((cookies ?? []).every(c => /^lectra\.sid=;/.test(c))).toBe(true);
+        const after = (await pool.query("SELECT sid FROM auth_session WHERE sess->>'userId'=$1", [fixtureId(1)])).rows.map(r => r.sid);
+        expect.soft(after.sort()).toEqual(before.sort());
+        // Restore storage before replay: the denial must not depend on an outage.
+        await pool.query('DROP TRIGGER r40_auth_expiry ON auth_session');
+        expect.soft((await agent.get('/api/auth/me')).status).toBe(401);
+        expect.soft((await request(app).get('/api/auth/me').set('Cookie', guestCookie)).status).toBe(401);
+        for (const cookie of cookies ?? [])
+            expect.soft((await request(app).get('/api/auth/me').set('Cookie', cookie.split(';')[0]!)).status).toBe(401);
+        // A deliberate fresh login after recovery still works.
+        const recovered = await login();
+        await recovered.agent.get('/api/auth/me').expect(200);
+    }
+    finally {
+        await pool.query('DROP TRIGGER IF EXISTS r40_auth_expiry ON auth_session');
+        await pool.query('DROP FUNCTION r40_reject_exact_auth_expiry()');
+    }
+});
+it('R40-01 / TEST-F01-I18: failed guest persistence clears the cookie and leaves no row', async () => {
+    const before = (await pool.query('SELECT count(*)::int AS n FROM auth_session')).rows[0].n;
+    await pool.query(`CREATE FUNCTION r40_reject_guest() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN RAISE EXCEPTION 'controlled guest persistence failure'; END $$`);
+    try {
+        await pool.query('CREATE TRIGGER r40_guest BEFORE INSERT ON auth_session FOR EACH ROW EXECUTE FUNCTION r40_reject_guest()');
+        const agent = request.agent(app);
+        const failed = await agent.get('/api/auth/session').expect(503);
+        expect(failed.body.error.code).toBe('AUTH_SERVICE_UNAVAILABLE');
+        expect(((failed.headers['set-cookie'] ?? []) as string[]).every(c => /^lectra\.sid=;/.test(c))).toBe(true);
+        expect((await pool.query('SELECT count(*)::int AS n FROM auth_session')).rows[0].n).toBe(before);
+        await pool.query('DROP TRIGGER r40_guest ON auth_session');
+        await agent.get('/api/auth/me').expect(401);
+        await agent.get('/api/auth/session').expect(200);
+    }
+    finally {
+        await pool.query('DROP TRIGGER IF EXISTS r40_guest ON auth_session');
+        await pool.query('DROP FUNCTION r40_reject_guest()');
+    }
+});
+it.each(['auth_session', 'User'])('TEST-F01-I18: unavailable %s lookup fails closed and recovers without fallback', async table => {
+    const { agent } = await login();
+    // Real failed SQL, not a mocked Pool. The isolated fixture is restored even
+    // when an assertion fails; no production fault switch is introduced.
+    await pool.query(`ALTER TABLE "${table}" RENAME TO r40_unavailable`);
+    try {
+        const failed = await agent.get('/api/auth/me').expect(503);
+        expect(failed.body).toEqual({ error: { code: 'AUTH_SERVICE_UNAVAILABLE', message: 'Request could not be completed.' } });
+        expect(failed.headers['cache-control']).toBe('no-store');
+    }
+    finally {
+        await pool.query(`ALTER TABLE r40_unavailable RENAME TO "${table}"`);
+    }
+    await agent.get('/api/auth/me').expect(200);
+});
+it.each(['regenerate', 'logout'])('TEST-F01-I18: failed %s destroy is reported honestly and can be retried', async mode => {
+    const agent = request.agent(app);
+    const boot = await agent.get('/api/auth/session').expect(200);
+    let csrfToken = boot.body.data.csrfToken;
+    if (mode === 'logout') {
+        const logged = await agent.post('/api/auth/login').set('Origin', origin).set('X-CSRF-Token', csrfToken).send({ email: 'owner.1@example.test', password }).expect(200);
+        csrfToken = logged.body.data.csrfToken;
+    }
+    const before = (await pool.query('SELECT count(*)::int AS n FROM auth_session')).rows[0].n;
+    await pool.query(`CREATE FUNCTION r40_reject_destroy() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN RAISE EXCEPTION 'controlled session destroy failure'; END $$`);
+    try {
+        await pool.query('CREATE TRIGGER r40_destroy BEFORE DELETE ON auth_session FOR EACH ROW EXECUTE FUNCTION r40_reject_destroy()');
+        const failed = await agent.post(mode === 'logout' ? '/api/auth/logout' : '/api/auth/login').set('Origin', origin).set('X-CSRF-Token', csrfToken).send(mode === 'logout' ? {} : { email: 'owner.1@example.test', password }).expect(503);
+        expect(failed.body.error.code).toBe('AUTH_SERVICE_UNAVAILABLE');
+        const cookies = (failed.headers['set-cookie'] ?? []) as string[];
+        expect(cookies.every(c => /^lectra\.sid=;/.test(c))).toBe(true);
+        expect((await pool.query('SELECT count(*)::int AS n FROM auth_session')).rows[0].n).toBe(before);
+        await pool.query('DROP TRIGGER r40_destroy ON auth_session');
+        // Failed revocation may retain the old auth session; never claim success.
+        await agent.get('/api/auth/me').expect(mode === 'logout' ? 200 : 401);
+        if (mode === 'logout')
+            await agent.post('/api/auth/logout').set('Origin', origin).set('X-CSRF-Token', csrfToken).send({}).expect(204);
+        else {
+            const recovered = await login();
+            await recovered.agent.get('/api/auth/me').expect(200);
+        }
+    }
+    finally {
+        await pool.query('DROP TRIGGER IF EXISTS r40_destroy ON auth_session');
+        await pool.query('DROP FUNCTION r40_reject_destroy()');
+    }
+});
 it('TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie', async () => {
     const { agent, token, logged } = await login();
     const saved = String(logged.headers['set-cookie']![0]).split(';')[0]!;

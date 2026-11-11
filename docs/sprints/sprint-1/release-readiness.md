@@ -1,5 +1,7 @@
 # Sprint 1 release readiness — Issue #25
 
+**Release-review correction (2026-11-12):** R40-01 was independently reproduced after a teammate review was relayed by the owner. [Atomic authentication persistence correction and G-04 register](pr40-auth-save-fix.md) records actual RED/fix sources and 144 selected passing regression tests. The old 138-test record/hashes below remain historical; they do not cover this defect. Correction review/integration and G-04 acceptance remain required before main merge.
+
 Prepared 2026-11-10; evidence/readiness updated 2026-11-11. Integrated pre-release source: `4ff4562a8cf1a58fa5c6ae1d958b4ab8c0b2e18f` on staging. Readiness-test candidate: `037cb3f69db4b37b8363b9f4bdca9c277d02624c`, adding direct frozen-discovery list assertions on that integrated baseline. This is a **release candidate record, not an accepted main release**. The project owner authorized preparing #24/#25; actual opposite-member review still precedes main integration. No main merge, tag or post-main test result is recorded by this document.
 
 ## Source and review traceability
