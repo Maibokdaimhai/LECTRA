@@ -19,7 +19,7 @@ Actual GitHub PR/review/merge metadata is retained in [release history](release-
 
 The current staging graph contains both PR #38 and PR #37: merge `4ff4562` has parents `60736fb` (PR #38 integration) and `b024596` (PR #37 head). Earlier PR base fields alone must not be used to infer missing integration. A later documentation-only commit can identify its own evidence revision while retaining the exact tested application/source version.
 
-PR #39 received [R1NNE0's approval](https://github.com/Maibokdaimhai/LECTRA/pull/39#pullrequestreview-5842618558) at `2026-11-10T20:24:41Z` on source `2801003c1ef292fa90c5190dd89ac0325e40d582` and merged at `2026-11-10T20:25:00Z` as `b5f6d67eab20aece3307cdad03b41f840cc6a8d5`. That merge is the documentation/readiness integration point; it is not the source on which the historical 138-test matrix was executed.
+PR #39 received [R1NNE0's approval](https://github.com/Maibokdaimhai/LECTRA/pull/39#pullrequestreview-5848796940) at `2026-11-10T20:24:41Z` on source `2801003c1ef292fa90c5190dd89ac0325e40d582` and merged at `2026-11-10T20:25:00Z` as `b5f6d67eab20aece3307cdad03b41f840cc6a8d5`. That merge is the documentation/readiness integration point; it is not the source on which the historical 138-test matrix was executed.
 
 ## Actual integrated candidate verification
 
@@ -77,4 +77,4 @@ For each decision record: planned ID/AC, applicability, actual evidence/version,
 
 ## Current disposition
 
-#24: setup verification and documentation completed under the owner-approved author-reproduction route; R1NNE0 approved PR #39, and it merged into staging as `b5f6d67eab20aece3307cdad03b41f840cc6a8d5`. No independent teammate installation is claimed. #25 remains open pending release acceptance: G-04 coverage/Product DoD decisions, G-05 substantive staging-to-main review, G-06 main merge/immutable tag/post-main verification and G-07 final assessed PDF/contribution record remain pending. The Sprint 1 release is not complete.
+#24: setup verification and documentation completed under the owner-approved author-reproduction route; R1NNE0 approved PR #39, and it merged into staging as `b5f6d67eab20aece3307cdad03b41f840cc6a8d5`. No independent teammate installation is claimed. #25 remains open pending accepted G-04 coverage/Product DoD decisions, G-05 substantive release review, authorized staging-to-main integration, verification on the actual main commit and immutable release SHA/tag evidence under G-06. G-04, G-05 and G-06 remain pending. #26 separately owns the final Deliverable 1 PDF and final contribution/report evidence. G-07 remains pending for overall Deliverable 1 readiness, but does not block closing #25 once its own release criteria are complete. Neither the Sprint 1 release nor the final report is complete.
