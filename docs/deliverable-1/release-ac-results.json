@@ -1,0 +1,1810 @@
+{
+  "release": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "policy": "Preserve historical conservative mappings; main suite reruns mapped executable sources. Explicit corrections supplement selected F-01 assertions. Missing/manual mappings are not silently passed. Actual release reviewer accepted bounded local G-04 dispositions.",
+  "acceptanceCriteria": [
+    {
+      "id": "AC-F01-01",
+      "requirement": "Bootstrap returns a persisted session-bound token, correct guest/auth projection and no-store; repeated live bootstrap does not renew token/deadline.",
+      "plannedTests": [
+        "TEST-F01-I01",
+        "TEST-F01-I27"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-02",
+      "requirement": "Exact login/logout schema and transport/decoded bounds reject malformed, oversized, unsupported or identity-spoofing bodies without authentication writes.",
+      "plannedTests": [
+        "TEST-F01-U01",
+        "TEST-F01-I06",
+        "TEST-F01-I15"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I05/I15: generic credential errors, exact schemas and body security"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-03",
+      "requirement": "Each seeded role can log in with exact password and normalized email; /me returns the trusted safe current identity.",
+      "plannedTests": [
+        "TEST-F01-I03",
+        "TEST-F01-I04",
+        "TEST-F01-E01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-04",
+      "requirement": "Unknown email and wrong password return the same 401 body without authenticated session; existing auth is not silently switched/renewed by login.",
+      "plannedTests": [
+        "TEST-F01-I05",
+        "TEST-F01-I28"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I05/I15: generic credential errors, exact schemas and body security"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I09/I28: trusted role is resolved anew and authenticated login does not switch accounts"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-05",
+      "requirement": "Stored credentials are salted Argon2id; exact nontrimmed password verification succeeds/fails correctly; corruption/errors never grant identity.",
+      "plannedTests": [
+        "TEST-F01-U06",
+        "TEST-F01-I24",
+        "TEST-F01-I26"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F01-06",
+      "requirement": "Successful login regenerates SID/token, destroys guest SID and waits for durable save; old token/SID cannot authenticate.",
+      "plannedTests": [
+        "TEST-F01-I07",
+        "TEST-F01-I13"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-07",
+      "requirement": "Auth is valid just before eight hours and denied exactly at/after it; reads/touch/save/restart cannot extend cookie/store/server deadline. Invalid/future timestamps fail.",
+      "plannedTests": [
+        "TEST-F01-U02",
+        "TEST-F01-U07",
+        "TEST-F01-I08",
+        "TEST-F01-I20"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/auth-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie"
+        },
+        {
+          "file": "scripts/verify-restart.ts",
+          "case": "Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-08",
+      "requirement": "Every protected request resolves trusted User/role; deleted/invalid users lose auth and client identity claims never elevate permission.",
+      "plannedTests": [
+        "TEST-F01-I09",
+        "TEST-F01-I15"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I09/I28: trusted role is resolved anew and authenticated login does not switch accounts"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I05/I15: generic credential errors, exact schemas and body security"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-09",
+      "requirement": "Confirmed logout revokes the stored session; cookie replay is unauthorized; repeated/absent-session logout follows the documented token no-op policy.",
+      "plannedTests": [
+        "TEST-F01-I16",
+        "TEST-F01-I17",
+        "TEST-F01-E02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie"
+        },
+        {
+          "file": "tests/browser/logout-csrf-rotation.spec.ts",
+          "case": "PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-10",
+      "requirement": "Login/logout/unsafe routes enforce exact Origin and session-bound CSRF, including cross-session/old-token rejection and the explicit logout-only no-op branch.",
+      "plannedTests": [
+        "TEST-F01-U03",
+        "TEST-F01-I13",
+        "TEST-F01-I14",
+        "TEST-F01-I17",
+        "TEST-F01-E04"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/auth-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-11",
+      "requirement": "Local HTTP versus HTTPS cookies, clearing and validated proxy/configuration behave as specified; spoofed forwarded headers do not make an insecure caller trusted.",
+      "plannedTests": [
+        "TEST-F01-I02",
+        "TEST-F01-I25",
+        "TEST-F01-M02"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F01-12",
+      "requirement": "Guard boundary gives unauthenticated 401, authenticated wrong-role 403 and missing/out-of-scope 404 without private data. Real domain integrations remain explicitly assigned.",
+      "plannedTests": [
+        "TEST-F01-U04",
+        "TEST-F01-I10",
+        "TEST-F01-I11",
+        "TEST-F01-I12",
+        "TEST-F01-H01",
+        "TEST-F01-H02",
+        "TEST-F01-H03",
+        "TEST-F01-H04"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-01: unsupported methods, foreign origins and forged cookies fail without authority"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-13",
+      "requirement": "DB/store/verifier failures produce safe failure, never memory fallback or successful login/logout acknowledgement; failed revocation remains disclosed/retryable.",
+      "plannedTests": [
+        "TEST-F01-I18",
+        "TEST-F01-I26",
+        "TEST-F01-E05"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-01: session-store failures return safe 503 and never create a memory fallback"
+        },
+        {
+          "file": "tests/browser/logout-csrf-rotation.spec.ts",
+          "case": "PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-14",
+      "requirement": "Auth errors/identity projections/logs/cache behavior expose no credentials, SID, other-user payload or private cached content after session loss.",
+      "plannedTests": [
+        "TEST-F01-U05",
+        "TEST-F01-I23",
+        "TEST-F01-E02",
+        "TEST-F01-E03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-15",
+      "requirement": "Login has usable labelled/keyboard/busy/error/timeout behavior and server-derived role navigation at the specified widths.",
+      "plannedTests": [
+        "TEST-F01-E01",
+        "TEST-F01-E04",
+        "TEST-F01-M01"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F01-16",
+      "requirement": "Session expiry/logout hides private UI, rechecks before protected re-entry and distinguishes server-revocation failure from success.",
+      "plannedTests": [
+        "TEST-F01-E02",
+        "TEST-F01-E03",
+        "TEST-F01-E05"
+      ],
+      "actual": [
+        {
+          "file": "tests/browser/logout-csrf-rotation.spec.ts",
+          "case": "PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-17",
+      "requirement": "Reviewed migration/seed and test-DB safeguards reproduce User/session storage; sessions survive restart with unchanged absolute deadline.",
+      "plannedTests": [
+        "TEST-F01-I20",
+        "TEST-F01-I24",
+        "TEST-F01-I25",
+        "TEST-F01-M02"
+      ],
+      "actual": [
+        {
+          "file": "scripts/verify-restart.ts",
+          "case": "Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-18",
+      "requirement": "The tenth allowed attempt and eleventh rejected attempt/reset behave under the documented per-process limiter; public distributed limitation is explicit.",
+      "plannedTests": [
+        "TEST-F01-I22"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-19",
+      "requirement": "Concurrent session reads do not resurrect a revoked session; logging out one independent session does not revoke another.",
+      "plannedTests": [
+        "TEST-F01-I19",
+        "TEST-F01-I21"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "TEST-F01-I19/I21: reads overlapping logout never resurrect the cookie; independent sessions remain usable"
+        },
+        {
+          "file": "tests/browser/logout-csrf-rotation.spec.ts",
+          "case": "PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F01-20",
+      "requirement": "Preimplementation contract/test-design versions, reviewed Product DoD, actual test results and substantive teammate integration are linked before F-01 is called Done.",
+      "plannedTests": [
+        "TEST-F01-M03"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-01",
+      "requirement": "Reproducible synthetic hierarchy satisfies required roles/FKs/unique relationships; #16 owns its schema without duplicate auth/domain tables.",
+      "plannedTests": [
+        "TEST-F02-I01",
+        "TEST-F02-M02"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-02",
+      "requirement": "All reads require trusted F-01 identity; owner context routes reject respondents before resource detail; client actor data grants nothing.",
+      "plannedTests": [
+        "TEST-F02-I02",
+        "TEST-F02-I03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-03",
+      "requirement": "Course list contains exactly Courses having an owned Section, once each, without cross-owner data/counts.",
+      "plannedTests": [
+        "TEST-F02-I04"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-04",
+      "requirement": "Section list requires owned Course access and returns only own Sections; missing/foreign-only parent is indistinguishable 404.",
+      "plannedTests": [
+        "TEST-F02-I05"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-05",
+      "requirement": "Lecture list requires owned Section access, supports empty Sections and exposes only the authorized existing-survey reference.",
+      "plannedTests": [
+        "TEST-F02-I06"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-06",
+      "requirement": "Owner survey list is Section-scoped across all three states; optional lecture selection cannot broaden ownership or reveal another Section's survey.",
+      "plannedTests": [
+        "TEST-F02-I07"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-07",
+      "requirement": "Respondent list includes only own-eligible Published/Closed surveys and never Draft or unrelated context.",
+      "plannedTests": [
+        "TEST-F02-I08",
+        "TEST-F02-I09"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-08",
+      "requirement": "Post-publication Membership changes do not add/remove discovery eligibility; only frozen eligibility controls it.",
+      "plannedTests": [
+        "TEST-F02-I10"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-09",
+      "requirement": "Each respondent sees only their persisted submitted boolean; another student's participation never changes it.",
+      "plannedTests": [
+        "TEST-F02-I11",
+        "TEST-F02-H02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-10",
+      "requirement": "Exact safe projections exclude questions/answers/results/identities/session/private fields; text is plain, owner participation absent.",
+      "plannedTests": [
+        "TEST-F02-U02",
+        "TEST-F02-I12"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-11: scoped pagination retains totals/order at default, final and beyond-last pages and rejects malformed bounds"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "N4: explicitly empty lecture filter fails validation instead of returning all surveys"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-11",
+      "requirement": "Exact query/UUID syntax, duplicate/unknown fields, GET bodies and deferred history filters are rejected safely without domain writes.",
+      "plannedTests": [
+        "TEST-F02-U01",
+        "TEST-F02-I13"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-11: scoped pagination retains totals/order at default, final and beyond-last pages and rejects malformed bounds"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "N4: explicitly empty lecture filter fails validation instead of returning all surveys"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-12",
+      "requirement": "Pagination defaults/bounds and authorized totals are correct; empty/out-of-range pages do not expose another actor's counts.",
+      "plannedTests": [
+        "TEST-F02-U03",
+        "TEST-F02-I14",
+        "TEST-F02-I16"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-11: scoped pagination retains totals/order at default, final and beyond-last pages and rejects malformed bounds"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "N4: explicitly empty lecture filter fails validation instead of returning all surveys"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-13",
+      "requirement": "Stable documented ordering/tiebreakers produce repeatable unchanged-data pages and preserve calendar dates.",
+      "plannedTests": [
+        "TEST-F02-I15"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-14",
+      "requirement": "Owner/Respondent empty/loading/availability distinctions and parent-reset/page actions match server data without invented workflow success.",
+      "plannedTests": [
+        "TEST-F02-I16",
+        "TEST-F02-E01",
+        "TEST-F02-E02"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-15",
+      "requirement": "Retry, permission/session-loss and superseded-request behavior never restores unrelated/private stale content or treats failure as empty success.",
+      "plannedTests": [
+        "TEST-F02-E03",
+        "TEST-F02-E04"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-16",
+      "requirement": "Both list journeys are labelled, keyboard-operable and usable at 360px/1280px with visible focus and wrapped content.",
+      "plannedTests": [
+        "TEST-F02-E01",
+        "TEST-F02-E02",
+        "TEST-F02-M01"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-17",
+      "requirement": "Reads leave domain data unchanged; one response's count/items/participation use a consistent committed snapshot during publication/submission.",
+      "plannedTests": [
+        "TEST-F02-I17",
+        "TEST-F02-I18"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-18",
+      "requirement": "Database/auth dependency failure produces the safe defined error, no-store and no private diagnostics, not a fabricated empty collection.",
+      "plannedTests": [
+        "TEST-F02-I19",
+        "TEST-F02-E04"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F02-19",
+      "requirement": "Actions derive from current state/own status; target features revalidate stale/ineligible requests; no F-03/F-04 write is implemented in F-02.",
+      "plannedTests": [
+        "TEST-F02-U04",
+        "TEST-F02-I20",
+        "TEST-F02-H01",
+        "TEST-F02-H02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F02-20",
+      "requirement": "Accepted contract/STS/DoD, actual setup/test/history and substantive teammate integration are linked before claiming F-02 Done.",
+      "plannedTests": [
+        "TEST-F02-M02"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-01",
+      "requirement": "Creating on an owned empty Lecture returns 201 empty IDENTIFIED Draft revision 1, canonical owner and committed definition retrievable by GET.",
+      "plannedTests": [
+        "TEST-F03-I01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-02",
+      "requirement": "All six routes enforce \u00a72 server-side; foreign-owner records are 404, Respondent management 403, unauthenticated access 401, with no mutation or private data.",
+      "plannedTests": [
+        "TEST-F03-I02",
+        "TEST-F03-I23"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-03",
+      "requirement": "Concurrent creates for one Lecture yield exactly one Survey; committed winner 201 and conflicting loser 409.",
+      "plannedTests": [
+        "TEST-F03-I03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-01: concurrent create produces one Draft and one conflict for the same owned lecture"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-04",
+      "requirement": "Owner reads own three states; Respondent reads only frozen-eligible Published/Closed, never Draft. Projections, question order and disclosure match \u00a75.2; no participant/answer/owner-identity leak.",
+      "plannedTests": [
+        "TEST-F03-U06",
+        "TEST-F03-I04",
+        "TEST-F03-I24",
+        "TEST-F03-E04"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-05",
+      "requirement": "Save atomically adds/edits/removes/reorders questions with retained stable IDs and contiguous positions; invalid/foreign/duplicate IDs cause 422 and no change.",
+      "plannedTests": [
+        "TEST-F03-U05",
+        "TEST-F03-I05"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-06",
+      "requirement": "Normalization and Unicode limits in \u00a74 accept exact bounds and reject one over; Draft blanks allowed, publication blanks rejected, malformed Unicode/NUL safely rejected.",
+      "plannedTests": [
+        "TEST-F03-U01",
+        "TEST-F03-I06"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-07",
+      "requirement": "RATING/TEXT and required booleans follow \u00a74; 1\u20135 scale fixed, labels/interpretation preserved; malformed scales, coercions and unsupported types return 422.",
+      "plannedTests": [
+        "TEST-F03-U02",
+        "TEST-F03-I07"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-08",
+      "requirement": "Save accepts 0\u201310 questions; publication rejects 0/text-only, accepts valid 1 or 10 with RATING, and rejects 11. No failed publication creates eligibility/state changes.",
+      "plannedTests": [
+        "TEST-F03-U03",
+        "TEST-F03-I08"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-09",
+      "requirement": "Real change increments once; normalized no-op with current revision does not. Stale writes conflict; concurrent real saves with same revision have one winner and no lost update.",
+      "plannedTests": [
+        "TEST-F03-U04",
+        "TEST-F03-I09"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-10",
+      "requirement": "Matching-revision Draft delete returns 204 and removes only its definition; stale delete 409, absent 404, Published/Closed 409; Lecture can receive a new Draft afterward.",
+      "plannedTests": [
+        "TEST-F03-I10"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-11",
+      "requirement": "Only DRAFT\u2192PUBLISHED\u2192CLOSED is allowed. Published/Closed definitions, modes and eligibility cannot be edited/deleted/reopened; invalid transitions are 409 for valid-shaped requests.",
+      "plannedTests": [
+        "TEST-F03-U04",
+        "TEST-F03-I11",
+        "TEST-F03-E04"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-12",
+      "requirement": "Valid publication commits full frozen definition and exactly the selected eligible snapshot together; no partial state visible.",
+      "plannedTests": [
+        "TEST-F03-I12",
+        "TEST-F03-H01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-13",
+      "requirement": "Empty eligibility or invalid member roles prevent publication with 422 and unchanged Draft/zero snapshot rows.",
+      "plannedTests": [
+        "TEST-F03-U03",
+        "TEST-F03-I13"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "R3: invalid and empty membership snapshots leave the Draft and eligibility unchanged"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-14",
+      "requirement": "After publication, membership changes do not alter frozen access; required/type/scale/order/mode stay fixed and identified disclosure remains truthful for F-04/F-05.",
+      "plannedTests": [
+        "TEST-F03-U06",
+        "TEST-F03-I11",
+        "TEST-F03-I14",
+        "TEST-F03-H03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-15",
+      "requirement": "Controlled edit/publish races produce exactly \u00a77's two outcomes: save-first revision conflict or publish-first invalid-state rejection, never mixed published content.",
+      "plannedTests": [
+        "TEST-F03-I15"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-10: held-row barriers exercise both Draft save/publication orders with complete frozen revisions"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-16",
+      "requirement": "Controlled membership/publish tests prove the one-statement snapshot boundary before/after committed changes, including invisible uncommitted changes.",
+      "plannedTests": [
+        "TEST-F03-I16"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "R3: publication validates and freezes one membership snapshot while membership changes concurrently"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-17",
+      "requirement": "Authorized Close changes Published to Closed once, retains publishedAt/revision and all questions/eligibility/responses, and sets closedAt only on success.",
+      "plannedTests": [
+        "TEST-F03-I17",
+        "TEST-F03-H03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-18",
+      "requirement": "Sequential and concurrent duplicate publish/close produce one successful transition and subsequent 409, without timestamp/snapshot duplication or rewriting. Concurrent publish/close from Draft follows \u00a77: close-first 409 then Published; publish-first permits subsequent Closed.",
+      "plannedTests": [
+        "TEST-F03-U04",
+        "TEST-F03-I18"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-19",
+      "requirement": "Close/submit follows BR-11's lock/commit order; close-first rejects submission without rows, submit-first response survives closing. A protocol harness alone is not actual F-04 integration evidence.",
+      "plannedTests": [
+        "TEST-F03-I19",
+        "TEST-F03-H02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03/F-04: actual API close and submit serialize correctly in both lock orders"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-20",
+      "requirement": "Injected write/known precommit failures leave no partial definition/order/snapshot/state changes; safe error, no success. Unknown commit outcome triggers reconciliation, not a fabricated rollback claim.",
+      "plannedTests": [
+        "TEST-F03-I20"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-21",
+      "requirement": "Shared session/Origin/CSRF/access, route body ceilings, strict JSON/error precedence, safe logs and no-store responses follow \u00a75; spoofed actor/mode cannot bypass checks.",
+      "plannedTests": [
+        "TEST-F03-I21",
+        "TEST-F03-I23"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "N4: explicitly empty lecture filter fails validation instead of returning all surveys"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-22",
+      "requirement": "Owner completes real create/save/publish and Published/Closed read-only navigation with persisted state confirmation, no premature success.",
+      "plannedTests": [
+        "TEST-F03-E01",
+        "TEST-F03-E04"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-23",
+      "requirement": "Validation, state/revision conflicts and network uncertainty show \u00a78 recovery without automatic overwrite or false success; recoverable unsaved content retained, session loss clears private state.",
+      "plannedTests": [
+        "TEST-F03-E02",
+        "TEST-F03-E03"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-24",
+      "requirement": "Core authoring/publication/closing controls are labelled, keyboard usable, focus/error handling visible at 360px and 1280px.",
+      "plannedTests": [
+        "TEST-F03-E05",
+        "TEST-F03-M01"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F03-25",
+      "requirement": "After process restart against the same PostgreSQL database, committed Draft/Published/Closed definitions, IDs/order/revisions/timestamps and snapshots remain unchanged.",
+      "plannedTests": [
+        "TEST-F03-I22"
+      ],
+      "actual": [
+        {
+          "file": "scripts/verify-restart.ts",
+          "case": "Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F03-26",
+      "requirement": "Before implementation, reviewed contract/schema/security/handoff agreements exist; later acceptance has actual mapped unit/API/PostgreSQL/E2E/handoff results, meaningful RED/GREEN and human review, with pending work explicit.",
+      "plannedTests": [
+        "TEST-F03-M02",
+        "TEST-F03-H01",
+        "TEST-F03-H02",
+        "TEST-F03-H03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03/F-04: actual API close and submit serialize correctly in both lock orders"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-01",
+      "requirement": "Eligible Published identified survey renders F-03 frozen definitions/disclosure and current own status, without creating another definition API.",
+      "plannedTests": [
+        "TEST-F04-E01",
+        "TEST-F04-H01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03/F-04: actual API close and submit serialize correctly in both lock orders"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-02",
+      "requirement": "Required/optional ratings are strict integers 1-5, with no default/coercion/optional zero; missing required rejects.",
+      "plannedTests": [
+        "TEST-F04-U01",
+        "TEST-F04-I02",
+        "TEST-F04-I03",
+        "TEST-F04-E02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04: required/type/Unicode/association boundaries reject without any partial response"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-03",
+      "requirement": "Text preserves valid nonblank content, enforces code-point/blank/NUL/surrogate rules and normalizes bounded optional blank to absence.",
+      "plannedTests": [
+        "TEST-F04-U02",
+        "TEST-F04-I04",
+        "TEST-F04-E02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/feedback-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-04",
+      "requirement": "Unknown/duplicate/wrong-survey IDs, wrong type and empty normalized response reject without partial persistence.",
+      "plannedTests": [
+        "TEST-F04-U03",
+        "TEST-F04-U05",
+        "TEST-F04-I05",
+        "TEST-F04-I06"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04: required/type/Unicode/association boundaries reject without any partial response"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-05",
+      "requirement": "256 KiB byte/compression/parser and decoded limits are independent; supported UTF-8/escaped maximum fits and oversized request writes nothing.",
+      "plannedTests": [
+        "TEST-F04-I07"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-07: exact chunked transport ceiling is accepted; oversized, compressed and malformed bodies never write"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-06",
+      "requirement": "Actor is server-resolved; guest/wrong-role/spoofed identity cannot submit/read for another account.",
+      "plannedTests": [
+        "TEST-F04-I08",
+        "TEST-F04-I17"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-07",
+      "requirement": "Frozen eligibility controls both endpoints despite later Membership changes; Draft/ineligible/missing remains hidden.",
+      "plannedTests": [
+        "TEST-F04-I09"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-08",
+      "requirement": "Closed/non-Published requests never create a response; documented state/duplicate precedence holds.",
+      "plannedTests": [
+        "TEST-F04-I10",
+        "TEST-F04-I11"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-09",
+      "requirement": "Valid POST commits one Participation/bundle/all normalized typed answers and returns only persisted own data in question-position order.",
+      "plannedTests": [
+        "TEST-F04-U06",
+        "TEST-F04-I01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-10",
+      "requirement": "Sequential repeat returns duplicate conflict without second/changed response.",
+      "plannedTests": [
+        "TEST-F04-I11"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-11",
+      "requirement": "Concurrent same-student submit produces exactly one success/committed bundle; loser safely rejected.",
+      "plannedTests": [
+        "TEST-F04-I12"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-12",
+      "requirement": "Invalid item or forced failure at each write phase leaves no partial rows or success confirmation.",
+      "plannedTests": [
+        "TEST-F04-I02",
+        "TEST-F04-I13"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04: required/type/Unicode/association boundaries reject without any partial response"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-04: faults after each response write stage roll back all rows and permit one valid retry"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-13",
+      "requirement": "Real Survey lock order determines close-first rejection versus submit-first inclusion; no timestamp/arrival shortcut.",
+      "plannedTests": [
+        "TEST-F04-I14",
+        "TEST-F04-I15",
+        "TEST-F04-H01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03/F-04: actual API close and submit serialize correctly in both lock orders"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-14",
+      "requirement": "Frozen definitions/required flags/scale are consumed without update; no response edit/delete/reopen operation exists.",
+      "plannedTests": [
+        "TEST-F04-I18",
+        "TEST-F04-H01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-03/F-04: actual API close and submit serialize correctly in both lock orders"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-15",
+      "requirement": "Own false/true status and persisted identified answers survive closure/logout-login/restart; consistent read does not fabricate integrity recovery.",
+      "plannedTests": [
+        "TEST-F04-I16",
+        "TEST-F04-E01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results"
+        },
+        {
+          "file": "scripts/verify-restart.ts",
+          "case": "Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-16",
+      "requirement": "Other-student lookup, forged query/body identity and owner respondent-linked access are denied without leakage.",
+      "plannedTests": [
+        "TEST-F04-I17",
+        "TEST-F04-I21"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-17",
+      "requirement": "UI pending/confirmation/readonly states reflect real API outcomes; no duplicate UI POST or premature success.",
+      "plannedTests": [
+        "TEST-F04-E01",
+        "TEST-F04-E02"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F04-18",
+      "requirement": "Ambiguous acknowledgement queries own persisted status before deliberate retry; no automatic response resend.",
+      "plannedTests": [
+        "TEST-F04-I20",
+        "TEST-F04-E03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-19",
+      "requirement": "Auth/Origin/CSRF/method/schema/state errors match exact codes/precedence with no database/internal/input exposure.",
+      "plannedTests": [
+        "TEST-F04-U04",
+        "TEST-F04-I10",
+        "TEST-F04-I18",
+        "TEST-F04-I20"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-20",
+      "requirement": "Private response data is absent from caches/storage/logs/other-user payloads; expiry/logout removes stale client content.",
+      "plannedTests": [
+        "TEST-F04-I21",
+        "TEST-F04-E04"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-21",
+      "requirement": "Reviewed real schema enforces relevant FK/unique/range/typed-column invariants with atomic backend cross-table checks.",
+      "plannedTests": [
+        "TEST-F04-I19"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F04-22",
+      "requirement": "Unsupported mode never stores or reveals an identified/anonymous fallback; no extra student-linked anonymous retrieval.",
+      "plannedTests": [
+        "TEST-F04-I10"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-23",
+      "requirement": "F-02 participation flag and F-05 count/denominator/text projections match actual committed normalized rows.",
+      "plannedTests": [
+        "TEST-F04-H02",
+        "TEST-F04-H03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F04-24",
+      "requirement": "Accepted contract/STS/DoD, real meaningful RED/GREEN, mapped outcomes, opposite-member review/integration and limitations precede feature Done.",
+      "plannedTests": [
+        "TEST-F04-M02"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F04-25",
+      "requirement": "Core form/readback/errors support labelled keyboard/focus and narrow/wide layouts with truthful identified disclosure.",
+      "plannedTests": [
+        "TEST-F04-E01",
+        "TEST-F04-E02",
+        "TEST-F04-E04",
+        "TEST-F04-M01"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F05-01",
+      "requirement": "Own Draft results GET is 409 RESULTS_NOT_AVAILABLE with no statistics; UI shows unavailable, never invented zeros.",
+      "plannedTests": [
+        "TEST-F05-U04",
+        "TEST-F05-I02",
+        "TEST-F05-E02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-02",
+      "requirement": "Own identified Published GET returns exactly survey metadata and committed responseCount, including real zero; no answer/comment query or quantitative payload/DOM.",
+      "plannedTests": [
+        "TEST-F05-U04",
+        "TEST-F05-I02",
+        "TEST-F05-I10",
+        "TEST-F05-E02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-03",
+      "requirement": "Own identified Closed GET returns full ordered frozen question results and identified comments; low counts are not suppressed and stored data is unchanged.",
+      "plannedTests": [
+        "TEST-F05-U04",
+        "TEST-F05-I02",
+        "TEST-F05-I11",
+        "TEST-F05-E01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-04",
+      "requirement": "Unauthenticated 401, Respondent 403, foreign/missing Survey 404, including same Course/different Owner; direct calls and guessed IDs cannot bypass it.",
+      "plannedTests": [
+        "TEST-F05-U04",
+        "TEST-F05-I01",
+        "TEST-F05-I09",
+        "TEST-F05-H02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-05",
+      "requirement": "UUID/body/query/method/Origin and error precedence follow \u00a74.3; safe messages do not reveal private records or echo inputs.",
+      "plannedTests": [
+        "TEST-F05-I01",
+        "TEST-F05-I08",
+        "TEST-F05-I09"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-06",
+      "requirement": "responseCount equals committed distinct participating respondents, not eligibility, bundles/answers or current membership; joins cannot multiply it.",
+      "plannedTests": [
+        "TEST-F05-U01",
+        "TEST-F05-I03",
+        "TEST-F05-I10",
+        "TEST-F05-I14"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/feedback-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-07",
+      "requirement": "Each rating answeredCount includes only its own persisted valid answers; optional omissions add neither zero nor denominator weight.",
+      "plannedTests": [
+        "TEST-F05-U01",
+        "TEST-F05-I03",
+        "TEST-F05-I14"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/feedback-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-08",
+      "requirement": "Each rating has five ordered integer bins for scores 1\u20135, zeros included, summing exactly to answeredCount.",
+      "plannedTests": [
+        "TEST-F05-U01",
+        "TEST-F05-I03",
+        "TEST-F05-I14"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/feedback-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-09",
+      "requirement": "Exact S/N is rounded once with proposed decimal half-up; \u00a75's endpoint/tie/below/above fixtures and two-decimal strings match, without binary-float ambiguity.",
+      "plannedTests": [
+        "TEST-F05-U02",
+        "TEST-F05-I04",
+        "TEST-F05-E01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/feedback-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-10",
+      "requirement": "R=0 and R>0/N=0 produce null means and all-zero bins with distinct no-data messages; never 0.00/NaN or fabricated observations.",
+      "plannedTests": [
+        "TEST-F05-U03",
+        "TEST-F05-U06",
+        "TEST-F05-I05",
+        "TEST-F05-E02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/unit/feedback-rules.test.ts",
+          "case": ""
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-11",
+      "requirement": "Frozen IDs/prompts/order/types/required flags/scales/anchors/interpretation are preserved; no live template/current-membership substitution or cross-question comparability claim.",
+      "plannedTests": [
+        "TEST-F05-U05",
+        "TEST-F05-I06",
+        "TEST-F05-E01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-12",
+      "requirement": "Closed TEXT comments preserve literal strings, duplicates and line breaks, use deterministic per-question ordering, and carry no identity/bundle/timing or cross-question response linkage.",
+      "plannedTests": [
+        "TEST-F05-U05",
+        "TEST-F05-I07",
+        "TEST-F05-E03"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-13",
+      "requirement": "Unsafe comments and all user-authored metadata render as literal text; scripts/event handlers/embedded content do not execute.",
+      "plannedTests": [
+        "TEST-F05-U06",
+        "TEST-F05-E03"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F05-14",
+      "requirement": "JSON, DOM, cache/storage, logs and analytics exclude forbidden identity/participation/bundle/timing/auth fields and raw feedback in logs; notice makes no anonymity promise.",
+      "plannedTests": [
+        "TEST-F05-U05",
+        "TEST-F05-I07",
+        "TEST-F05-I09",
+        "TEST-F05-E03",
+        "TEST-F05-H02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-15",
+      "requirement": "Each result response is one committed snapshot across state/count/definitions/answers, including submit and Close races; no mixed Published/Closed projections.",
+      "plannedTests": [
+        "TEST-F05-I10",
+        "TEST-F05-I11",
+        "TEST-F05-H01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-16",
+      "requirement": "Known storage outage 503 and unexpected/inconsistent data 500 return safe failures, not partial/zero results; Retry performs a safe new read.",
+      "plannedTests": [
+        "TEST-F05-I12",
+        "TEST-F05-I14",
+        "TEST-F05-E04"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-17",
+      "requirement": "Repeated reads and restart against unchanged PostgreSQL preserve results/metadata/comment order and all stored rows; GET has no domain writes.",
+      "plannedTests": [
+        "TEST-F05-I13",
+        "TEST-F05-H01"
+      ],
+      "actual": [
+        {
+          "file": "scripts/verify-restart.ts",
+          "case": "Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-18",
+      "requirement": "Owner sees correct Published/Closed view, per-question denominator/mean/table, frozen meaning, comments and truthful identified notice at the proposed navigation handoff.",
+      "plannedTests": [
+        "TEST-F05-U06",
+        "TEST-F05-E01",
+        "TEST-F05-E02",
+        "TEST-F05-H01"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-19",
+      "requirement": "Loading, network/database errors, session expiry and denials show \u00a78 states; old/private content is cleared and no premature/fabricated numbers displayed.",
+      "plannedTests": [
+        "TEST-F05-E04",
+        "TEST-F05-H02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-20",
+      "requirement": "Results navigation/Retry and equivalent numerical table work by keyboard with labels/focus/readable layout at 360px and 1280px.",
+      "plannedTests": [
+        "TEST-F05-E04",
+        "TEST-F05-M01"
+      ],
+      "actual": [],
+      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+    },
+    {
+      "id": "AC-F05-21",
+      "requirement": "Own unsupported/anonymous mode is safely rejected with no text/count fallback; no S2 thresholds, export, history or overall instructor score are added.",
+      "plannedTests": [
+        "TEST-F05-U04",
+        "TEST-F05-I02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    },
+    {
+      "id": "AC-F05-22",
+      "requirement": "Reviewed/versioned precode interfaces/schema/rounding and mapped STS exist before dependent implementation; later acceptance records actual results, meaningful TDD and human review, leaving release/PDF gates separate.",
+      "plannedTests": [
+        "TEST-F05-M02",
+        "TEST-F05-H01",
+        "TEST-F05-H02"
+      ],
+      "actual": [
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "apps/api/tests/features/workflows.test.ts",
+          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+    }
+  ]
+}

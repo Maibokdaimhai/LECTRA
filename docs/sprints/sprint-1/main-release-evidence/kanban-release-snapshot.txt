@@ -1,0 +1,163 @@
+- link "Skip to content":
+  - /url: "#start-of-content"
+- banner "Global navigation menu":
+  - button "Open menu":
+  - link "Homepage (g then d)":
+    - /url: /
+  - navigation "Breadcrumbs":
+    - list:
+      - button "2 more breadcrumb items":
+      - link "LECTRA Kanban":
+        - /url: /users/Maibokdaimhai/projects/7
+        - generic: LECTRA Kanban
+  - button "Open quick search dialog, type / to search":
+  - button "Create new...":
+  - link "You have unread notifications (g then n)":
+    - /url: /notifications
+  - button "Open user navigation menu":
+    - img "Thanawat Suntarawattana"
+- button "Dismiss this message":
+- button "Enable 2FA"
+- paragraph:
+  - text: GitHub users are
+  - link "now required":
+    - /url: https://github.blog/2023-03-09-raising-the-bar-for-software-security-github-2fa-begins-march-13/
+  - text: to enable two-factor authentication as an additional security measure. Your activity on GitHub includes you in this requirement. You will need to enable two-factor authentication on your account before November 25, 2026, or be restricted from account actions.
+- main:
+  - navigation "Project":
+    - heading "LECTRA Kanban" [level=1]
+    - button "Add status update":
+      - generic: Add status update
+    - link "Insights":
+      - /url: /users/Maibokdaimhai/projects/7/insights
+      - generic: Insights
+    - link "Workflows (7 enabled)":
+      - /url: /users/Maibokdaimhai/projects/7/workflows
+      - generic: Workflows
+      - generic: "7"
+      - generic: (7)
+    - button "Project details":
+    - button "View more options":
+  - navigation "Select view":
+    - tablist:
+      - tab "Backlog" [selected]:
+        - generic: Backlog
+      - tab "Priority board":
+        - generic: Priority board
+      - tab "Team items":
+        - generic: Team items
+      - tab "Roadmap":
+        - generic: Roadmap
+      - tab "My items":
+        - generic: My items
+      - tab "New view":
+        - generic: New view
+  - button "View options for Backlog":
+  - tabpanel:
+    - region "View filters":
+      - form "Filter":
+        - generic: Filter
+        - img "Search"
+        - combobox "Filter"
+      - button "View":
+        - generic: View
+    - heading "Backlog" [level=2]:
+      - generic: Backlog
+    - generic: "1"
+    - generic: (1)
+    - generic: "Estimate: 0"
+    - 'button "Actions for column: Backlog"':
+    - button "Add item to Backlog":
+    - generic: Collection of raw, unclear issues
+    - 'button "docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF Open issue LECTRA #26"':
+      - img "Open issue"
+      - generic: "LECTRA #26"
+      - button "More actions":
+      - 'figure "Assignees: R1NNE0 and Maibokdaimhai"':
+        - generic: "Assignees: R1NNE0 and Maibokdaimhai"
+        - button "Maibokdaimhai":
+          - img "Maibokdaimhai"
+        - button "R1NNE0":
+          - img "R1NNE0"
+      - 'button "docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF"':
+        - 'heading "docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF" [level=3]'
+      - list "Fields"
+      - generic: Click a value to filter the view
+    - button "Add item":
+      - generic: Add item
+    - heading "Specified" [level=2]:
+      - generic: Specified
+    - generic: "0"
+    - generic: (0)
+    - generic: "Estimate: 0"
+    - 'button "Actions for column: Specified"':
+    - button "Add item to Specified":
+    - generic: Detailed specs & requirements clear
+    - button "Add item":
+      - generic: Add item
+    - heading "Started" [level=2]:
+      - generic: Started
+    - generic: "1"
+    - generic: (1)
+    - generic: "Estimate: 0"
+    - 'button "Actions for column: Started"':
+    - button "Add item to Started":
+    - generic: Development actively underway
+    - 'button "plan: track Sprint 1 delivery and acceptance readiness Maibokdaimhai/LECTRA#8" [disabled]'
+    - button "Add item":
+      - generic: Add item
+    - heading "PR Review" [level=2]:
+      - generic: PR Review
+    - generic: "0"
+    - generic: (0)
+    - generic: "Estimate: 0"
+    - 'button "Actions for column: PR Review"':
+    - button "Add item to PR Review":
+    - generic: Peer code review & verification
+    - button "Add item":
+      - generic: Add item
+    - heading "Fixing" [level=2]:
+      - generic: Fixing
+    - generic: "0"
+    - generic: (0)
+    - generic: "Estimate: 0"
+    - 'button "Actions for column: Fixing"':
+    - button "Add item to Fixing":
+    - generic: Resolving pull request comments
+    - button "Add item":
+      - generic: Add item
+    - heading "Done" [level=2]:
+      - generic: Done
+    - generic: "23"
+    - generic: (23)
+    - generic: "Estimate: 0"
+    - 'button "Actions for column: Done"':
+    - button "Add item to Done":
+    - generic: This has been completed
+    - 'button "docs: define product scope, decisions, and SRS (Part A) Maibokdaimhai/LECTRA#1" [disabled]'
+    - 'button "docs: map requirements to features and sprints (Part B) Maibokdaimhai/LECTRA#2" [disabled]'
+    - 'button "docs: design system architecture, data, access, and delivery (Part C) Maibokdaimhai/LECTRA#3" [disabled]'
+    - 'button "docs: plan three sprints and team responsibilities (Part D) Maibokdaimhai/LECTRA#4" [disabled]'
+    - 'button "docs: specify Sprint 1 feature contracts, AC, STS, and DoD (Part E) Maibokdaimhai/LECTRA#5" [disabled]'
+    - 'button "docs: plan Deliverable 1 evidence and PDF structure (Part F readiness) Maibokdaimhai/LECTRA#6" [disabled]'
+    - 'button "chore: establish Sprint 1 board and teammate review workflow Maibokdaimhai/LECTRA#9" [disabled]'
+    - 'button "docs: contract F-01 authentication, sessions, and backend access (Sprint 1) Maibokdaimhai/LECTRA#10" [disabled]'
+    - 'button "docs: contract F-02 owned context and eligible survey discovery (Sprint 1) Maibokdaimhai/LECTRA#11" [disabled]'
+    - 'button "docs: contract F-03 survey authoring, publication, and closing (Sprint 1) Maibokdaimhai/LECTRA#12" [disabled]'
+    - 'button "docs: contract F-04 validated one-time responses and persisted retrieval (Sprint 1) Maibokdaimhai/LECTRA#13" [disabled]'
+    - 'button "docs: contract F-05 identified aggregate results and privacy projections (Sprint 1) Maibokdaimhai/LECTRA#14" [disabled]'
+    - 'button "chore: initialize Sprint 1 workspace and verification tooling Maibokdaimhai/LECTRA#15" [disabled]'
+    - 'button "feat: add Sprint 1 PostgreSQL schema, migrations, and synthetic seed Maibokdaimhai/LECTRA#16" [disabled]'
+    - 'button "feat: implement F-01 authentication, sessions, and server-side access Maibokdaimhai/LECTRA#17" [disabled]'
+    - 'button "feat: implement F-02 owned context selection and eligible survey lists Maibokdaimhai/LECTRA#18" [disabled]'
+    - 'button "feat: implement F-03 identified survey drafting, publication, and closing Maibokdaimhai/LECTRA#19" [disabled]'
+    - 'button "feat: implement F-04 atomic one-time feedback and own-response retrieval Maibokdaimhai/LECTRA#20" [disabled]'
+    - 'button "feat: implement F-05 identified owner results and score distributions Maibokdaimhai/LECTRA#21" [disabled]'
+    - 'button "test: verify Sprint 1 access, persistence, and concurrent domain rules Maibokdaimhai/LECTRA#22" [disabled]'
+    - 'button "test: cover critical Sprint 1 browser journeys and rejection states Maibokdaimhai/LECTRA#23" [disabled]'
+    - 'button "docs: document reproducible Sprint 1 setup and safe demo handoff Maibokdaimhai/LECTRA#24" [disabled]'
+    - 'button "release: verify integrated Sprint 1 and record reviewed main release Maibokdaimhai/LECTRA#25" [disabled]'
+    - button "Add item":
+      - generic: Add item
+    - button "Add a new column to the board":
+- status
