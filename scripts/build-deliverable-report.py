@@ -137,32 +137,6 @@ for i,key in enumerate('ABCDEF'):
  para(key+' | pages '+(str(start)+'-'+str(end) if start else 'pagination in progress')+' | '+labels[key],'small')
 para('Reading guide: full Markdown tables are expanded into labelled records to remain readable; complete diagrams-as-source supplement the visual architecture. Source snapshots retain historical planning dates/status language; current acceptance/results are in Part F. Manual/Not run/Partial and runner Pass are not interchangeable. No secrets or real student feedback are included.','small')
 story.append(PageBreak());para('Contents','chapter');toc=TableOfContents();toc.levelStyles=[styles['h2'],styles['small']];story.append(toc)
-parts={}
- def afterFlowable(self,flow):
-  if isinstance(flow,Paragraph) and hasattr(flow,'toc_title'):
-   level,title,key=flow.toc_title;self.canv.bookmarkPage(key);self.canv.addOutlineEntry(title,key,level,False);self.notify('TOCEntry',(level,title,self.page,key))
-   if level==0:self.parts[key]=self.page
-
-def chapter(key,title):
- story.append(PageBreak());p=para(title,'chapter');p.toc_title=(0,title,key)
-def source(path):
- story.append(PageBreak());p=para(path,'h1');p.toc_title=(1,path,'source-'+path.replace('/','-').replace('.','-'))
- para('Embedded source snapshot. Historical draft/pending statements retain their original planning meaning; current execution and acceptance limits are in Part F.','small')
- markdown(root/path)
-def footer(canvas,doc):
- canvas.saveState();canvas.setStrokeColor(colors.HexColor('#c8d7e8'));canvas.line(44,39,551,39);canvas.setFont('Body',7);canvas.setFillColor(colors.HexColor('#455775'))
- canvas.drawString(44,26,'LECTRA | REVIEW DRAFT - NOT AN ACCEPTED RELEASE | 2026-11-09');canvas.drawRightString(551,26,str(doc.page));canvas.restoreState()
-
-para('LECTRA','title');para('Deliverable 1 - Parts A-F','h1');para('REVIEW DRAFT / NOT READY FOR SUBMISSION','chapter')
-para('Theme 10: Review, Feedback, and Survey System. Context: feedback after individual lectures. Course: CPE334 Software Engineering.')
-for s in snapshot['students']:para(s['id']+' - '+s['name'])
-para('Repository: https://github.com/Maibokdaimhai/LECTRA')
-para('Working increment PR: '+snapshot.get('pullRequest','Pending creation'))
-para('Observed candidate source: '+snapshot['testedCommit'])
-para('Assessed main release/tag: **NOT AVAILABLE**. This draft contains complete embedded planning sources and selected actual candidate checks. It does not replace required human review, integrated release verification or final contributions. Source/code and separate report revisions are distinguished.')
-para('Known open boundaries: PR #35 integration; working increment teammate review/integration; complete STS dispositions; teammate setup reproduction; assessed main release and release-linked checks; final contribution confirmation.')
-para('Reading notes: wide Markdown tables are expanded into labelled records to preserve all cells legibly. Mermaid source is retained verbatim as code, with architectural/domain descriptions in the SDS. Unsupported non-BMP fixture characters are displayed as explicit Unicode escapes. No secrets, passwords, session cookies or real feedback are embedded.','small')
-story.append(PageBreak());para('Contents and page navigation','chapter');toc=TableOfContents();toc.levelStyles=[styles['h2'],styles['small']];story.append(toc)
 parts=[('A','Part A - SRS and product scope',['docs/srs.md','docs/decisions.md','docs/baseline-review.md']),('B','Part B - Feature inventory and traceability',['docs/features.md','docs/traceability.md']),('C','Part C - System-Level SDS',['docs/system-sds.md','docs/sprints/sprint-1/database-foundation.md']),('D','Part D - Three-sprint plan and team workflow',['docs/sprints/plan.md','docs/sprints/sprint-1/workflow.md','docs/sprints/sprint-1/tracker.md']),('E','Part E - Feature contracts, AC, STS and Product DoD',['docs/sprints/sprint-1/README.md','docs/sprints/sprint-1/shared-contract.md','docs/sprints/sprint-1/product-dod.md']+[f'docs/sprints/sprint-1/{name}{suffix}.md' for name in ['f-01-authentication','f-02-context-discovery','f-03-survey-authoring','f-04-responses','f-05-results'] for suffix in ['', '-sts']])]
 
 for key,title,paths in parts:
