@@ -44,3 +44,19 @@ test('failed logout must keep private workspace hidden even if reconnect returns
  failCheck=false;await page.getByRole('button',{name:'Retry sign-out',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Log in',exact:true})).toBeVisible();
 });
+test('logout failure while an earlier session check is held must leave retry available',async({page})=>{
+ let calls=0,release!:()=>void,reached!:()=>void;const held=new Promise<void>(r=>release=r),seen=new Promise<void>(r=>reached=r);
+ const auth={authenticated:true,user:{id:'owner-a',role:'OWNER',displayName:'Private owner identity'},csrfToken:'token',expiresAt:new Date(Date.now()+3600000).toISOString()};
+ await page.route('**/api/**',async route=>{const path=new URL(route.request().url()).pathname;
+ if(path==='/api/auth/session'){calls++;if(calls===2){reached();await held;}return route.fulfill({json:{data:auth}});}
+ if(path==='/api/auth/logout')return route.fulfill({status:503,json:{error:{code:'AUTH_SERVICE_UNAVAILABLE',message:'Unavailable'}}});
+ if(path==='/api/health')return route.fulfill({json:{data:{status:'ok'}}});
+ return route.fulfill({json:{data:{items:[],pagination:{total:0,limit:20,offset:0}}}});});
+ try{await page.goto('/');await expect(page.getByRole('button',{name:'Log out',exact:true})).toBeVisible();
+ await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));await seen;
+ await page.getByRole('button',{name:'Log out',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Retry sign-out',exact:true})).toBeEnabled({timeout:1500});
+ release();await expect(page.getByRole('button',{name:'Retry sign-out',exact:true})).toBeVisible();
+ await expect(page.getByText('Private owner identity · Instructor',{exact:true})).toHaveCount(0);
+ }finally{release();}
+});

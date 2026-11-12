@@ -258,6 +258,7 @@ function App() {
             return;
         setBusy(true);
         logoutPending.current = true;
+        setLoading(false);
         setPendingLogout(true);
         retainedLogoutToken.current ||= token.current;
         generation.current++;
