@@ -1,0 +1,1883 @@
+{
+  "recordedAt": "2026-11-12T08:10:48.950988+00:00",
+  "issue": 25,
+  "purpose": "UI-F01, UI-F02, UI-F03 bounded correction; not release acceptance",
+  "baselineSha": "2961014e6b21668f20321e0acade382e67972f1a",
+  "branch": "fix/25-ui-accessibility-recovery",
+  "testedSource": "Uncommitted working tree; sourceHashes identify actual tested content. No Git operations or review submission.",
+  "runtime": {
+    "node": "24.22.1",
+    "npm": "10.9.2",
+    "postgresql": "17.11",
+    "playwright": "1.65.0",
+    "chromium": "158.0.8127.18",
+    "platform": "Windows x64"
+  },
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "outcome": "Pass"
+    },
+    {
+      "command": "npm run build",
+      "outcome": "Pass; final build after recovery adjustment"
+    },
+    {
+      "command": "npm run test:unit",
+      "outcome": "Pass",
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0,
+      "filesPassed": 7,
+      "newFrontendUnitCases": 4
+    },
+    {
+      "command": "npm run test:e2e:recovery -- --reporter=list,json --output .local/evidence/ui-accessibility-recovery-verified",
+      "outcome": "Pass",
+      "report": "recovery-verified"
+    },
+    {
+      "command": "node scripts/playwright.mjs test --config playwright.features.config.ts --reporter=list,json --output .local/evidence/ui-accessibility-real-verified",
+      "outcome": "Pass",
+      "report": "real-verified",
+      "environment": "Direct process environment from isolated runner, no private .env files loaded"
+    },
+    {
+      "command": "npm run test:e2e -- --reporter=list,json --output .local/evidence/ui-accessibility-smoke",
+      "outcome": "Pass",
+      "report": "smoke"
+    }
+  ],
+  "finalTestExecutions": {
+    "unit": 41,
+    "mockedHttpBrowser": 74,
+    "realBrowserApiPostgresql": 22,
+    "databaseFreeSmoke": 4,
+    "total": 141,
+    "failed": 0,
+    "skipped": 0,
+    "retries": 0,
+    "notCompleteAcStsCertification": true
+  },
+  "newCases": {
+    "unitDefinitions": 4,
+    "mockedBrowserDefinitions": 9,
+    "realBrowserDefinitions": 2,
+    "browserConfigurations": [
+      "1280x720 normal",
+      "360x800 normal",
+      "320x900 normal",
+      "1280x900 native 200% zoom, 640 CSS pixels"
+    ]
+  },
+  "finalReports": {
+    "recovery-verified": {
+      "localIgnoredPath": ".local/evidence/ui-accessibility-recovery-verified.json",
+      "sha256": "0c2948d351b0526a2b682aa681d53ec44eaacaec5ea9f3d04f6fbd149734cc21",
+      "statistics": {
+        "startTime": "2026-11-12T08:06:49.080Z",
+        "duration": 43424.811,
+        "expected": 74,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "name": "R1: same-identity background check retains unsaved owner inputs; confirmed account change clears them",
+          "file": "review-recovery.spec.ts",
+          "line": 62,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 346
+            }
+          ]
+        },
+        {
+          "name": "R1: same-identity background check retains unsaved owner inputs; confirmed account change clears them",
+          "file": "review-recovery.spec.ts",
+          "line": 62,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 345
+            }
+          ]
+        },
+        {
+          "name": "R2: conflict preserves local edits, reads persisted revision, and requires explicit reapply before saving",
+          "file": "review-recovery.spec.ts",
+          "line": 74,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 502
+            }
+          ]
+        },
+        {
+          "name": "R2: conflict preserves local edits, reads persisted revision, and requires explicit reapply before saving",
+          "file": "review-recovery.spec.ts",
+          "line": 74,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 478
+            }
+          ]
+        },
+        {
+          "name": "R2: committed save with lost response retains edits and recovers through persisted read, without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 91,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 475
+            }
+          ]
+        },
+        {
+          "name": "R2: committed save with lost response retains edits and recovers through persisted read, without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 91,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 471
+            }
+          ]
+        },
+        {
+          "name": "R2/R4: uncertain publication checks persisted state and exposes frozen questionnaire without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 106,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 365
+            }
+          ]
+        },
+        {
+          "name": "R2/R4: uncertain publication checks persisted state and exposes frozen questionnaire without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 106,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 374
+            }
+          ]
+        },
+        {
+          "name": "R1: background session service failure retains edits and gates mutations until successful reconnect",
+          "file": "review-recovery.spec.ts",
+          "line": 117,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 334
+            }
+          ]
+        },
+        {
+          "name": "R1: background session service failure retains edits and gates mutations until successful reconnect",
+          "file": "review-recovery.spec.ts",
+          "line": 117,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 319
+            }
+          ]
+        },
+        {
+          "name": "R1: respondent selection remains after same-identity revalidation",
+          "file": "review-recovery.spec.ts",
+          "line": 129,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 281
+            }
+          ]
+        },
+        {
+          "name": "R1: respondent selection remains after same-identity revalidation",
+          "file": "review-recovery.spec.ts",
+          "line": 129,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 274
+            }
+          ]
+        },
+        {
+          "name": "R2: publication conflict reloads the authoritative Draft revision before an explicit retry",
+          "file": "review-recovery.spec.ts",
+          "line": 136,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 365
+            }
+          ]
+        },
+        {
+          "name": "R2: publication conflict reloads the authoritative Draft revision before an explicit retry",
+          "file": "review-recovery.spec.ts",
+          "line": 136,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 368
+            }
+          ]
+        },
+        {
+          "name": "R2/R4: lost close response recovers Closed read-only questionnaire without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 145,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 421
+            }
+          ]
+        },
+        {
+          "name": "R2/R4: lost close response recovers Closed read-only questionnaire without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 145,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 427
+            }
+          ]
+        },
+        {
+          "name": "R2: lost delete response reconciles a persisted 404 to the list without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 157,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 376
+            }
+          ]
+        },
+        {
+          "name": "R2: lost delete response reconciles a persisted 404 to the list without replay",
+          "file": "review-recovery.spec.ts",
+          "line": 157,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 385
+            }
+          ]
+        },
+        {
+          "name": "R2: uncertain create checks the lecture and opens its persisted survey without creating twice",
+          "file": "review-recovery.spec.ts",
+          "line": 165,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 396
+            }
+          ]
+        },
+        {
+          "name": "R2: uncertain create checks the lecture and opens its persisted survey without creating twice",
+          "file": "review-recovery.spec.ts",
+          "line": 165,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 422
+            }
+          ]
+        },
+        {
+          "name": "N1: uncertain committed submission remains blocked until saved status succeeds",
+          "file": "review-recovery.spec.ts",
+          "line": 179,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 479
+            }
+          ]
+        },
+        {
+          "name": "N1: uncertain committed submission remains blocked until saved status succeeds",
+          "file": "review-recovery.spec.ts",
+          "line": 179,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 476
+            }
+          ]
+        },
+        {
+          "name": "N1: an explicit successful not-submitted read permits a deliberate retry with retained answers",
+          "file": "review-recovery.spec.ts",
+          "line": 194,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 474
+            }
+          ]
+        },
+        {
+          "name": "N1: an explicit successful not-submitted read permits a deliberate retry with retained answers",
+          "file": "review-recovery.spec.ts",
+          "line": 194,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 524
+            }
+          ]
+        },
+        {
+          "name": "N2: back navigation requires explicit discard and cancellation retains draft inputs",
+          "file": "review-recovery.spec.ts",
+          "line": 209,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 350
+            }
+          ]
+        },
+        {
+          "name": "N2: back navigation requires explicit discard and cancellation retains draft inputs",
+          "file": "review-recovery.spec.ts",
+          "line": 209,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 426
+            }
+          ]
+        },
+        {
+          "name": "N2: context selection cancellation retains selection and draft; acceptance discards explicitly",
+          "file": "review-recovery.spec.ts",
+          "line": 221,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 344
+            }
+          ]
+        },
+        {
+          "name": "N2: context selection cancellation retains selection and draft; acceptance discards explicitly",
+          "file": "review-recovery.spec.ts",
+          "line": 221,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 372
+            }
+          ]
+        },
+        {
+          "name": "N3: publish and close require confirmation and cancellation sends no mutation",
+          "file": "review-recovery.spec.ts",
+          "line": 237,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 452
+            }
+          ]
+        },
+        {
+          "name": "N3: publish and close require confirmation and cancellation sends no mutation",
+          "file": "review-recovery.spec.ts",
+          "line": 237,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 442
+            }
+          ]
+        },
+        {
+          "name": "N5: survey card exposes course, section, lecture date and mode",
+          "file": "review-recovery.spec.ts",
+          "line": 256,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 289
+            }
+          ]
+        },
+        {
+          "name": "N5: survey card exposes course, section, lecture date and mode",
+          "file": "review-recovery.spec.ts",
+          "line": 256,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 278
+            }
+          ]
+        },
+        {
+          "name": "N2: Section and Lecture changes each require explicit discard before unmounting the draft",
+          "file": "review-recovery.spec.ts",
+          "line": 266,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 359
+            }
+          ]
+        },
+        {
+          "name": "N2: Section and Lecture changes each require explicit discard before unmounting the draft",
+          "file": "review-recovery.spec.ts",
+          "line": 266,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 336
+            }
+          ]
+        },
+        {
+          "name": "N3: Draft deletion also respects the existing contract confirmation",
+          "file": "review-recovery.spec.ts",
+          "line": 283,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 363
+            }
+          ]
+        },
+        {
+          "name": "N3: Draft deletion also respects the existing contract confirmation",
+          "file": "review-recovery.spec.ts",
+          "line": 283,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 354
+            }
+          ]
+        },
+        {
+          "name": "DEF-B23-01: failed lifecycle and status reads stay blocked until explicit reconciliation",
+          "file": "review-recovery.spec.ts",
+          "line": 295,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 551
+            }
+          ]
+        },
+        {
+          "name": "DEF-B23-01: failed lifecycle and status reads stay blocked until explicit reconciliation",
+          "file": "review-recovery.spec.ts",
+          "line": 295,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 546
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: keyboard reorder focuses the moved question, including movement to first position",
+          "file": "ui-accessibility.spec.ts",
+          "line": 42,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 677
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: keyboard reorder focuses the moved question, including movement to first position",
+          "file": "ui-accessibility.spec.ts",
+          "line": 42,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 666
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: keyboard reorder focuses the moved question, including movement to first position",
+          "file": "ui-accessibility.spec.ts",
+          "line": 42,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 709
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: keyboard reorder focuses the moved question, including movement to first position",
+          "file": "ui-accessibility.spec.ts",
+          "line": 42,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1574
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 1 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 352
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 1 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 346
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 1 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 341
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 1 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1354
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 2 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 355
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 2 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 378
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 2 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 418
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 2 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1361
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 3 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 369
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 3 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 401
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 3 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 441
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing question 3 focuses the next or previous available question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 57,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1394
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing the only question focuses Add question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 65,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 290
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing the only question focuses Add question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 65,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 339
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing the only question focuses Add question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 65,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 310
+            }
+          ]
+        },
+        {
+          "name": "UI-F01: removing the only question focuses Add question",
+          "file": "ui-accessibility.spec.ts",
+          "line": 65,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1296
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: rejected Draft fields have stable linked errors without exposing server details",
+          "file": "ui-accessibility.spec.ts",
+          "line": 70,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 463
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: rejected Draft fields have stable linked errors without exposing server details",
+          "file": "ui-accessibility.spec.ts",
+          "line": 70,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 517
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: rejected Draft fields have stable linked errors without exposing server details",
+          "file": "ui-accessibility.spec.ts",
+          "line": 70,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 461
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: rejected Draft fields have stable linked errors without exposing server details",
+          "file": "ui-accessibility.spec.ts",
+          "line": 70,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1439
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required rating links to its retained input",
+          "file": "ui-accessibility.spec.ts",
+          "line": 88,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 374
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required rating links to its retained input",
+          "file": "ui-accessibility.spec.ts",
+          "line": 88,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 359
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required rating links to its retained input",
+          "file": "ui-accessibility.spec.ts",
+          "line": 88,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 312
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required rating links to its retained input",
+          "file": "ui-accessibility.spec.ts",
+          "line": 88,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1498
+            }
+          ]
+        },
+        {
+          "name": "UI-F03: rejection and uncertainty do not focus confirmation; confirmed success does",
+          "file": "ui-accessibility.spec.ts",
+          "line": 97,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 458
+            }
+          ]
+        },
+        {
+          "name": "UI-F03: rejection and uncertainty do not focus confirmation; confirmed success does",
+          "file": "ui-accessibility.spec.ts",
+          "line": 97,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 515
+            }
+          ]
+        },
+        {
+          "name": "UI-F03: rejection and uncertainty do not focus confirmation; confirmed success does",
+          "file": "ui-accessibility.spec.ts",
+          "line": 97,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 498
+            }
+          ]
+        },
+        {
+          "name": "UI-F03: rejection and uncertainty do not focus confirmation; confirmed success does",
+          "file": "ui-accessibility.spec.ts",
+          "line": 97,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1446
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required and overlong written answers retain values and link to the textarea",
+          "file": "ui-accessibility.spec.ts",
+          "line": 113,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 459
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required and overlong written answers retain values and link to the textarea",
+          "file": "ui-accessibility.spec.ts",
+          "line": 113,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 519
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required and overlong written answers retain values and link to the textarea",
+          "file": "ui-accessibility.spec.ts",
+          "line": 113,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 479
+            }
+          ]
+        },
+        {
+          "name": "UI-F02: required and overlong written answers retain values and link to the textarea",
+          "file": "ui-accessibility.spec.ts",
+          "line": 113,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1350
+            }
+          ]
+        }
+      ]
+    },
+    "real-verified": {
+      "localIgnoredPath": ".local/evidence/ui-accessibility-real-verified.json",
+      "sha256": "32509f38a9af68d9de227f58f70d6dbf5264ec8725d5a2667f776d3bd124842b",
+      "statistics": {
+        "startTime": "2026-11-12T08:07:24.976Z",
+        "duration": 44673.632000000005,
+        "expected": 22,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "name": "B23-01 real owner → student → closed results, persisted reload/relogin and validation",
+          "file": "feedback.spec.ts",
+          "line": 3,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2364
+            }
+          ]
+        },
+        {
+          "name": "B23-01 real owner → student → closed results, persisted reload/relogin and validation",
+          "file": "feedback.spec.ts",
+          "line": 3,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2273
+            }
+          ]
+        },
+        {
+          "name": "B23-02 real invalid then keyboard login and one StrictMode bootstrap",
+          "file": "feedback.spec.ts",
+          "line": 66,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 358
+            }
+          ]
+        },
+        {
+          "name": "B23-02 real invalid then keyboard login and one StrictMode bootstrap",
+          "file": "feedback.spec.ts",
+          "line": 66,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 516
+            }
+          ]
+        },
+        {
+          "name": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload",
+          "file": "sprint1-recovery-states.spec.ts",
+          "line": 3,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1704
+            }
+          ]
+        },
+        {
+          "name": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload",
+          "file": "sprint1-recovery-states.spec.ts",
+          "line": 3,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2018
+            }
+          ]
+        },
+        {
+          "name": "B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation",
+          "file": "sprint1-recovery-states.spec.ts",
+          "line": 43,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1664
+            }
+          ]
+        },
+        {
+          "name": "B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation",
+          "file": "sprint1-recovery-states.spec.ts",
+          "line": 43,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1772
+            }
+          ]
+        },
+        {
+          "name": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry",
+          "file": "sprint1-recovery-states.spec.ts",
+          "line": 80,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1703
+            }
+          ]
+        },
+        {
+          "name": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry",
+          "file": "sprint1-recovery-states.spec.ts",
+          "line": 80,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1897
+            }
+          ]
+        },
+        {
+          "name": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows",
+          "file": "sprint1-rejections.spec.ts",
+          "line": 3,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2151
+            }
+          ]
+        },
+        {
+          "name": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows",
+          "file": "sprint1-rejections.spec.ts",
+          "line": 3,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2460
+            }
+          ]
+        },
+        {
+          "name": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access",
+          "file": "sprint1-rejections.spec.ts",
+          "line": 49,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1296
+            }
+          ]
+        },
+        {
+          "name": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access",
+          "file": "sprint1-rejections.spec.ts",
+          "line": 49,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1452
+            }
+          ]
+        },
+        {
+          "name": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 22,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1254
+            }
+          ]
+        },
+        {
+          "name": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 22,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1455
+            }
+          ]
+        },
+        {
+          "name": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 22,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1414
+            }
+          ]
+        },
+        {
+          "name": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 22,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2303
+            }
+          ]
+        },
+        {
+          "name": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 51,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1663
+            }
+          ]
+        },
+        {
+          "name": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 51,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1722
+            }
+          ]
+        },
+        {
+          "name": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 51,
+          "project": "chromium-320",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 1746
+            }
+          ]
+        },
+        {
+          "name": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results",
+          "file": "ui-accessibility-real.spec.ts",
+          "line": 51,
+          "project": "chromium-zoom200",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 2735
+            }
+          ]
+        }
+      ]
+    },
+    "smoke": {
+      "localIgnoredPath": ".local/evidence/ui-accessibility-smoke.json",
+      "sha256": "7328d854c3440ffb49aa59a72a367381e02deb46ec753901e67eee2ab899bb59",
+      "statistics": {
+        "startTime": "2026-11-12T08:07:05.852Z",
+        "duration": 2410.4880000000003,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "name": "real browser proxy reaches the API liveness endpoint",
+          "file": "workspace.spec.ts",
+          "line": 2,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 434
+            }
+          ]
+        },
+        {
+          "name": "real browser proxy reaches the API liveness endpoint",
+          "file": "workspace.spec.ts",
+          "line": 2,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 419
+            }
+          ]
+        },
+        {
+          "name": "same-origin proxy requires real authentication for survey access",
+          "file": "workspace.spec.ts",
+          "line": 12,
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 10
+            }
+          ]
+        },
+        {
+          "name": "same-origin proxy requires real authentication for survey access",
+          "file": "workspace.spec.ts",
+          "line": 12,
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            {
+              "status": "passed",
+              "retry": 0,
+              "durationMs": 11
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "intermediateReportsNotCounted": [
+    {
+      "report": ".local/evidence/ui-accessibility-real-first.json",
+      "sha256": "e0ae79759e024be2bcdc1ae208e12ce3959be910991d34ba530f222001a97d8c",
+      "statistics": {
+        "startTime": "2026-11-12T08:03:33.291Z",
+        "duration": 64131.125,
+        "expected": 18,
+        "skipped": 0,
+        "unexpected": 4,
+        "flaky": 0
+      },
+      "countedInFinalTotal": false
+    },
+    {
+      "report": ".local/evidence/ui-accessibility-real-green.json",
+      "sha256": "c2547b64ec696cf49c5dba6feb8efa8c5da4dc5ba67502b58f18577179955760",
+      "statistics": {
+        "startTime": "2026-11-12T08:05:42.012Z",
+        "duration": 51378.672,
+        "expected": 21,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "countedInFinalTotal": false
+    },
+    {
+      "report": ".local/evidence/ui-accessibility-recovery-final.json",
+      "sha256": "1903c61f4b8e681fe46cf18d8b8f0442e3692cbed8ee1210f9dba0b6dcefa5db",
+      "statistics": {
+        "startTime": "2026-11-12T08:02:47.278Z",
+        "duration": 63375.73,
+        "expected": 70,
+        "skipped": 0,
+        "unexpected": 4,
+        "flaky": 0
+      },
+      "countedInFinalTotal": false
+    },
+    {
+      "report": ".local/evidence/ui-accessibility-recovery-green.json",
+      "sha256": "27f895d34600857e03d534f20c9d0d75bf92b16ff6b70836e69c07ed9994d55f",
+      "statistics": {
+        "startTime": "2026-11-12T08:05:23.333Z",
+        "duration": 47925.577,
+        "expected": 74,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "countedInFinalTotal": false
+    },
+    {
+      "report": ".local/evidence/ui-accessibility-recovery.json",
+      "sha256": "491f606bf2fbb471ffb4e871eee221513445a212aa127a1e3c7fc043fd4e9b46",
+      "statistics": {
+        "startTime": "2026-11-12T08:00:53.951Z",
+        "duration": 43469.208,
+        "expected": 63,
+        "skipped": 0,
+        "unexpected": 7,
+        "flaky": 0
+      },
+      "countedInFinalTotal": false
+    },
+    {
+      "report": ".local/evidence/ui-accessibility-red-confirmation.json",
+      "sha256": "92516db4745314d8d9b154b0786a0bb708a44f3a6d89283efffd37f4237148fa",
+      "statistics": {
+        "startTime": "2026-11-12T07:56:37.310Z",
+        "duration": 6939.736,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "countedInFinalTotal": false
+    },
+    {
+      "report": ".local/evidence/ui-accessibility-red.json",
+      "sha256": "b43da924621c0502fc8573587c6aa2d03a908bdab6cca27f89b483a094781b9d",
+      "statistics": {
+        "startTime": "2026-11-12T07:56:08.865Z",
+        "duration": 15779.699999999999,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 3,
+        "flaky": 0
+      },
+      "countedInFinalTotal": false
+    }
+  ],
+  "otherAttempts": [
+    {
+      "attempt": "Data-URL dynamic harness import",
+      "result": "pg module resolution failed before cluster/database creation; no tests ran"
+    },
+    {
+      "attempt": "Initial sandbox build",
+      "result": "spawn EPERM; normal subprocess build subsequently passed"
+    },
+    {
+      "attempt": "Source edit during intermediate real run",
+      "result": "Hot reload interrupted existing login case: 21 pass/1 fail; frozen-source final rerun 22 pass"
+    }
+  ],
+  "databaseSafety": {
+    "newEmptyClusterEachRun": true,
+    "loopbackOnly": true,
+    "verifiedDataDirectory": true,
+    "allowlistAndBrowserOptIn": true,
+    "existingDataTouched": false,
+    "privateEnvironmentFilesRead": false,
+    "finalDatabase": "lectra_test_ui_a02d2179c4a2",
+    "clusterStopped": true,
+    "temporaryServicesStopped": true,
+    "credentials": "Synthetic, generated in memory; not included in evidence"
+  },
+  "nativeZoomEvidence": [
+    {
+      "scenario": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists",
+      "project": "chromium-zoom200",
+      "factor": 2,
+      "innerWidth": 640,
+      "outerWidth": 1280,
+      "devicePixelRatio": 2
+    },
+    {
+      "scenario": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results",
+      "project": "chromium-zoom200",
+      "factor": 2,
+      "innerWidth": 640,
+      "outerWidth": 1280,
+      "devicePixelRatio": 2
+    }
+  ],
+  "mapping": [
+    {
+      "findings": [
+        "UI-F01"
+      ],
+      "ac": [
+        "AC-F03-05",
+        "AC-F03-24"
+      ],
+      "sts": [
+        "TEST-F03-E01",
+        "TEST-F03-E05"
+      ],
+      "disposition": "Selected automated subconditions demonstrated, not full STS Pass"
+    },
+    {
+      "findings": [
+        "UI-F02"
+      ],
+      "ac": [
+        "AC-F03-06",
+        "AC-F03-23",
+        "AC-F03-24",
+        "AC-F04-02",
+        "AC-F04-03",
+        "AC-F04-17",
+        "AC-F04-25"
+      ],
+      "sts": [
+        "TEST-F03-E02",
+        "TEST-F03-E05",
+        "TEST-F04-E02"
+      ],
+      "disposition": "Selected field/keyboard/retention subconditions demonstrated"
+    },
+    {
+      "findings": [
+        "UI-F03"
+      ],
+      "ac": [
+        "AC-F04-09",
+        "AC-F04-17",
+        "AC-F04-18",
+        "AC-F04-25"
+      ],
+      "sts": [
+        "TEST-F04-E01",
+        "TEST-F04-E02",
+        "TEST-F04-E03"
+      ],
+      "disposition": "Confirmed success/rejection focus and selected uncertainty subconditions demonstrated"
+    }
+  ],
+  "existingFilesChanged": [
+    "apps/web/src/main.tsx",
+    "apps/web/src/theme.css",
+    "playwright.features.config.ts",
+    "playwright.recovery.config.ts",
+    "vitest.unit.config.ts"
+  ],
+  "newFiles": [
+    "apps/web/src/ui-validation.ts",
+    "apps/web/tests/ui-validation.test.ts",
+    "docs/sprints/sprint-1/pr40-ui-accessibility-fix.md",
+    "docs/sprints/sprint-1/pr40-ui-accessibility-verification.json",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/closed-results-chromium-320.png",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/closed-results-chromium-zoom200.png",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/draft-field-error-chromium-320.png",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/draft-field-error-chromium-zoom200.png",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/response-validation-chromium-320.png",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/response-validation-chromium-zoom200.png",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/submission-focus-chromium-320.png",
+    "docs/sprints/sprint-1/ui-accessibility-evidence/submission-focus-chromium-zoom200.png",
+    "tests/browser/support/ui-keyboard.ts",
+    "tests/browser/ui-accessibility-real.spec.ts",
+    "tests/browser/ui-accessibility.spec.ts"
+  ],
+  "sourceHashes": {
+    ".env.example": "c95cb3e5cfd4e622f2f3fe1d2b12781d447a7cd18214ecfb1f1389c3d4a7b4eb",
+    ".env.test.example": "a06562006648ac5cb155e398ba2e93ee69706c8ce4ed96fc265165fd4ffb8dcf",
+    ".node-version": "7c415154bb9f8e90394317c7109261249d2c4fbd549008ae6d014ee565ee7967",
+    ".npmrc": "923b57051dfbbcd94b28386d3d452a5830993a9b349cfe8d9a8d0d418976949f",
+    "apps/api/package.json": "afc0d6a6d8ff05743c33d2da1e8278e260a7ba4f1dd17ef028e6930463752326",
+    "apps/api/src/app.ts": "73edb5129eb0244708788786cc6e5b47e7f1743d82927a6e065fbf7e810736c0",
+    "apps/api/src/auth-rules.ts": "e748a3ad1c1d10e78a56ccb11f6537d1c633dda5ff1cea1d4be6b9107c3102f7",
+    "apps/api/src/auth.ts": "aa457dceee84694e84cbc8812c2eb1b9721acabc35306caa6bfcd51a71349dff",
+    "apps/api/src/config.ts": "6810df86640931f18c084a46777ea3f747f6540c1907bb6a50079d22972cf1f5",
+    "apps/api/src/database.ts": "9814c89f355d05ba9aaa1f0418ef3a01977997f57ac4b9effef3b967d3a72776",
+    "apps/api/src/feedback-rules.ts": "14083dfb16594605166cfd21ba037fe29babbcc2873eba99b35a9162407bfa65",
+    "apps/api/src/feedback.ts": "5804bfa4adc47dabb2f6a5c5f95914c5998148f2fbe1c99820a1fc94b9ca2e10",
+    "apps/api/src/http.ts": "cc94620d83eaa8a6b5caf6edf0289cc8f636ca6c4cb5bd297365ea283a21b3b6",
+    "apps/api/src/server.ts": "8c87fdb9e77e07585d7e456ba9e7701a25805376429141e64628a62f0df357a1",
+    "apps/api/src/test-database.ts": "f9d2525c87bcd04c75d58e9bc09e1faff81fb78caae7ed54ee94684fe33b24eb",
+    "apps/api/tests/api/health.test.ts": "3cf605fc6930096f68607be7792929f7b82771c7ff7a19b31e6cc22f67633008",
+    "apps/api/tests/db/postgres.test.ts": "8895ea970a4a01a727454ca17e29eac934982162988d5e21062f6b3cb75624e9",
+    "apps/api/tests/features/workflows.test.ts": "6be29c67e5691ee7a6aabb0b2db019c215a3958d97c5a851acf2b8a2c1f41ec5",
+    "apps/api/tests/foundation/database.test.ts": "c10cc2edf7e34f7b088d012e542d99af6908ae47dcc2030b56fdbb29d36e4309",
+    "apps/api/tests/unit/argon2-compatibility.test.ts": "077fd4debd2cb9063d9cffcb974cc66a1c0901951785140475f09ab91da3231d",
+    "apps/api/tests/unit/auth-rules.test.ts": "fd69932d24cb77ea6c290461c6d1fc897426ed88d21afdcc74a5bef6fec6d334",
+    "apps/api/tests/unit/config.test.ts": "fcfb156c371a3ac5934b35e9d7a2411d28010ee14d83688a0bf05d42054cfca9",
+    "apps/api/tests/unit/database-seed.test.ts": "fe09dad111464a6bf76168f97665682f8d4306d2f891e612760aec7508dc44b3",
+    "apps/api/tests/unit/feedback-rules.test.ts": "e282320bc052803290f7108c51a40961377ee3987e58e6e3bb5649e0dd1c3ec7",
+    "apps/api/tests/unit/test-database.test.ts": "83e910f6262ee96dd280eadd26f40ccd28d651fd2f092337da6902f598a1a4c2",
+    "apps/api/tsconfig.build.json": "e95cf10601d333c6c4c3204cf7149ef1f4da3e2e0118e310da531c7d61deee33",
+    "apps/api/tsconfig.json": "06ad6c72fd0966aac016c6944cc7029365ca30f24e133009a4440b1f97dfb7b2",
+    "apps/web/index.html": "13d1cf03e601ffe64951f895ca4389788de518089f6fdadc85092da5e8ab094c",
+    "apps/web/package.json": "3812dbe005e1a4685ad21cc7588a027ec1a5e716d65365b0deb895805f300c9e",
+    "apps/web/src/main.tsx": "57082cf6459284e13937116b7a6128efed5bb54fcfa69fb4fd7769329774fb3d",
+    "apps/web/src/theme.css": "e4c24ae604bde0356d877c5e9b0a785aad3b8eb3f801022885ac11a6a03f6320",
+    "apps/web/src/ui-validation.ts": "9ca8dadc98bee08a0cc7818defbaf3f4c637d364ee58e20e51ca4775faae6e5d",
+    "apps/web/tests/ui-validation.test.ts": "aa2575ce3b4b246e1ac71b11d60540202f9e9fd173bbf7171c7b5e93102c4942",
+    "apps/web/tsconfig.json": "65ec8f1388871aee2c54bd3dd0e6129315aee4fdc8edfb726b87a4020ef963ca",
+    "apps/web/vite.config.ts": "ea49504c9c370064624f0cdc7a9efedd0d833098bd2d77f48b7dfcb4da0f36b1",
+    "package-lock.json": "7de43c3d6d767cc74c9ea049ad6ca63acc7f381ce9205e9bb7e0082dcce3a186",
+    "package.json": "fedcbd3ac56b25ab353a844a61ccd6cf51a337274b6f91a0c348dac728c32dcb",
+    "playwright.config.ts": "be60ab5526c4b19f4a5797ebde93a33f40f949c0f5896f833ca46998b47eca93",
+    "playwright.features.config.ts": "6d25a034ef2cd21ac424c554a56dcc5eb783dd2d468f378dc7cf358665effbd6",
+    "playwright.recovery.config.ts": "2798214d3af1c7959cd95452feaf64298c7ebcb1b954294fae0b5861234a714c",
+    "prisma.config.ts": "64e2f999573b3d9cf70fe31027c20773e6a9a982b7e305a9488d15823247c91d",
+    "prisma/fixtures.ts": "4aa44180f9d78ba9d8117c6ac94e083b0e1323f109fdeb4e2e1da973d6b26477",
+    "prisma/migrations/202611080001_user_session/migration.sql": "e7ef2e0d21127b0cadf06b1dd0cbc59307eec7617753c6e8b3dee244f57c541d",
+    "prisma/migrations/202611080002_academic_context/migration.sql": "fe7cba867e1fbd70450bfebff7d6b6deff6d46dc25f4a49ce54b3adcb7be0dbc",
+    "prisma/migrations/202611080003_survey_response/migration.sql": "0ebbff8b6ecab12a5005ff3d5945e887924257ee1d8665cbdc6d9b8455ecc926",
+    "prisma/migrations/migration_lock.toml": "e0f301404b533bea819cafbc56ca2a9d9bcc2cf97d6350473e3a008f0637cc12",
+    "prisma/schema.prisma": "700e2408818d250c02b02eee99958cd0002a270edf0ebdc0bc8f81cf55301c77",
+    "scripts/build-review-report.py": "b9c61f6c8341f8046673f1d142e2e7c5d23f0708173fd3a70c1ff5eb4d397711",
+    "scripts/check-runtime.mjs": "6dea76ca398fe4d1462fc0c00b4a3801bd0c0b363e638b372629765cc80558fc",
+    "scripts/database.ts": "105409e46a424482e75e0e89d463c405bf2603ed86f05aa24e196575b7ebea9f",
+    "scripts/demo-config.ts": "2630215cc4557859d5bbea3bd88ac5f54087f1e1ef4a8b54ff5056db2b7eb3a5",
+    "scripts/dev.mjs": "f55bec4c4f7c7d8cf28f31c2d0331d01b1ce387bd8679008ab8b0b0224af9a10",
+    "scripts/orm-smoke.ts": "6deec45bad53193151365dfa5e8a666b4744977395372d3b2e0ed4f7073d2560",
+    "scripts/playwright.mjs": "361e7da3ea60c63eb9243c049d9d854d5158fd852c70d500ccb244f9f34db36d",
+    "scripts/prepare-browser.ts": "ad89c4eb9f6afa6c7e9637a9e108553f7453b3aa177b980356d3d326f049e147",
+    "scripts/seed-database.ts": "1becca446742fa95e611aabf6a7b3a701b03200d48bdcaf85ea1ef3cc7687085",
+    "scripts/setup-local.mjs": "330377f9ce0edb7c551edf257d6b71905fe4c066e226b6e162fc9c4298950c9b",
+    "scripts/verify-restart.ts": "287ff4b24f0246532f9dafdbb074c12eccdecaa974f3eca308446b09126db6b2",
+    "tests/browser/feedback.spec.ts": "248a0c753a1d127519b735e36b7655c2cdc8e01ac4ea6cbf9c78613c763366f4",
+    "tests/browser/review-recovery.spec.ts": "e4424b5a0d8a4cce272741e8df4eca0a4975d8144f4ade9f68fd9ea9c36ae65e",
+    "tests/browser/sprint1-recovery-states.spec.ts": "46e39b331cf92c6ef0604106c5866a208c237b9c95bd86c7d281cd8fdace8705",
+    "tests/browser/sprint1-rejections.spec.ts": "be799bd56c582ffe6af1ab02401de1bf4727370d04948c9f659e7666a7584d44",
+    "tests/browser/support/fixtures.ts": "0888eca6852f01d5f3bc34103d64dd4f87779c642f847494ced2d5dae8c723a4",
+    "tests/browser/support/real-app.ts": "ffc1070ea0267625730d62276900facf3f9a7a5dfa43623b3736602b6a43e70b",
+    "tests/browser/support/ui-keyboard.ts": "eb99b07e2cc2e2042d2735943bce4dc767ec97bf6bc9440da5a139d2b5544338",
+    "tests/browser/ui-accessibility-real.spec.ts": "baea622a0e9f7a71973d8317ac28b1a613974d5a947253f610e3993e0fb59eeb",
+    "tests/browser/ui-accessibility.spec.ts": "2bde3297afc249f68bc4d7186b863b358bb829794ae4dd7c3e58792930de1273",
+    "tests/database/constraints.sql": "70005c3b17fcbd347200e4e901e2d748046091cb635364142be9768463fd232f",
+    "tests/e2e/workspace.spec.ts": "026b17da852bd876ba14710fba04d507ac6d0f88837008d4af3269ebc6425aa1",
+    "tsconfig.base.json": "f70549527080f27e6c1929957e67d49fb11453df0850484864e9a026613613a2",
+    "tsconfig.tooling.json": "1b8c8ddeb03e7a0d9fbfc3a00f910ea875e46a500d39333a5ec400efaf5273d2",
+    "vitest.api.config.ts": "db682d8acf6ed8d886364683e6567ded5688d9aec3c63b0f279bccb52a7826b3",
+    "vitest.db.config.ts": "a98117dbd6af4f192adf365508a476e82f4ffcf4cf010b416cf41cada7e8ec95",
+    "vitest.features.config.ts": "2c712c64d3d4b5fe8d73db30b5b7893a7b5fb98f01fa74c5c6841e7ba1f1d14f",
+    "vitest.foundation.config.ts": "9ca976563277151a538361572e98c57eec6f6a20ef24f0b89a15b53b86ce769f",
+    "vitest.unit.config.ts": "475607a26ca65a2fcd84875871f1c0e6a634e31051440a0d4f26e37169de38f2"
+  },
+  "screenshots": [
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/closed-results-chromium-320.png",
+      "sha256": "e15181a8b7e0d1bf86ac475953734fb8754047d8482db8e96544d488191de068",
+      "width": 320,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    },
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/closed-results-chromium-zoom200.png",
+      "sha256": "b858919447f4a198fdfd09a6f53fb3bab1aaafb2f93c12ad081117f638032275",
+      "width": 1280,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    },
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/draft-field-error-chromium-320.png",
+      "sha256": "99246b79dc2da1c5c8a3dcc17fee2c3ffc6045f090736a6d74c65b46504387a2",
+      "width": 320,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    },
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/draft-field-error-chromium-zoom200.png",
+      "sha256": "3569868b0ab942232ab3aa8800c90428582e2c774500ed4476ce9da0d04f561a",
+      "width": 1280,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    },
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/response-validation-chromium-320.png",
+      "sha256": "ee73efad16fa933361945d833e574fe3aae062889f2ef12197aa9eaedd227060",
+      "width": 320,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    },
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/response-validation-chromium-zoom200.png",
+      "sha256": "99753ec58d272007a410e7f6b231715b719be7927e7c91ddc7cb3d0e3e712715",
+      "width": 1280,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    },
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/submission-focus-chromium-320.png",
+      "sha256": "9dfefc7b33e0bf76223b28cd0b925da4a8ab3d1b71dd65aa07f15b9163940d6f",
+      "width": 320,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    },
+    {
+      "file": "docs/sprints/sprint-1/ui-accessibility-evidence/submission-focus-chromium-zoom200.png",
+      "sha256": "c74197e3096fa4842c79803a94c5ae4fb438545c2684bb46d7a4bbe550c21ee9",
+      "width": 1280,
+      "height": 900,
+      "sourceReport": ".local/evidence/ui-accessibility-real-verified.json",
+      "capture": "CDP Page.captureScreenshot; viewport only; genuine browser zoom retained"
+    }
+  ],
+  "limitations": [
+    "Automated Chromium checks and agent screenshot inspection; no human or assistive-technology acceptance.",
+    "No full WCAG certification or complete AC/STS matrix claim.",
+    "Native dialogs in fixture setup are handled by existing automation, not human keyboard acceptance.",
+    "Screenshots show their actual viewport/scroll position; Closed navigation captures do not show numerical results.",
+    "Teammate review and G-04 human acceptance remain pending.",
+    "Historical evidence, F-01-F-05 specs and AC wording are unchanged."
+  ]
+}

@@ -1,5 +1,6 @@
-import { StrictMode, useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { StrictMode, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
+import { draftFieldIssues, responseFieldIssues, type DraftField, type FieldIssue } from './ui-validation';
 import './theme.css';
 type User = {
     id: string;
@@ -108,15 +109,27 @@ class ApiError extends Error {
 }
 type Api = <T>(path: string, method?: string, body?: unknown) => Promise<T>;
 const defaultScale = (): Scale => ({ min: 1, max: 5, minLabel: '', maxLabel: '', interpretation: '' });
-function ErrorBox({ message }: {
+function ErrorBox({ message, fields = [], focusKey }: {
     message: string;
+    fields?: FieldIssue[];
+    focusKey?: number;
 }) {
     const ref = useRef<HTMLDivElement>(null);
+    const focusTrigger = focusKey ?? message;
     useEffect(() => { if (message)
-        ref.current?.focus(); }, [message]);
-    return message ? <div ref={ref} className="error" role="alert" tabIndex={-1}>{message}</div> : null;
+        ref.current?.focus(); }, [focusTrigger]);
+    return message ? <div ref={ref} className="error" role="alert" tabIndex={-1}>{message}{fields.length > 0 && <ul>{fields.map(field => <li key={field.target}><a href={`#${field.target}`} onClick={event => { event.preventDefault(); document.getElementById(field.target)?.focus(); }}>{field.message}</a></li>)}</ul>}</div> : null;
+}
+function fieldAttributes(id: string, fields: FieldIssue[]) {
+    return fields.some(field => field.target === id) ? { 'aria-invalid': true as const, 'aria-describedby': `${id}-error` } : {};
+}
+function FieldError({ id, fields }: { id: string; fields: FieldIssue[] }) {
+    const issue = fields.find(field => field.target === id);
+    return issue ? <p className="field-error" id={`${id}-error`}>{issue.message}</p> : null;
 }
 const reason = (error: unknown) => error instanceof ApiError ? `${error.message} (${error.code})` : 'Connection interrupted. The outcome may be unknown. Check saved status before trying again.';
+const formCodes = new Set(['INVALID_DEFINITION', 'INVALID_REQUEST', 'INVALID_ANSWERS', 'REVISION_CONFLICT', 'INVALID_STATE', 'SURVEY_ALREADY_EXISTS', 'RESPONSE_ALREADY_SUBMITTED', 'MODE_NOT_SUPPORTED', 'NOT_FOUND', 'FORBIDDEN_ROLE', 'AUTH_REQUIRED', 'SESSION_EXPIRED', 'CSRF_INVALID', 'ORIGIN_FORBIDDEN', 'BODY_TOO_LARGE', 'UNSUPPORTED_CONTENT', 'MALFORMED_JSON', 'ELIGIBILITY_EMPTY', 'ELIGIBILITY_INVALID', 'AUTH_SERVICE_UNAVAILABLE', 'SERVICE_UNAVAILABLE', 'INTERNAL_ERROR']);
+const formReason = (error: unknown) => error instanceof ApiError ? `Request could not be completed.${formCodes.has(error.code) ? ` (${error.code})` : ''}` : reason(error);
 function App() {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
@@ -418,19 +431,44 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     busy: boolean;
     blocked: (value: boolean) => void;
 }) {
+    type EditorQuestion = Question & { editorKey: string };
+    const formId = useId(), serial = useRef(0), pendingFocus = useRef<string | null>(null);
+    function editable(items: Question[], previous: EditorQuestion[] = []): EditorQuestion[] {
+        return items.map((q, index) => ({ ...q, editorKey: previous.find(old => q.id && old.id === q.id)?.editorKey ?? (previous[index]?.id === null ? previous[index].editorKey : undefined) ?? q.id ?? `new-${serial.current++}` }));
+    }
     const [baseline, setBaseline] = useState(survey);
     const [needsCheck, setNeedsCheck] = useState(false), [persisted, setPersisted] = useState<Survey | null>(null), [checking, setChecking] = useState(false);
-    const [title, setTitle] = useState(survey.title), [questions, setQuestions] = useState<Question[]>(survey.questions), [dirty, setDirty] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('');
+    const [title, setTitle] = useState(survey.title), [questions, setQuestions] = useState<EditorQuestion[]>(() => editable(survey.questions)), [dirty, setDirty] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('');
+    const [validation, setValidation] = useState<'draft' | 'publish' | null>(null), [errorAttempt, setErrorAttempt] = useState(0);
+    const titleId = `${formId}-title`, addId = `${formId}-add`;
+    const questionId = (index: number, field: DraftField) => `${formId}-${questions[index]!.editorKey}-${field}`;
+    const validate = (publishing: boolean) => draftFieldIssues(title, questions, { title: titleId, add: addId, question: questionId }, publishing);
+    const fields = validation ? validate(validation === 'publish') : [];
+    useLayoutEffect(() => { if (pendingFocus.current) { document.getElementById(pendingFocus.current)?.focus(); pendingFocus.current = null; } }, [questions]);
     useEffect(() => { blocked(saving || needsCheck || checking || dirty); return () => blocked(false); }, [saving, needsCheck, checking, dirty, blocked]);
     useEffect(() => {
-        if (!dirty && !needsCheck && !saving) { setBaseline(survey); setTitle(survey.title); setQuestions(survey.questions); }
+        if (!dirty && !needsCheck && !saving) { setBaseline(survey); setTitle(survey.title); setQuestions(old => editable(survey.questions, old)); }
     }, [survey, dirty, needsCheck, saving]);
     function change(index: number, patch: Partial<Question>) { setDirty(true); setQuestions(q => q.map((v, i) => i === index ? { ...v, ...patch } : v)); }
+    function moveUp(index: number) {
+        if (!index) return;
+        pendingFocus.current = questionId(index, 'prompt');
+        setDirty(true); setQuestions(old => { const items = [...old]; [items[index - 1], items[index]] = [items[index]!, items[index - 1]!]; return items; });
+    }
+    function remove(index: number) {
+        const remaining = questions.filter((_, i) => i !== index), next = remaining[index] ?? remaining[index - 1];
+        pendingFocus.current = next ? `${formId}-${next.editorKey}-prompt` : addId;
+        setDirty(true); setQuestions(remaining);
+    }
+    function publishDraft() {
+        if (validate(true).length) { setValidation('publish'); setError('Check the form fields before publishing.'); setErrorAttempt(n => n + 1); return; }
+        setError(''); setValidation(null); publish();
+    }
     async function checkPersisted() {
         if (checking || saving) return;
-        setChecking(true); setError('');
+        setChecking(true); setError(''); setValidation(null);
         try { setPersisted(await api<Survey>(`/api/surveys/${survey.id}`)); }
-        catch (e) { setError(reason(e)); } finally { setChecking(false); }
+        catch (e) { setError(formReason(e)); setErrorAttempt(n => n + 1); } finally { setChecking(false); }
     }
     function acceptPersisted(reapply: boolean) {
         if (!persisted) return;
@@ -438,30 +476,31 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
             const ids = new Set(persisted.questions.map(q => q.id));
             setQuestions(old => old.map(q => ({ ...q, id: q.id && ids.has(q.id) ? q.id : null })));
             setDirty(true);
-        } else { setTitle(persisted.title); setQuestions(persisted.questions); setDirty(false); }
-        setBaseline(persisted); saved(persisted); setNeedsCheck(false); setPersisted(null); setError('');
+        } else { setTitle(persisted.title); setQuestions(old => editable(persisted.questions, old)); setDirty(false); }
+        setBaseline(persisted); saved(persisted); setNeedsCheck(false); setPersisted(null); setError(''); setValidation(null);
     }
-    async function save(e: FormEvent) { e.preventDefault(); if (saving || busy || needsCheck) return; setSaving(true); setError(''); try {
+    async function save(e: FormEvent) { e.preventDefault(); if (saving || busy || needsCheck) return; setSaving(true); setError(''); setValidation(null); try {
         const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title, questions: questions.map(({ id, prompt, type, required, ratingScale }) => ({ id, prompt, type, required, ratingScale })) });
-        setBaseline(value); setTitle(value.title); setQuestions(value.questions);
+        setBaseline(value); setTitle(value.title); setQuestions(old => editable(value.questions, old));
         saved(value);
         setDirty(false);
     }
     catch (e) {
-        setError(reason(e));
+        setError(formReason(e)); setErrorAttempt(n => n + 1);
+        if (e instanceof ApiError && e.status === 422 && validate(false).length) setValidation('draft');
         if (!(e instanceof ApiError) || e.status >= 500 || e.status === 409) { setNeedsCheck(true); setPersisted(null); }
     }
     finally {
         setSaving(false);
     } }
-    return <><form onSubmit={e => void save(e)}><ErrorBox message={error}/><fieldset disabled={saving || busy || checking}><legend className="sr-only">Draft definition</legend><label>Survey title<input value={title} onChange={e => { setTitle(e.target.value); setDirty(true); }}/></label>
-    {questions.map((q, index) => <fieldset key={q.id ?? `new-${index}`}><legend>Question {index + 1}</legend><label>Prompt<input value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><label>Question type<select value={q.type} onChange={e => change(index, { type: e.target.value as Question['type'], ratingScale: e.target.value === 'RATING' ? defaultScale() : null })}><option value="RATING">Rating 1–5</option><option value="TEXT">Written feedback</option></select></label>
+    return <><form onSubmit={e => void save(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/><fieldset disabled={saving || busy || checking}><legend className="sr-only">Draft definition</legend><label>Survey title<input id={titleId} {...fieldAttributes(titleId, fields)} value={title} onChange={e => { setTitle(e.target.value); setDirty(true); }}/></label><FieldError id={titleId} fields={fields}/>
+    {questions.map((q, index) => <fieldset key={q.editorKey}><legend>Question {index + 1}</legend><label>Prompt<input id={questionId(index, 'prompt')} {...fieldAttributes(questionId(index, 'prompt'), fields)} value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><FieldError id={questionId(index, 'prompt')} fields={fields}/><label>Question type<select id={questionId(index, 'type')} {...fieldAttributes(questionId(index, 'type'), fields)} value={q.type} onChange={e => change(index, { type: e.target.value as Question['type'], ratingScale: e.target.value === 'RATING' ? defaultScale() : null })}><option value="RATING">Rating 1–5</option><option value="TEXT">Written feedback</option></select></label><FieldError id={questionId(index, 'type')} fields={fields}/>
       <label className="check"><input type="checkbox" checked={q.required} onChange={e => change(index, { required: e.target.checked })}/>Required</label>
-      {q.ratingScale && <div className="scale-editor">{(['minLabel', 'maxLabel', 'interpretation'] as const).map(key => <label key={key}>{key === 'minLabel' ? 'Score 1 label' : key === 'maxLabel' ? 'Score 5 label' : 'Scale interpretation'}<input value={q.ratingScale![key]} onChange={e => change(index, { ratingScale: { ...q.ratingScale!, [key]: e.target.value } })}/></label>)}</div>}
-      <div className="actions"><button type="button" disabled={index === 0} onClick={() => { setDirty(true); setQuestions(old => { const items = [...old]; [items[index - 1], items[index]] = [items[index]!, items[index - 1]!]; return items; }); }}>Move question {index + 1} up</button><button type="button" onClick={() => { setDirty(true); setQuestions(old => old.filter((_, i) => i !== index)); }}>Remove question {index + 1}</button></div>
+      {q.ratingScale && <div className="scale-editor">{(['minLabel', 'maxLabel', 'interpretation'] as const).map(key => <div key={key}><label>{key === 'minLabel' ? 'Score 1 label' : key === 'maxLabel' ? 'Score 5 label' : 'Scale interpretation'}<input id={questionId(index, key)} {...fieldAttributes(questionId(index, key), fields)} value={q.ratingScale![key]} onChange={e => change(index, { ratingScale: { ...q.ratingScale!, [key]: e.target.value } })}/></label><FieldError id={questionId(index, key)} fields={fields}/></div>)}</div>}
+      <div className="actions"><button type="button" disabled={index === 0} onClick={() => moveUp(index)}>Move question {index + 1} up</button><button type="button" onClick={() => remove(index)}>Remove question {index + 1}</button></div>
     </fieldset>)}
-    <div className="actions"><button type="button" disabled={questions.length >= 10 || saving} onClick={() => { setDirty(true); setQuestions(q => [...q, { id: null, prompt: '', type: 'RATING', required: true, ratingScale: defaultScale() }]); }}>Add question</button><button disabled={saving || busy || needsCheck}>{saving ? 'Saving…' : 'Save draft'}</button></div>
-  </fieldset></form><p>{dirty ? 'Unsaved changes. Save before publishing.' : `Saved revision ${baseline.definitionRevision}.`}</p><button disabled={dirty || saving || busy || needsCheck} onClick={publish}>Publish survey</button>
+    <div className="actions"><button id={addId} type="button" disabled={questions.length >= 10 || saving} onClick={() => { setDirty(true); setQuestions(q => [...q, { id: null, editorKey: `new-${serial.current++}`, prompt: '', type: 'RATING', required: true, ratingScale: defaultScale() }]); }}>Add question</button><button disabled={saving || busy || needsCheck}>{saving ? 'Saving…' : 'Save draft'}</button></div><FieldError id={addId} fields={fields}/>
+  </fieldset></form><p>{dirty ? 'Unsaved changes. Save before publishing.' : `Saved revision ${baseline.definitionRevision}.`}</p><button disabled={dirty || saving || busy || needsCheck} onClick={publishDraft}>Publish survey</button>
     {needsCheck && <section><p>Your local edits are retained. Check the persisted draft before choosing to discard or reapply them. Removed questions will be recreated with new identifiers only after you explicitly reapply and save.</p><button disabled={checking || saving} onClick={() => void checkPersisted()}>Check persisted draft</button>
       {persisted && <section aria-label="Persisted draft"><h3>Persisted draft</h3><p>{persisted.title} · {persisted.status} · Revision {persisted.definitionRevision}</p><Questionnaire survey={persisted}/><button disabled={checking || busy} type="button" onClick={() => acceptPersisted(false)}>Use persisted draft</button>{persisted.status === 'DRAFT' && <button disabled={checking || busy} type="button" onClick={() => acceptPersisted(true)}>Reapply my edits to revision {persisted.definitionRevision}</button>}</section>}
     </section>}</>;
@@ -473,6 +512,11 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
     refreshSurvey: () => Promise<Survey>;
 }) {
     const [submission, setSubmission] = useState<Submission | null>(null), [values, setValues] = useState<Record<string, string | number>>({}), [error, setError] = useState(''), [busy, setBusy] = useState(false), [unknownOutcome, setUnknownOutcome] = useState(false), [checking, setChecking] = useState(false);
+    const formId = useId(), confirmation = useRef<HTMLHeadingElement>(null), focusConfirmation = useRef(false);
+    const [validation, setValidation] = useState(false), [errorAttempt, setErrorAttempt] = useState(0);
+    const target = (index: number) => `${formId}-${survey.questions[index]!.id}-${survey.questions[index]!.type === 'RATING' ? 'rating-1' : 'text'}`;
+    const fields = validation ? responseFieldIssues(survey.questions, values, target) : [];
+    useLayoutEffect(() => { if (submission?.submitted && focusConfirmation.current) { confirmation.current?.focus(); focusConfirmation.current = false; } }, [submission?.submitted]);
     const lifecycleNeedsCheck = useRef(false);
     useEffect(() => { navigationBlocked(busy || unknownOutcome || checking || Object.keys(values).length > 0); return () => navigationBlocked(false); }, [busy, unknownOutcome, checking, values, navigationBlocked]);
     useEffect(() => { let active = true; api<Submission>(`/api/surveys/${survey.id}/my-submission`).then(v => { if (active)
@@ -485,15 +529,16 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
             lifecycleNeedsCheck.current = false;
         }
         const stored = await api<Submission>(`/api/surveys/${survey.id}/my-submission`);
+        if (stored.submitted && !submission?.submitted) focusConfirmation.current = true;
         setSubmission(stored); setUnknownOutcome(false);
         if (stored.submitted || latest?.status === 'CLOSED' || survey.status === 'CLOSED') setValues({});
     }
     async function checkSaved() {
         if (busy || checking) return;
-        setChecking(true); setError('');
+        setChecking(true); setError(''); setValidation(false);
         try {
             await recoverSubmission();
-        } catch (e) { setError(reason(e)); }
+        } catch (e) { setError(formReason(e)); setErrorAttempt(n => n + 1); }
         finally { setChecking(false); }
     }
     async function submit(e: FormEvent) {
@@ -501,15 +546,17 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
         if (busy || checking || unknownOutcome)
             return;
         setBusy(true);
-        setError('');
+        setError(''); setValidation(false);
         try {
             const result = await api<Submission>(`/api/surveys/${survey.id}/responses`, 'POST', { answers: Object.entries(values).map(([questionId, value]) => ({ questionId, value })) });
+            if (result.submitted) focusConfirmation.current = true;
             setSubmission(result);
             setUnknownOutcome(false);
             setValues({});
         }
         catch (e) {
-            setError(reason(e));
+            setError(formReason(e)); setErrorAttempt(n => n + 1);
+            if (e instanceof ApiError && e.status === 422 && responseFieldIssues(survey.questions, values, target).length) setValidation(true);
             if (e instanceof ApiError && e.status === 409 && e.code === 'INVALID_STATE')
                 lifecycleNeedsCheck.current = true;
             if (!(e instanceof ApiError) || e.status >= 500 || e.status === 409) {
@@ -527,10 +574,10 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
     if (!submission)
         return <><ErrorBox message={error}/><p>Checking your submission…</p><button disabled={checking} onClick={() => void checkSaved()}>Check saved status</button></>;
     if (submission.submitted)
-        return <section><h3>Submission received</h3><p>Your saved answers are read-only.</p>{submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{a.value}</p></div>)}</section>;
+        return <section><h3 ref={confirmation} tabIndex={-1}>Submission received</h3><p>Your saved answers are read-only.</p>{submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{a.value}</p></div>)}</section>;
     if (survey.status === 'CLOSED')
         return <><ErrorBox message={error}/><p>{unknownOutcome ? 'This survey is closed. Check saved status to confirm whether your submission was recorded.' : 'This survey is closed. No submission was recorded for your account.'}</p>{unknownOutcome && <button disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button>}</>;
-    return <form onSubmit={e => void submit(e)}><ErrorBox message={error}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map(q => <fieldset key={q.id!}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/2000 characters</small></>}</fieldset>)}</fieldset><button disabled={busy || checking || unknownOutcome}>{busy ? 'Submitting…' : 'Submit feedback'}</button><button type="button" className="secondary" disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button></form>;
+    return <form onSubmit={e => void submit(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map((q, index) => <fieldset key={q.id!} {...fieldAttributes(target(index), fields)}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input id={`${formId}-${q.id}-rating-${score}`} {...fieldAttributes(target(index), fields)} type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea id={target(index)} {...fieldAttributes(target(index), fields)} value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/2000 characters</small></>}<FieldError id={target(index)} fields={fields}/></fieldset>)}</fieldset><button disabled={busy || checking || unknownOutcome}>{busy ? 'Submitting…' : 'Submit feedback'}</button><button type="button" className="secondary" disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button></form>;
 }
 function ResultsView({ id, api }: {
     id: string;
