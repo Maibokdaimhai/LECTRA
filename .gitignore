@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+!.env.test.example
+.local/
+test-results/
+playwright-report/
+coverage/
+apps/api/src/generated/prisma/
+*.tsbuildinfo
+.DS_Store
+output/pdf/

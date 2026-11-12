@@ -1,0 +1,1091 @@
+{
+  "recordedAt": "2026-11-12T09:18:38.419500+00:00",
+  "issue": 25,
+  "releasePr": 40,
+  "defect": {
+    "id": "DEF-G04-01",
+    "severity": "Major",
+    "file": "apps/api/src/feedback.ts",
+    "section": "transaction",
+    "before": "A checked-out pg client emitted an unhandled error after TCP loss following real COMMIT; Vitest captured the event, while normal Node would terminate. Query failures alone did not consume the client error event.",
+    "fix": "Listen for checked-out client errors; avoid rollback on known lost connection, preserve the original failure, discard failed clients and remove the listener after release. No automatic SQL/HTTP replay and no false rollback guarantee.",
+    "status": "Fixed and verified in uncommitted working tree; not yet integrated into staging or approved by teammate"
+  },
+  "baseCommit": "fa33e4cc2b57e5c140ffca892e507814b436829d",
+  "branch": "fix/25-g04-final-evidence",
+  "testedSource": "Uncommitted working tree on baseCommit; sourceHashes identify actual production/test/config content. HEAD is not relabelled as containing this patch.",
+  "productionFilesChanged": [
+    "apps/api/src/feedback.ts"
+  ],
+  "runtime": {
+    "node": "24.22.1",
+    "npm": "10.9.2",
+    "postgresql": "17.11",
+    "vitest": "5.1.0",
+    "playwright": "1.65.0",
+    "chromium": "158.0.8127.18",
+    "platform": "Windows x64",
+    "selection": "All reported test/typecheck/build commands explicitly prepended the pinned runtime directory to PATH. Default system Node v24.14.0 was only inspected, not used for these executions."
+  },
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "result": "Final Pass; initial test typing error corrected before RED regression execution"
+    },
+    {
+      "command": "npm run build",
+      "result": "Pass"
+    },
+    {
+      "command": "node .local/evidence/run-g04-final.mjs --testNamePattern 'G04-F03|G04-F04'",
+      "environmentOverride": "G04_REPORT=g04-final-red",
+      "underlyingCommand": "node node_modules/vitest/vitest.mjs run --config vitest.release.config.ts --reporter=default --reporter=json --outputFile=.local/evidence/g04-final-red.json --testNamePattern 'G04-F03|G04-F04'",
+      "result": "2 failed, 5 unselected skipped, 2 uncaught errors; exit 1; unchanged production baseline"
+    },
+    {
+      "command": "node .local/evidence/run-g04-final.mjs",
+      "environmentOverride": "G04_REPORT=g04-final-green",
+      "underlyingCommand": "node node_modules/vitest/vitest.mjs run --config vitest.release.config.ts --reporter=default --reporter=json --outputFile=.local/evidence/g04-final-green.json",
+      "result": "7 passed, 0 failed/skipped, 0 uncaught errors; exit 0"
+    },
+    {
+      "command": "node .local/evidence/run-g04-neighbors.mjs",
+      "environmentOverride": "G04_REPORT=g04-api-neighbors",
+      "underlyingCommand": "node node_modules/vitest/vitest.mjs run --config vitest.features.config.ts --reporter=default --reporter=json --outputFile=.local/evidence/g04-api-neighbors.json",
+      "result": "38 passed, 0 failed/skipped; exit 0; directly affected shared transaction helper"
+    },
+    {
+      "command": "node .local/evidence/run-g04-browser.mjs",
+      "underlyingCommand": "node scripts/playwright.mjs test --config playwright.features.config.ts --grep 'B23-01|B23-03' --reporter=list,json --output .local/evidence/g04-browser-neighbors",
+      "result": "4 passed, 0 failed/skipped; exit 0; real browser/API/PostgreSQL at 1280px and 360px"
+    }
+  ],
+  "reports": {
+    "g04-final-first": {
+      "localIgnoredPath": ".local/evidence/g04-final-first.json",
+      "rawReportSha256": "7cf2dd39e9434fcc5a03ef3433a34fcc679c352843631e83aa9b1f611a73adc2",
+      "processExit": 1,
+      "uncaughtErrorsObserved": 2,
+      "reportedJsonSuccess": true,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "startTimeEpochMs": 1794474764259,
+      "cases": [
+        {
+          "name": "G04-F01: physical loss of authenticated UPSERT acknowledgement suppresses cookie and automatic resave",
+          "status": "passed",
+          "durationMs": 139.8735999999999,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F02: create failure after actual Survey insertion rolls back and permits same-Lecture creation",
+          "status": "passed",
+          "durationMs": 98.33489999999983,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F03: physical loss after Draft COMMIT is reconciled by persisted definition without replay",
+          "status": "passed",
+          "durationMs": 240.01000000000022,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F04: physical loss after response COMMIT preserves one response and own-status reconciliation",
+          "status": "passed",
+          "durationMs": 299.58320000000003,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F05: a real two-connection deadlock aborts the route transaction and permits deliberate retry",
+          "status": "passed",
+          "durationMs": 312.86259999999993,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F06: PostgreSQL serialization-error injection rolls back preceding writes and permits retry",
+          "status": "passed",
+          "durationMs": 170.8494999999998,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F07: exercised pool logger and normal/error routes omit known secret and feedback markers",
+          "status": "passed",
+          "durationMs": 129.0587999999998,
+          "failureMessages": []
+        }
+      ]
+    },
+    "g04-final-red": {
+      "localIgnoredPath": ".local/evidence/g04-final-red.json",
+      "rawReportSha256": "820b09453c933181f431a2736918b30ca7603908efd4bfb07a9cdd0edc1defe7",
+      "processExit": 1,
+      "uncaughtErrorsObserved": 2,
+      "reportedJsonSuccess": false,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 5,
+      "startTimeEpochMs": 1794474823596,
+      "cases": [
+        {
+          "name": "G04-F01: physical loss of authenticated UPSERT acknowledgement suppresses cookie and automatic resave",
+          "status": "skipped",
+          "durationMs": null,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F02: create failure after actual Survey insertion rolls back and permits same-Lecture creation",
+          "status": "skipped",
+          "durationMs": null,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F03: physical loss after Draft COMMIT is reconciled by persisted definition without replay",
+          "status": "failed",
+          "durationMs": 240.5869,
+          "failureMessages": [
+            "AssertionError: expected [ Array(1) ] to deeply equal []\n    at C:/Users/Songwit Rueangsawat/Desktop/SOFTWARE ENGINEERING/LECTRA/apps/api/tests/release/g04.test.ts:111:50\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///C:/Users/Songwit%20Rueangsawat/Desktop/SOFTWARE%20ENGINEERING/LECTRA/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:20"
+          ]
+        },
+        {
+          "name": "G04-F04: physical loss after response COMMIT preserves one response and own-status reconciliation",
+          "status": "failed",
+          "durationMs": 118.29340000000002,
+          "failureMessages": [
+            "AssertionError: expected [ Array(1) ] to deeply equal []\n    at C:/Users/Songwit Rueangsawat/Desktop/SOFTWARE ENGINEERING/LECTRA/apps/api/tests/release/g04.test.ts:122:50\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///C:/Users/Songwit%20Rueangsawat/Desktop/SOFTWARE%20ENGINEERING/LECTRA/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:20"
+          ]
+        },
+        {
+          "name": "G04-F05: a real two-connection deadlock aborts the route transaction and permits deliberate retry",
+          "status": "skipped",
+          "durationMs": null,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F06: PostgreSQL serialization-error injection rolls back preceding writes and permits retry",
+          "status": "skipped",
+          "durationMs": null,
+          "failureMessages": []
+        },
+        {
+          "name": "G04-F07: exercised pool logger and normal/error routes omit known secret and feedback markers",
+          "status": "skipped",
+          "durationMs": null,
+          "failureMessages": []
+        }
+      ]
+    },
+    "g04-final-green": {
+      "localIgnoredPath": ".local/evidence/g04-final-green.json",
+      "rawReportSha256": "ffeb45cd952eecaf99a0bc02440c0df2b592b93823061bb1b474b6daaab3c8cc",
+      "processExit": 0,
+      "uncaughtErrorsObserved": 0,
+      "reportedJsonSuccess": true,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "startTimeEpochMs": 1794474848536,
+      "cases": [
+        {
+          "name": "G04-F01: physical loss of authenticated UPSERT acknowledgement suppresses cookie and automatic resave",
+          "status": "passed",
+          "durationMs": 139.0072,
+          "failureMessages": [],
+          "acceptanceCriteria": [
+            "AC-F01-06",
+            "AC-F01-13"
+          ],
+          "plannedSts": [
+            "TEST-F01-I18"
+          ],
+          "coverageBoundary": "Selected executed assertions; no blanket planned-case promotion"
+        },
+        {
+          "name": "G04-F02: create failure after actual Survey insertion rolls back and permits same-Lecture creation",
+          "status": "passed",
+          "durationMs": 194.99649999999997,
+          "failureMessages": [],
+          "acceptanceCriteria": [
+            "AC-F03-01",
+            "AC-F03-20"
+          ],
+          "plannedSts": [
+            "TEST-F03-I01",
+            "TEST-F03-I20"
+          ],
+          "coverageBoundary": "Selected executed assertions; no blanket planned-case promotion"
+        },
+        {
+          "name": "G04-F03: physical loss after Draft COMMIT is reconciled by persisted definition without replay",
+          "status": "passed",
+          "durationMs": 226.50350000000003,
+          "failureMessages": [],
+          "acceptanceCriteria": [
+            "AC-F03-20",
+            "AC-F03-23"
+          ],
+          "plannedSts": [
+            "TEST-F03-I20",
+            "TEST-F03-E03"
+          ],
+          "coverageBoundary": "Selected executed assertions; no blanket planned-case promotion"
+        },
+        {
+          "name": "G04-F04: physical loss after response COMMIT preserves one response and own-status reconciliation",
+          "status": "passed",
+          "durationMs": 163.47859999999991,
+          "failureMessages": [],
+          "acceptanceCriteria": [
+            "AC-F04-09",
+            "AC-F04-10",
+            "AC-F04-18",
+            "AC-F04-19"
+          ],
+          "plannedSts": [
+            "TEST-F04-I11",
+            "TEST-F04-I20"
+          ],
+          "coverageBoundary": "Selected executed assertions; no blanket planned-case promotion"
+        },
+        {
+          "name": "G04-F05: a real two-connection deadlock aborts the route transaction and permits deliberate retry",
+          "status": "passed",
+          "durationMs": 368.17520000000013,
+          "failureMessages": [],
+          "acceptanceCriteria": [
+            "AC-F04-12",
+            "AC-F04-18",
+            "AC-F04-19"
+          ],
+          "plannedSts": [
+            "TEST-F04-I13",
+            "TEST-F04-I20"
+          ],
+          "coverageBoundary": "Selected executed assertions; no blanket planned-case promotion"
+        },
+        {
+          "name": "G04-F06: PostgreSQL serialization-error injection rolls back preceding writes and permits retry",
+          "status": "passed",
+          "durationMs": 132.9395999999997,
+          "failureMessages": [],
+          "acceptanceCriteria": [
+            "AC-F04-12",
+            "AC-F04-18",
+            "AC-F04-19"
+          ],
+          "plannedSts": [
+            "TEST-F04-I13",
+            "TEST-F04-I20"
+          ],
+          "coverageBoundary": "Selected executed assertions; no blanket planned-case promotion"
+        },
+        {
+          "name": "G04-F07: exercised pool logger and normal/error routes omit known secret and feedback markers",
+          "status": "passed",
+          "durationMs": 122.41620000000012,
+          "failureMessages": [],
+          "acceptanceCriteria": [
+            "AC-F01-14",
+            "AC-F04-20",
+            "AC-F05-14"
+          ],
+          "plannedSts": [
+            "TEST-F01-I23",
+            "TEST-F04-I21"
+          ],
+          "coverageBoundary": "Selected executed assertions; no blanket planned-case promotion"
+        }
+      ]
+    },
+    "g04-api-neighbors": {
+      "localIgnoredPath": ".local/evidence/g04-api-neighbors.json",
+      "rawReportSha256": "eeb101177706067073838336b1335fe60d0c16b4ffcbc4ddab31fbb7f0df0a47",
+      "processExit": 0,
+      "uncaughtErrorsObserved": 0,
+      "reportedJsonSuccess": true,
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "startTimeEpochMs": 1794474937789,
+      "cases": [
+        {
+          "name": "TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection",
+          "status": "passed",
+          "durationMs": 82.9670000000001,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I05/I15: generic credential errors, exact schemas and body security",
+          "status": "passed",
+          "durationMs": 89.07979999999998,
+          "failureMessages": []
+        },
+        {
+          "name": "R40-01 / TEST-F01-I18: an exact-expiry persistence failure cannot leave a login cookie or usable session",
+          "status": "passed",
+          "durationMs": 118.05370000000016,
+          "failureMessages": []
+        },
+        {
+          "name": "R40-01 / TEST-F01-I18: failed guest persistence clears the cookie and leaves no row",
+          "status": "passed",
+          "durationMs": 53.73019999999997,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I18: unavailable auth_session lookup fails closed and recovers without fallback",
+          "status": "passed",
+          "durationMs": 78.13210000000026,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I18: unavailable User lookup fails closed and recovers without fallback",
+          "status": "passed",
+          "durationMs": 77.17659999999978,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I18: failed regenerate destroy is reported honestly and can be retried",
+          "status": "passed",
+          "durationMs": 207.79510000000028,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I18: failed logout destroy is reported honestly and can be retried",
+          "status": "passed",
+          "durationMs": 85.08950000000004,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie",
+          "status": "passed",
+          "durationMs": 89.72400000000016,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I09/I28: trusted role is resolved anew and authenticated login does not switch accounts",
+          "status": "passed",
+          "durationMs": 164.74440000000004,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled",
+          "status": "passed",
+          "durationMs": 269.26099999999997,
+          "failureMessages": []
+        },
+        {
+          "name": "F-02: owner context is scoped even within a shared Course, and query pagination is strict",
+          "status": "passed",
+          "durationMs": 120.82060000000001,
+          "failureMessages": []
+        },
+        {
+          "name": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot",
+          "status": "passed",
+          "durationMs": 184.4355999999998,
+          "failureMessages": []
+        },
+        {
+          "name": "F-04: required/type/Unicode/association boundaries reject without any partial response",
+          "status": "passed",
+          "durationMs": 164.53759999999966,
+          "failureMessages": []
+        },
+        {
+          "name": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering",
+          "status": "passed",
+          "durationMs": 254.07169999999996,
+          "failureMessages": []
+        },
+        {
+          "name": "F-04: an actual SQL fault after participation/bundle insertion rolls the entire submission back",
+          "status": "passed",
+          "durationMs": 123.6219000000001,
+          "failureMessages": []
+        },
+        {
+          "name": "F-03/F-04: actual API close and submit serialize correctly in both lock orders",
+          "status": "passed",
+          "durationMs": 253.70150000000012,
+          "failureMessages": []
+        },
+        {
+          "name": "F-01: session-store failures return safe 503 and never create a memory fallback",
+          "status": "passed",
+          "durationMs": 86.71169999999984,
+          "failureMessages": []
+        },
+        {
+          "name": "F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics",
+          "status": "passed",
+          "durationMs": 74.58719999999994,
+          "failureMessages": []
+        },
+        {
+          "name": "F01-store: persisted and cookie expiry never extend past the exact absolute millisecond deadline",
+          "status": "passed",
+          "durationMs": 83.6831000000002,
+          "failureMessages": []
+        },
+        {
+          "name": "TEST-F01-I19/I21: reads overlapping logout never resurrect the cookie; independent sessions remain usable",
+          "status": "passed",
+          "durationMs": 233.73340000000007,
+          "failureMessages": []
+        },
+        {
+          "name": "F-01: unsupported methods, foreign origins and forged cookies fail without authority",
+          "status": "passed",
+          "durationMs": 74.95969999999943,
+          "failureMessages": []
+        },
+        {
+          "name": "F-03: concurrent Draft edit and publication commit only a consistent frozen revision",
+          "status": "passed",
+          "durationMs": 130.1217000000006,
+          "failureMessages": []
+        },
+        {
+          "name": "R3: publication validates and freezes one membership snapshot while membership changes concurrently",
+          "status": "passed",
+          "durationMs": 109.70830000000024,
+          "failureMessages": []
+        },
+        {
+          "name": "R3: invalid and empty membership snapshots leave the Draft and eligibility unchanged",
+          "status": "passed",
+          "durationMs": 107.39080000000013,
+          "failureMessages": []
+        },
+        {
+          "name": "N4: explicitly empty lecture filter fails validation instead of returning all surveys",
+          "status": "passed",
+          "durationMs": 78.6948999999995,
+          "failureMessages": []
+        },
+        {
+          "name": "N5: owner and eligible student list projections contain the required survey context",
+          "status": "passed",
+          "durationMs": 106.03009999999995,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-01: concurrent create produces one Draft and one conflict for the same owned lecture",
+          "status": "passed",
+          "durationMs": 100.60019999999986,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable",
+          "status": "passed",
+          "durationMs": 193.7501999999995,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities",
+          "status": "passed",
+          "durationMs": 224.77530000000024,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-04: faults after each response write stage roll back all rows and permit one valid retry",
+          "status": "passed",
+          "durationMs": 242.02570000000014,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence",
+          "status": "passed",
+          "durationMs": 234.3078999999998,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data",
+          "status": "passed",
+          "durationMs": 254.42609999999968,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-07: exact chunked transport ceiling is accepted; oversized, compressed and malformed bodies never write",
+          "status": "passed",
+          "durationMs": 130.6254000000008,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds",
+          "status": "passed",
+          "durationMs": 5161.593,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results",
+          "status": "passed",
+          "durationMs": 126.45929999999862,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-10: held-row barriers exercise both Draft save/publication orders with complete frozen revisions",
+          "status": "passed",
+          "durationMs": 231.9372000000003,
+          "failureMessages": []
+        },
+        {
+          "name": "INT22-11: scoped pagination retains totals/order at default, final and beyond-last pages and rejects malformed bounds",
+          "status": "passed",
+          "durationMs": 131.83119999999872,
+          "failureMessages": []
+        }
+      ]
+    },
+    "g04-browser-neighbors": {
+      "localIgnoredPath": ".local/evidence/g04-browser-neighbors.json",
+      "rawReportSha256": "9efd6cd4bfed1f928b96c92dfda6c2d5c1756a3ea3a64712db180fb891ba1624",
+      "processExit": 0,
+      "stats": {
+        "startTime": "2026-11-12T09:15:38.638Z",
+        "duration": 13555.42,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "name": "B23-01 real owner → student → closed results, persisted reload/relogin and validation",
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            "passed"
+          ]
+        },
+        {
+          "name": "B23-01 real owner → student → closed results, persisted reload/relogin and validation",
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            "passed"
+          ]
+        },
+        {
+          "name": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows",
+          "project": "chromium-wide",
+          "status": "expected",
+          "runs": [
+            "passed"
+          ]
+        },
+        {
+          "name": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows",
+          "project": "chromium-narrow",
+          "status": "expected",
+          "runs": [
+            "passed"
+          ]
+        }
+      ]
+    }
+  },
+  "finalSelectedExecutions": {
+    "releasePostgresql": 7,
+    "existingApiPostgresqlNeighbors": 38,
+    "realBrowserApiPostgresqlNeighbors": 4,
+    "total": 49,
+    "failed": 0,
+    "skipped": 0,
+    "uncaughtErrors": 0,
+    "historicalMatricesNotSummed": true
+  },
+  "isolation": {
+    "newClusterEachRun": true,
+    "newAllowlistedDatabaseEachRun": true,
+    "dataDirectoryVerified": true,
+    "newPublicSchemaEmptyBeforeMigrations": true,
+    "explicitOptIn": "ALLOW_RELEASE_TESTS equals ALLOW_TEST_DATABASE equals test DB name; neighbors use their existing ALLOW_FEATURE_TESTS/ALLOW_BROWSER_TESTS",
+    "environmentPrecedence": "Direct process environment; no private environment file read; DATABASE_URL is an unavailable distinct development reference for API tests; browser runner aligns DATABASE_URL/TEST_DATABASE_URL with its new test target",
+    "finalDatabases": [
+      "lectra_test_g04_close_14fdb34eb602",
+      "lectra_test_g04_close_646f33ee31cb",
+      "lectra_test_g04_browser_a15b23880d01"
+    ],
+    "remainingTemporaryFunctions": 0,
+    "otherOpenTransactions": 0,
+    "temporaryServicesStopped": true,
+    "existingDatabasesContainersChanged": false,
+    "credentials": "Random synthetic credentials/session secret generated in memory, not published"
+  },
+  "executionSemantics": {
+    "acknowledgementLoss": "Test-only TCP proxy forwards real PostgreSQL traffic, then suppresses completion packets and closes sockets only after CommandComplete and ReadyForQuery I prove backend commit; independent direct DB reads verify durable consequences. No mocked SQL result or forced Promise rejection.",
+    "deadlock": "Actual cyclic lock wait between route transaction (Survey row plus response writes) and independent control transaction (advisory lock); pg_blocking_pids proves first dependency, application-side advisory lock closes cycle; native driver 40P01 asserted. Additional lock is test-only, not a production lock-order change.",
+    "serialization": "Actual PostgreSQL trigger emits SQLSTATE 40001 after Answer insertion; rollback/retry verified. This is not naturally generated SSI write skew. Production writes use READ COMMITTED; reads use REPEATABLE READ READ ONLY.",
+    "authenticationAmbiguity": "The row can be fully committed when acknowledgement is lost. Test verifies safe 503, no usable new cookie, old guest replay denied and no automatic resave. It does not falsely require an already committed row to disappear.",
+    "logging": "Positive actual registered pool error handler invoked with synthetic marker; fixed diagnostic observed; normal/invalid-answer routes and all console methods inspected for known credentials/tokens/cookies/secret/feedback marker. This remains selected boundary coverage, not comprehensive logging certification.",
+    "deadlockServerObservation": "2026-11-12 16:14:10.988 +07: ERROR: deadlock detected (task-owned green-run PostgreSQL server; native 40P01 separately asserted)."
+  },
+  "historicalEvidenceReuse": {
+    "supplementary": "Original 12 remain on 2961014. Their 54 unchanged manifest entries applied to fa33e4c before this patch. feedback.ts now differs only in transaction error lifecycle; original query/locking/isolation logic retained and directly affected routes retested. No original result rewritten as new execution.",
+    "ui": "All frontend code, browser fixtures/configuration and eight screenshots unchanged. 75/76 original source hashes match the working tree; only feedback.ts differs. Four selected real journeys rerun for backend integration; 320px/native 200% frontend evidence retained at its actual original source.",
+    "notRepeated": [
+      "Historical 138/144 matrices",
+      "PR #43 41/74/22/4 matrix",
+      "Foundation/schema/ORM checks without affected implementation changes"
+    ]
+  },
+  "sourceHashes": {
+    ".env.example": {
+      "sha256": "c95cb3e5cfd4e622f2f3fe1d2b12781d447a7cd18214ecfb1f1389c3d4a7b4eb",
+      "lfNormalizedSha256": "02c38661b2612cc36064256bec4642b647f633ee109e49eccacc07ee5e6f0f3b"
+    },
+    ".env.test.example": {
+      "sha256": "a06562006648ac5cb155e398ba2e93ee69706c8ce4ed96fc265165fd4ffb8dcf",
+      "lfNormalizedSha256": "f9fe2c72ae6e926bdd9461566e64e5f2ae1148dfba0c1406bd8b3ec788a0b668"
+    },
+    ".node-version": {
+      "sha256": "7c415154bb9f8e90394317c7109261249d2c4fbd549008ae6d014ee565ee7967",
+      "lfNormalizedSha256": "d9f318747a126ce2247661af67852b185def7789492eabfad7bba322be087c33"
+    },
+    ".npmrc": {
+      "sha256": "923b57051dfbbcd94b28386d3d452a5830993a9b349cfe8d9a8d0d418976949f",
+      "lfNormalizedSha256": "3b88d1057add6f92ec23dc22dd017e312ded13a042deb0ba6f08bad85d936456"
+    },
+    "apps/api/package.json": {
+      "sha256": "afc0d6a6d8ff05743c33d2da1e8278e260a7ba4f1dd17ef028e6930463752326",
+      "lfNormalizedSha256": "5c5f5a9cfd3c1a83c622e11bf1f56bf8b60b9042cb70c3d8d55254fd36694916"
+    },
+    "apps/api/src/app.ts": {
+      "sha256": "73edb5129eb0244708788786cc6e5b47e7f1743d82927a6e065fbf7e810736c0",
+      "lfNormalizedSha256": "4abc5409d560b6479dfc5f894a00b501f3e2ff6826098b8cb3bf339d673bd51b"
+    },
+    "apps/api/src/auth-rules.ts": {
+      "sha256": "e748a3ad1c1d10e78a56ccb11f6537d1c633dda5ff1cea1d4be6b9107c3102f7",
+      "lfNormalizedSha256": "7e74da2bd1e1de581c65e505a1626e241f740b32bbcfa840de3f98f3165945ed"
+    },
+    "apps/api/src/auth.ts": {
+      "sha256": "aa457dceee84694e84cbc8812c2eb1b9721acabc35306caa6bfcd51a71349dff",
+      "lfNormalizedSha256": "60cab0632bf3718eecc5b000d32a026122374e3aef3ab0340afd596ce08c7869"
+    },
+    "apps/api/src/config.ts": {
+      "sha256": "6810df86640931f18c084a46777ea3f747f6540c1907bb6a50079d22972cf1f5",
+      "lfNormalizedSha256": "d258b3003ac4b00c7c24bce90424f6ff260dc23af10d702104ca697e956ed5db"
+    },
+    "apps/api/src/database.ts": {
+      "sha256": "9814c89f355d05ba9aaa1f0418ef3a01977997f57ac4b9effef3b967d3a72776",
+      "lfNormalizedSha256": "465dff80dabc017bcc48bb25dd3553dec58d4d00ced6bf0be0338b6ff20637a8"
+    },
+    "apps/api/src/feedback-rules.ts": {
+      "sha256": "14083dfb16594605166cfd21ba037fe29babbcc2873eba99b35a9162407bfa65",
+      "lfNormalizedSha256": "8c7849a2fd90a67de3bd4f05dc17045b689c38681600c6cfcf9f50e859c0bb50"
+    },
+    "apps/api/src/feedback.ts": {
+      "sha256": "145efe7b5a2f1deb047fd9a6d064640c3674d7629ad91dcca515607eaf4556ec",
+      "lfNormalizedSha256": "b14281452d50f402ee7b33bc1f3d160db1d3dc3f3536bd10fcfe9f8cdfb48e29"
+    },
+    "apps/api/src/http.ts": {
+      "sha256": "cc94620d83eaa8a6b5caf6edf0289cc8f636ca6c4cb5bd297365ea283a21b3b6",
+      "lfNormalizedSha256": "115093e9a90d12a783f11ba33ba1a4fc50e55041037ae3d826e251f6b635bfd7"
+    },
+    "apps/api/src/server.ts": {
+      "sha256": "8c87fdb9e77e07585d7e456ba9e7701a25805376429141e64628a62f0df357a1",
+      "lfNormalizedSha256": "1cef1484f525b62bde74f31783b0644d881262db8bc52048d70d54c7fa852e81"
+    },
+    "apps/api/src/test-database.ts": {
+      "sha256": "f9d2525c87bcd04c75d58e9bc09e1faff81fb78caae7ed54ee94684fe33b24eb",
+      "lfNormalizedSha256": "6e6b1879a4991d99b20e709ad98f50cad10e6ed67877846155767084db95693a"
+    },
+    "apps/api/tests/api/health.test.ts": {
+      "sha256": "3cf605fc6930096f68607be7792929f7b82771c7ff7a19b31e6cc22f67633008",
+      "lfNormalizedSha256": "44a40219b6464588cf20cfbdd386975b77bc973a278e46a4784e8cfedd24a16d"
+    },
+    "apps/api/tests/db/postgres.test.ts": {
+      "sha256": "8895ea970a4a01a727454ca17e29eac934982162988d5e21062f6b3cb75624e9",
+      "lfNormalizedSha256": "511a146fde9dacd63537f435cdc2bcad4659fc07c1c8c23875a1108ae226fa3a"
+    },
+    "apps/api/tests/features/workflows.test.ts": {
+      "sha256": "6be29c67e5691ee7a6aabb0b2db019c215a3958d97c5a851acf2b8a2c1f41ec5",
+      "lfNormalizedSha256": "1663335d13c79bea3d31c74a24d601413d0b728dac49ec2c61878d8533fb7155"
+    },
+    "apps/api/tests/foundation/database.test.ts": {
+      "sha256": "c10cc2edf7e34f7b088d012e542d99af6908ae47dcc2030b56fdbb29d36e4309",
+      "lfNormalizedSha256": "c2efa025bbf74f67cf1ee65f09d21e092ddd184c633e72b657496822cd7692f4"
+    },
+    "apps/api/tests/release/acknowledgement-proxy.ts": {
+      "sha256": "9937ea1f70d9e6cd38a565e094e0aecbf699e9033484c320f66e95fc79b78676",
+      "lfNormalizedSha256": "9937ea1f70d9e6cd38a565e094e0aecbf699e9033484c320f66e95fc79b78676"
+    },
+    "apps/api/tests/release/g04.test.ts": {
+      "sha256": "274faca16b50b610077ca0fa99af41aa78d1b94554d338bf01900cfd63e035e5",
+      "lfNormalizedSha256": "274faca16b50b610077ca0fa99af41aa78d1b94554d338bf01900cfd63e035e5"
+    },
+    "apps/api/tests/unit/argon2-compatibility.test.ts": {
+      "sha256": "077fd4debd2cb9063d9cffcb974cc66a1c0901951785140475f09ab91da3231d",
+      "lfNormalizedSha256": "d1fd266139b50f418593be1a8c01c52b9f0e8b5ac219bfbb3a9d3acd512f7e2e"
+    },
+    "apps/api/tests/unit/auth-rules.test.ts": {
+      "sha256": "fd69932d24cb77ea6c290461c6d1fc897426ed88d21afdcc74a5bef6fec6d334",
+      "lfNormalizedSha256": "10bd1ef240ba41ca8ca48997fa53c02574458271a86aa1406431bcfdcc3ae91b"
+    },
+    "apps/api/tests/unit/config.test.ts": {
+      "sha256": "fcfb156c371a3ac5934b35e9d7a2411d28010ee14d83688a0bf05d42054cfca9",
+      "lfNormalizedSha256": "5e9cdfda6b0c2d15f28564f282f468378ef1d4f8a95d026a2e75961d70dcc0f3"
+    },
+    "apps/api/tests/unit/database-seed.test.ts": {
+      "sha256": "fe09dad111464a6bf76168f97665682f8d4306d2f891e612760aec7508dc44b3",
+      "lfNormalizedSha256": "3396c6684ea4370be3e614b8dd7b9c727fc2e7e67c55548b957c2ad4534a601d"
+    },
+    "apps/api/tests/unit/feedback-rules.test.ts": {
+      "sha256": "e282320bc052803290f7108c51a40961377ee3987e58e6e3bb5649e0dd1c3ec7",
+      "lfNormalizedSha256": "749d786a223753b347676313880d23167fc6f10e178e6f0c5ad60795610bc82b"
+    },
+    "apps/api/tests/unit/test-database.test.ts": {
+      "sha256": "83e910f6262ee96dd280eadd26f40ccd28d651fd2f092337da6902f598a1a4c2",
+      "lfNormalizedSha256": "24d55ca9a85ea4ec36e4102edf011336d6fd5e858f7600c2c34f227685c0215e"
+    },
+    "apps/api/tsconfig.build.json": {
+      "sha256": "e95cf10601d333c6c4c3204cf7149ef1f4da3e2e0118e310da531c7d61deee33",
+      "lfNormalizedSha256": "d1f7ee6aee1124f74a982fae3f9ad21592fd56b8775d7cea64addf850d0f8e78"
+    },
+    "apps/api/tsconfig.json": {
+      "sha256": "06ad6c72fd0966aac016c6944cc7029365ca30f24e133009a4440b1f97dfb7b2",
+      "lfNormalizedSha256": "5ecc53436802f7544282d3f4bdbf6de590648dce676821710b46e446694c2235"
+    },
+    "apps/web/index.html": {
+      "sha256": "13d1cf03e601ffe64951f895ca4389788de518089f6fdadc85092da5e8ab094c",
+      "lfNormalizedSha256": "689dccebc353b5ae84aa4ce6c24a519b9318d0803aaa5ed5e2c7fc181cf3c1b6"
+    },
+    "apps/web/package.json": {
+      "sha256": "3812dbe005e1a4685ad21cc7588a027ec1a5e716d65365b0deb895805f300c9e",
+      "lfNormalizedSha256": "923a37582756956caabd0325f79c5c0b93436a53aaa026fb05d1aff9c494ef69"
+    },
+    "apps/web/src/main.tsx": {
+      "sha256": "57082cf6459284e13937116b7a6128efed5bb54fcfa69fb4fd7769329774fb3d",
+      "lfNormalizedSha256": "1f4e16feab2bbf5ed834649cc0ae91037a1948585f277a30b3c88da39c47f522"
+    },
+    "apps/web/src/theme.css": {
+      "sha256": "e4c24ae604bde0356d877c5e9b0a785aad3b8eb3f801022885ac11a6a03f6320",
+      "lfNormalizedSha256": "afc988eb86070119f458f1d0d15c634aebc439f62deea66842a6ca6f8d929606"
+    },
+    "apps/web/src/ui-validation.ts": {
+      "sha256": "2fdcc41e6b30df1d08cd7ed9f1735f5b293002240e4317f253fbc6786a5bc0a8",
+      "lfNormalizedSha256": "9ca8dadc98bee08a0cc7818defbaf3f4c637d364ee58e20e51ca4775faae6e5d"
+    },
+    "apps/web/tests/ui-validation.test.ts": {
+      "sha256": "6007135dcb8c9651e4cfb7576eec4e3ba478fe96990157d3126be6ef1dad25f6",
+      "lfNormalizedSha256": "aa2575ce3b4b246e1ac71b11d60540202f9e9fd173bbf7171c7b5e93102c4942"
+    },
+    "apps/web/tsconfig.json": {
+      "sha256": "65ec8f1388871aee2c54bd3dd0e6129315aee4fdc8edfb726b87a4020ef963ca",
+      "lfNormalizedSha256": "3ed2c54364e03a507dfbd98a619c45697f9501beadd9f4c956a4a7cacf919a34"
+    },
+    "apps/web/vite.config.ts": {
+      "sha256": "ea49504c9c370064624f0cdc7a9efedd0d833098bd2d77f48b7dfcb4da0f36b1",
+      "lfNormalizedSha256": "1889e4323d7c99c57e9100f4e6d965481e065c06dff2da0ab048b479e767e0da"
+    },
+    "package-lock.json": {
+      "sha256": "7de43c3d6d767cc74c9ea049ad6ca63acc7f381ce9205e9bb7e0082dcce3a186",
+      "lfNormalizedSha256": "05e41efa900ff8bd92c914e6ffac68183d51f0e4dbafd906bc3f69adb6c1b9d7"
+    },
+    "package.json": {
+      "sha256": "fedcbd3ac56b25ab353a844a61ccd6cf51a337274b6f91a0c348dac728c32dcb",
+      "lfNormalizedSha256": "68e2792973556bed61d1688fa5c7542164df1ec2496ba6f59727aea44ea6be60"
+    },
+    "playwright.config.ts": {
+      "sha256": "be60ab5526c4b19f4a5797ebde93a33f40f949c0f5896f833ca46998b47eca93",
+      "lfNormalizedSha256": "74cfb2838d930c3a2a2790b8cb253f3a0beab7d4a362e89f5f727f020da1b276"
+    },
+    "playwright.features.config.ts": {
+      "sha256": "6d25a034ef2cd21ac424c554a56dcc5eb783dd2d468f378dc7cf358665effbd6",
+      "lfNormalizedSha256": "9a9abc322a0aa680d338b42ad464d32a98c32581abce71808485d1d10925e2f7"
+    },
+    "playwright.recovery.config.ts": {
+      "sha256": "2798214d3af1c7959cd95452feaf64298c7ebcb1b954294fae0b5861234a714c",
+      "lfNormalizedSha256": "e8e5b4fcbbffce956e91d5b9b2f1f8aec34b58196829b3ca780a5a9acdfd4471"
+    },
+    "prisma.config.ts": {
+      "sha256": "64e2f999573b3d9cf70fe31027c20773e6a9a982b7e305a9488d15823247c91d",
+      "lfNormalizedSha256": "ad93d016f0bef0497212d3867caec49ff4409d21482c90fbc9a87a79e5bc1faf"
+    },
+    "prisma/fixtures.ts": {
+      "sha256": "4aa44180f9d78ba9d8117c6ac94e083b0e1323f109fdeb4e2e1da973d6b26477",
+      "lfNormalizedSha256": "24a1ca2895ceecd795d457522db0dd19a0a1591b1e9899737532d07736e254d8"
+    },
+    "prisma/migrations/202611080001_user_session/migration.sql": {
+      "sha256": "e7ef2e0d21127b0cadf06b1dd0cbc59307eec7617753c6e8b3dee244f57c541d",
+      "lfNormalizedSha256": "3045896c1242b42b47e69b05b368da783e5c35513da39016add64f284f15c308"
+    },
+    "prisma/migrations/202611080002_academic_context/migration.sql": {
+      "sha256": "fe7cba867e1fbd70450bfebff7d6b6deff6d46dc25f4a49ce54b3adcb7be0dbc",
+      "lfNormalizedSha256": "e71a7af9f789aad3a228dc348c50f02aab344897dcb98c7712c266fc178b29e3"
+    },
+    "prisma/migrations/202611080003_survey_response/migration.sql": {
+      "sha256": "0ebbff8b6ecab12a5005ff3d5945e887924257ee1d8665cbdc6d9b8455ecc926",
+      "lfNormalizedSha256": "c01e453af2da54ff889ec6d760d457bae6ec7d404d1b3e7343423fb8720ab171"
+    },
+    "prisma/migrations/migration_lock.toml": {
+      "sha256": "e0f301404b533bea819cafbc56ca2a9d9bcc2cf97d6350473e3a008f0637cc12",
+      "lfNormalizedSha256": "1db17a8d051aa136110736752c5e1f8b7ed92b6ea8e803112fbbe2497047c210"
+    },
+    "prisma/schema.prisma": {
+      "sha256": "700e2408818d250c02b02eee99958cd0002a270edf0ebdc0bc8f81cf55301c77",
+      "lfNormalizedSha256": "9ca6e9f910d2e32738139143b66a054a269d48c5e39f0e4085121cdd06e2568a"
+    },
+    "scripts/build-review-report.py": {
+      "sha256": "b9c61f6c8341f8046673f1d142e2e7c5d23f0708173fd3a70c1ff5eb4d397711",
+      "lfNormalizedSha256": "61e92f0e34aed6334a87e1037d9d709934948c11231d8fd6830fe84a66719f30"
+    },
+    "scripts/check-runtime.mjs": {
+      "sha256": "6dea76ca398fe4d1462fc0c00b4a3801bd0c0b363e638b372629765cc80558fc",
+      "lfNormalizedSha256": "3f3d5199b93e8b5d8cb73d2c4d6f61cf7ab69a40120f9ad0774feb6096a8da79"
+    },
+    "scripts/database.ts": {
+      "sha256": "105409e46a424482e75e0e89d463c405bf2603ed86f05aa24e196575b7ebea9f",
+      "lfNormalizedSha256": "023fdd869eec3a3607c239270fda86cea370494efff580bee30cb359d13433db"
+    },
+    "scripts/demo-config.ts": {
+      "sha256": "2630215cc4557859d5bbea3bd88ac5f54087f1e1ef4a8b54ff5056db2b7eb3a5",
+      "lfNormalizedSha256": "e7ac1b36831a5fb88ffd5286cb9105e577655c4fb9bc39ba99dec09c505f5864"
+    },
+    "scripts/dev.mjs": {
+      "sha256": "f55bec4c4f7c7d8cf28f31c2d0331d01b1ce387bd8679008ab8b0b0224af9a10",
+      "lfNormalizedSha256": "acdad7e1ed10d05fc81159525c3dfa1fd6a2c7a6fd3ffc4da45d5bf364ee5c30"
+    },
+    "scripts/orm-smoke.ts": {
+      "sha256": "6deec45bad53193151365dfa5e8a666b4744977395372d3b2e0ed4f7073d2560",
+      "lfNormalizedSha256": "5f05a5d826e133e4a573572b42e7a041cdc566323aafcc9f662a42129d02e2d5"
+    },
+    "scripts/playwright.mjs": {
+      "sha256": "361e7da3ea60c63eb9243c049d9d854d5158fd852c70d500ccb244f9f34db36d",
+      "lfNormalizedSha256": "658aa4d742347d9a33f9257dadc6b91c9bfcb3befb64d49d85b2a7664562a364"
+    },
+    "scripts/prepare-browser.ts": {
+      "sha256": "ad89c4eb9f6afa6c7e9637a9e108553f7453b3aa177b980356d3d326f049e147",
+      "lfNormalizedSha256": "944a81ceb18133d145e1b915c252064bd2a4ece0c21866cf4ace547ab90bc462"
+    },
+    "scripts/seed-database.ts": {
+      "sha256": "1becca446742fa95e611aabf6a7b3a701b03200d48bdcaf85ea1ef3cc7687085",
+      "lfNormalizedSha256": "b34af97f7cd2e3be54a4b7742030793c7de7352f9de6cbdc0cb74392ad3e1957"
+    },
+    "scripts/setup-local.mjs": {
+      "sha256": "330377f9ce0edb7c551edf257d6b71905fe4c066e226b6e162fc9c4298950c9b",
+      "lfNormalizedSha256": "45486ecdfdb2dac3731f12e42516d82148ecb9679a459f45c96537b3076646cd"
+    },
+    "scripts/verify-restart.ts": {
+      "sha256": "287ff4b24f0246532f9dafdbb074c12eccdecaa974f3eca308446b09126db6b2",
+      "lfNormalizedSha256": "6c441b9932fbb9b1dba34be37b400b2eaab58d348fbd7a6442ee65b391489418"
+    },
+    "tests/browser/feedback.spec.ts": {
+      "sha256": "248a0c753a1d127519b735e36b7655c2cdc8e01ac4ea6cbf9c78613c763366f4",
+      "lfNormalizedSha256": "bf3d6c0948daaab356b69884921b1c1e5e07ec452b0299f48eea153e7e8c7732"
+    },
+    "tests/browser/review-recovery.spec.ts": {
+      "sha256": "e4424b5a0d8a4cce272741e8df4eca0a4975d8144f4ade9f68fd9ea9c36ae65e",
+      "lfNormalizedSha256": "6afe2fdf23c8a76013628565a8c2ccc75d6aaafe1811e05084bded8a825530a1"
+    },
+    "tests/browser/sprint1-recovery-states.spec.ts": {
+      "sha256": "46e39b331cf92c6ef0604106c5866a208c237b9c95bd86c7d281cd8fdace8705",
+      "lfNormalizedSha256": "93170c224b8e3b09ad47dbf227fe644c5283259517b106daa928fb478cd0f93e"
+    },
+    "tests/browser/sprint1-rejections.spec.ts": {
+      "sha256": "be799bd56c582ffe6af1ab02401de1bf4727370d04948c9f659e7666a7584d44",
+      "lfNormalizedSha256": "965bf0436251a84970ced140d06e81356c06ccca90a725fc08bafb44923250c9"
+    },
+    "tests/browser/support/fixtures.ts": {
+      "sha256": "0888eca6852f01d5f3bc34103d64dd4f87779c642f847494ced2d5dae8c723a4",
+      "lfNormalizedSha256": "29300d94e5a89c33dda6a21889358c7b4da774504200ece1f756c1b979c49ad5"
+    },
+    "tests/browser/support/real-app.ts": {
+      "sha256": "ffc1070ea0267625730d62276900facf3f9a7a5dfa43623b3736602b6a43e70b",
+      "lfNormalizedSha256": "4a80c8a86da2b567cfed89cc62163a4fb8c6031bb26ee58e54ca4845a49512f9"
+    },
+    "tests/browser/support/ui-keyboard.ts": {
+      "sha256": "df0e195f378e70bb3139bdfd5687693e29532ec5f60dde15651274a3ec26d4cb",
+      "lfNormalizedSha256": "eb99b07e2cc2e2042d2735943bce4dc767ec97bf6bc9440da5a139d2b5544338"
+    },
+    "tests/browser/ui-accessibility-real.spec.ts": {
+      "sha256": "ee12778c4e1d10dc03bf819831e9285bdbb7dd53e40d09d014ee4d4c924f4f1f",
+      "lfNormalizedSha256": "baea622a0e9f7a71973d8317ac28b1a613974d5a947253f610e3993e0fb59eeb"
+    },
+    "tests/browser/ui-accessibility.spec.ts": {
+      "sha256": "dd555e2e2c6cf7818ae2ea2d77089e850a0fb584343c3aee47a085d53a4cf8f3",
+      "lfNormalizedSha256": "2bde3297afc249f68bc4d7186b863b358bb829794ae4dd7c3e58792930de1273"
+    },
+    "tests/database/constraints.sql": {
+      "sha256": "70005c3b17fcbd347200e4e901e2d748046091cb635364142be9768463fd232f",
+      "lfNormalizedSha256": "d4531b5110f21e392aa50064f4d1aa8692c8228cf13148a6645ff79050d571d1"
+    },
+    "tests/e2e/workspace.spec.ts": {
+      "sha256": "026b17da852bd876ba14710fba04d507ac6d0f88837008d4af3269ebc6425aa1",
+      "lfNormalizedSha256": "e8cb6945059e520d8206bf9fe724e76e94125f2e4ff3658e5e7a5946564ae7a7"
+    },
+    "tsconfig.base.json": {
+      "sha256": "f70549527080f27e6c1929957e67d49fb11453df0850484864e9a026613613a2",
+      "lfNormalizedSha256": "4a299e962345448d9b2f4405329875989767afbec1538117fdf1ecb2b159b19e"
+    },
+    "tsconfig.tooling.json": {
+      "sha256": "1b8c8ddeb03e7a0d9fbfc3a00f910ea875e46a500d39333a5ec400efaf5273d2",
+      "lfNormalizedSha256": "52623d5f9f9c46aa7b6cced4ed8265116b84b9a254de4865c1cdf9e3124e4d62"
+    },
+    "vitest.api.config.ts": {
+      "sha256": "db682d8acf6ed8d886364683e6567ded5688d9aec3c63b0f279bccb52a7826b3",
+      "lfNormalizedSha256": "6f5f4f663c6c072492fd3ea8c283e99d5fb2749e6eaebd2c143b44d783b42a80"
+    },
+    "vitest.db.config.ts": {
+      "sha256": "a98117dbd6af4f192adf365508a476e82f4ffcf4cf010b416cf41cada7e8ec95",
+      "lfNormalizedSha256": "424de06d329281e19af2ea41bc384df8e02f0de91d4f11a1ff447a880afd6794"
+    },
+    "vitest.features.config.ts": {
+      "sha256": "2c712c64d3d4b5fe8d73db30b5b7893a7b5fb98f01fa74c5c6841e7ba1f1d14f",
+      "lfNormalizedSha256": "804d571e33cd229bf2024a28811e2c589c8856cff6f4325a1f61b114c5277ad1"
+    },
+    "vitest.foundation.config.ts": {
+      "sha256": "9ca976563277151a538361572e98c57eec6f6a20ef24f0b89a15b53b86ce769f",
+      "lfNormalizedSha256": "1d2d1867fc9b0cccebc9768efa3a57269b3d94eb2efae53a072c3d9a8af4d98c"
+    },
+    "vitest.release.config.ts": {
+      "sha256": "45bbee6507a355e148e01f0d64423fe029eac03e0cccfe72a6c7a07273e80b3f",
+      "lfNormalizedSha256": "45bbee6507a355e148e01f0d64423fe029eac03e0cccfe72a6c7a07273e80b3f"
+    },
+    "vitest.unit.config.ts": {
+      "sha256": "475607a26ca65a2fcd84875871f1c0e6a634e31051440a0d4f26e37169de38f2",
+      "lfNormalizedSha256": "c56f41a713254beb220ff7ba2aeb64efaf4a79175ca4a8c7475a2d4d94992765"
+    }
+  },
+  "pending": [
+    "Actual teammate review and integration of DEF-G04-01 fix/test/evidence into staging; current fa33e4c alone still contains the reproduced defect",
+    "Identify resulting staging/review SHA and verify correspondence to recorded patch hashes",
+    "Actual G-04/DoD and substantive PR #40 acceptance",
+    "Actual main integration, post-main verification and immutable tag",
+    "Full human screen-reader/WCAG checks Not run; later deployment/P15 scope separate; DOD-12 under #26"
+  ],
+  "remainingConditions": [
+    {
+      "area": "A",
+      "ac": [
+        "AC-F01-05",
+        "AC-F01-13"
+      ],
+      "sts": [
+        "TEST-F01-I26",
+        "TEST-F01-I18"
+      ],
+      "status": "Partial beyond demonstrated variants",
+      "localRequirement": "No identity grant after verifier/save error",
+      "sufficiency": "Recovered corrupt-verifier case, existing real store faults and F01 physical acknowledged-commit loss establish core integrity; every verifier/network timing is not enumerated.",
+      "additionalLocalTestRequired": false,
+      "proposedDisposition": "Accept demonstrated guarantee and preserve exhaustive variant limitation; human acceptance pending"
+    },
+    {
+      "area": "B",
+      "ac": [
+        "AC-F03-20",
+        "AC-F03-23"
+      ],
+      "sts": [
+        "TEST-F03-I20",
+        "TEST-F03-E03"
+      ],
+      "status": "Partial: not each SQL statement/wire timing",
+      "localRequirement": "Atomic mutations and uncertain-outcome reconciliation",
+      "sufficiency": "Recovered replacement/publication/delete rollback, F02 create rollback, F03 real COMMIT loss, shared wrapper and existing recovery tests; no separate retry implementation for each route.",
+      "additionalLocalTestRequired": false,
+      "proposedDisposition": "Accept tested shared mechanism plus representative write stages; preserve broad-row Partial"
+    },
+    {
+      "area": "C",
+      "ac": [
+        "AC-F02-17",
+        "AC-F03-04",
+        "AC-F05-15"
+      ],
+      "sts": [
+        "TEST-F02-I18",
+        "TEST-F03-I24",
+        "TEST-F05-I10",
+        "TEST-F05-I11"
+      ],
+      "status": "Partial: not every interleaving",
+      "localRequirement": "One committed snapshot per response",
+      "sufficiency": "Recovered four real PostgreSQL barriers exercise count/items, definition parent/questions, submit and Close; BEGIN REPEATABLE READ READ ONLY and all query bodies unchanged; current API neighbors pass.",
+      "additionalLocalTestRequired": false,
+      "proposedDisposition": "Accept shared snapshot mechanism; no claim all interleavings executed"
+    },
+    {
+      "area": "D",
+      "ac": [
+        "AC-F02-18",
+        "AC-F03-20",
+        "AC-F04-18",
+        "AC-F04-19",
+        "AC-F05-16"
+      ],
+      "sts": [
+        "TEST-F02-I19",
+        "TEST-F03-I20",
+        "TEST-F04-I20",
+        "TEST-F05-I12"
+      ],
+      "status": "Partial; naturally generated SSI and stopped-server/every-stage profiles Not run",
+      "localRequirement": "Safe failure, atomic rollback, no false success/replay and recovery",
+      "sufficiency": "Actual native deadlock F05, 40001 injection F06, physical COMMIT loss F03/F04, actual existing lock timeout/HTTP delivery loss, recovered 57P03 read failure; generic errors/rollback paths tested.",
+      "additionalLocalTestRequired": false,
+      "proposedDisposition": "Accept local error-handling guarantee; physical stop/start outage permutations and native SSI are not certified. Native SSI write-skew is outside configured READ COMMITTED write isolation, without marking whole mixed STS N/A"
+    },
+    {
+      "area": "E",
+      "ac": [
+        "AC-F01-14",
+        "AC-F04-20",
+        "AC-F05-14"
+      ],
+      "sts": [
+        "TEST-F01-I23",
+        "TEST-F04-I21"
+      ],
+      "status": "Partial; full external logging/analytics boundary matrix Not run",
+      "localRequirement": "Known secret/feedback markers absent from current response/log surfaces",
+      "sufficiency": "Current real access/projection/no-store neighbors, recovered negative spy and F07 positive actual configured pool logger plus normal/error calls; inspected current runtime has fixed diagnostics and no additional request-body logger/analytics pipeline.",
+      "additionalLocalTestRequired": false,
+      "proposedDisposition": "Accept configured local surfaces with bounded logging evidence; no full privacy certification"
+    },
+    {
+      "area": "F",
+      "ac": [
+        "AC-F01-15",
+        "AC-F03-24",
+        "AC-F04-25",
+        "AC-F05-20"
+      ],
+      "sts": [
+        "TEST-F01-M01",
+        "TEST-F03-E05",
+        "TEST-F03-M01",
+        "TEST-F04-E02",
+        "TEST-F04-M01",
+        "TEST-F05-E04",
+        "TEST-F05-M01"
+      ],
+      "status": "Selected checks Pass; broader manual cases Partial; full WCAG/human screen-reader Not run",
+      "localRequirement": "Core keyboard/labels/focus/errors/reflow/zoom",
+      "sufficiency": "Unchanged PR43 frontend/fixtures/screenshots and actual 320px/native 200% evidence, with four real integration journeys rerun for backend patch.",
+      "additionalLocalTestRequired": false,
+      "proposedDisposition": "Accept selected local UI evidence; no human AT/full WCAG outcome invented"
+    },
+    {
+      "area": "G",
+      "ac": [
+        "AC-F01-07",
+        "AC-F01-10",
+        "AC-F01-11",
+        "AC-F01-14",
+        "AC-F01-18"
+      ],
+      "sts": [
+        "Relevant mixed local/deployed F01 cases; SDS deployment/P15 sections"
+      ],
+      "status": "Local selected behavior Pass/Partial; later-only deployment subconditions proposed N/A to local release and Not run",
+      "localRequirement": "Local absolute expiry, Origin/CSRF, cookie/session/privacy and per-process rate limiting remain required",
+      "sufficiency": "Existing auth tests again pass in current 38-case neighbors. Cloud HTTPS/proxy/distributed rate limit and P15 are later-scope boundaries, not exemptions for these local controls.",
+      "additionalLocalTestRequired": false,
+      "proposedDisposition": "Human confirms local/later separation; never mark mixed AC/STS wholly N/A"
+    }
+  ]
+}

@@ -1,0 +1,401 @@
+{
+  "recordedDateBangkok": "2026-11-12",
+  "source": "Read-only GitHub API observations; actual metadata, not invented review or contribution; PR #39 metadata supplied as verified by the project owner; PR #42/#43 approval and merge metadata independently re-read through read-only GitHub connector on 2026-11-12",
+  "pullRequests": [
+    {
+      "number": 7,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/7",
+      "title": "docs: establish lecture feedback baseline, starter questionnaires, and improvement notes",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-06T14:14:19Z",
+      "sourceSha": "70f7edfdc73ffee3805ccd24810d643774bb00b8",
+      "mergeSha": "333a9fc6a6a2905b07087c98eb5f5d931ffec107",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "70f7edfdc73ffee3805ccd24810d643774bb00b8",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/7#pullrequestreview-5801278900",
+          "submittedAt": "2026-11-06T14:12:04Z"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/27",
+      "title": "docs: add Sprint 1 delivery tracker and readiness gates",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-06T15:48:38Z",
+      "sourceSha": "c586853f1188a9c53a2f926711d3914f8c18737f",
+      "mergeSha": "b3f644a7ca42c3750a7f673153aeba87d3c6d999",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "c586853f1188a9c53a2f926711d3914f8c18737f",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/27#pullrequestreview-5802534893",
+          "submittedAt": "2026-11-06T15:33:38Z"
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/28",
+      "title": "docs: establish Sprint 1 board and teammate review workflow",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-06T15:48:23Z",
+      "sourceSha": "cd99ea52b632e1dd37e10b85a6e0da1aa634df60",
+      "mergeSha": "2ef97562595c0b665f6f0452cf9af8335dedcb3f",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "cd99ea52b632e1dd37e10b85a6e0da1aa634df60",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/28#pullrequestreview-5802539098",
+          "submittedAt": "2026-11-06T15:33:54Z"
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/29",
+      "title": "docs: define shared Sprint 1 contracts and F-01 specification",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-07T02:41:30Z",
+      "sourceSha": "c344dc36d118105baf31f7c5f51312c5ffed6906",
+      "mergeSha": "9f6d1bff2bc8185d054098cc048670e438118e81",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "fc64e2cc16557d77d67ef278d56e05c86c2621fc",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/29#pullrequestreview-5803314777",
+          "submittedAt": "2026-11-06T16:20:51Z"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "e58fe0ab150af9bfb01f3cf57323003c44c68237",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/29#pullrequestreview-5807020832",
+          "submittedAt": "2026-11-06T21:10:27Z"
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/30",
+      "title": "docs: plan Deliverable 1 evidence and PDF assembly",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-07T02:39:21Z",
+      "sourceSha": "8f98fcd1e3826598a7e4ef64c578aed376594b4c",
+      "mergeSha": "1ba34fd34cb6b9faab3fba3e5a206f4b2851f663",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "d85909d09e43e893071519e28c1695d6b9ae3428",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/30#pullrequestreview-5803367771",
+          "submittedAt": "2026-11-06T16:24:13Z"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "8f98fcd1e3826598a7e4ef64c578aed376594b4c",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/30#pullrequestreview-5807116227",
+          "submittedAt": "2026-11-06T21:18:03Z"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/31",
+      "title": "docs: define F-02 context discovery contract and STS",
+      "author": "R1NNE0",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-07T14:46:55Z",
+      "sourceSha": "63300de3fa32891436ae11f3e32ebe4ba424b82e",
+      "mergeSha": "448282972881a636228c9f3a236850330dbcf606",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "63300de3fa32891436ae11f3e32ebe4ba424b82e",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/31#pullrequestreview-5809651179",
+          "submittedAt": "2026-11-07T02:59:58Z"
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/32",
+      "title": "docs: define F-03 survey authoring contract and STS",
+      "author": "R1NNE0",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-07T15:34:13Z",
+      "sourceSha": "3a0491fee3a23f85d405c17c57b72579536f0de2",
+      "mergeSha": "aee7c617a9e036c776c6c89eaa4c320929860882",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "029cf011aa19c262f125017b91ca8e1987f7381e",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/32#pullrequestreview-5809654108",
+          "submittedAt": "2026-11-07T03:00:31Z"
+        },
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "3a0491fee3a23f85d405c17c57b72579536f0de2",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/32#pullrequestreview-5813296170",
+          "submittedAt": "2026-11-07T15:32:37Z"
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/33",
+      "title": "docs: define F-05 results contract and STS",
+      "author": "R1NNE0",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-07T15:37:21Z",
+      "sourceSha": "30461be2076d043a21f1dfa07dff43d64dc85183",
+      "mergeSha": "090a5288ac57085d7d7107744d976c31ffd8192d",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "c76d239aab4739083d0d3c947099c4298563dbc8",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/33#pullrequestreview-5809655246",
+          "submittedAt": "2026-11-07T03:00:49Z"
+        },
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "30461be2076d043a21f1dfa07dff43d64dc85183",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/33#pullrequestreview-5813314690",
+          "submittedAt": "2026-11-07T15:36:39Z"
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/34",
+      "title": "chore: bootstrap Sprint 1 workspace and specify F-04 responses",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-08T15:45:01Z",
+      "sourceSha": "9e905e6b86f192d438a60c8f6ed4954574e8e27e",
+      "mergeSha": "f75466a2554fdcc7ebd181db2ffbcc5222275882",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "0ec16d5193534bd0bd0e1f8b8676665d62021025",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/34#pullrequestreview-5815114073",
+          "submittedAt": "2026-11-07T21:35:47Z"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "9e905e6b86f192d438a60c8f6ed4954574e8e27e",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/34#pullrequestreview-5818503977",
+          "submittedAt": "2026-11-08T15:43:50Z"
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/35",
+      "title": "feat(db): implement Sprint 1 database foundation",
+      "author": "R1NNE0",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-09T12:49:26Z",
+      "sourceSha": "6e80fa0828c8e6e00d604a7cf257cd6e11888da9",
+      "mergeSha": "9b58609d2f6623ea466835841f0332687307d41c",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "6e80fa0828c8e6e00d604a7cf257cd6e11888da9",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/35#pullrequestreview-5818921606",
+          "submittedAt": "2026-11-08T17:44:33Z"
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/36",
+      "title": "feat: implement Sprint 1 identified feedback workflows and review evidence",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-09T15:56:25Z",
+      "sourceSha": "2e1e789a9a82317fe6ec26787337d7b210dbb3bf",
+      "mergeSha": "d096a17c57b9ad0f49ec539a96905f729697100b",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "eb02e1c33f28d8a79c95d06afcf93683e757d770",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/36#pullrequestreview-5826938918",
+          "submittedAt": "2026-11-09T14:03:07Z"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "0ed97a450f893db10edefb5f0ce2225f4f5884ed",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/36#pullrequestreview-5827880763",
+          "submittedAt": "2026-11-09T15:09:36Z"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "2e1e789a9a82317fe6ec26787337d7b210dbb3bf",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/36#pullrequestreview-5828560188",
+          "submittedAt": "2026-11-09T15:55:51Z"
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/37",
+      "title": "test: verify integrated Sprint 1 API and database rules",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-10T13:28:53Z",
+      "sourceSha": "b024596bd09daea7099acc3607d4be25cdc0dd84",
+      "mergeSha": "4ff4562a8cf1a58fa5c6ae1d958b4ab8c0b2e18f",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "2726f9a595067ea09f21626894895f059782e3be",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/37#pullrequestreview-5832194353",
+          "submittedAt": "2026-11-09T20:24:45Z"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "b024596bd09daea7099acc3607d4be25cdc0dd84",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/37#pullrequestreview-5842618558",
+          "submittedAt": "2026-11-10T13:28:24Z"
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/38",
+      "title": "test(e2e): add Sprint 1 browser journeys and fix closed survey recovery",
+      "author": "R1NNE0",
+      "base": "staging",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-10T06:07:57Z",
+      "sourceSha": "4527ba5b26973fd14d42e3d1415c07632510315f",
+      "mergeSha": "60736fb0f4f3e900a68179ed71d11668861445f9",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "4527ba5b26973fd14d42e3d1415c07632510315f",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/38#pullrequestreview-5836366253",
+          "submittedAt": "2026-11-10T03:33:56Z"
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/39",
+      "title": "docs: verify fresh setup and prepare Sprint 1 release readiness",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "headBranch": "docs/24-setup-release-readiness",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-10T20:25:00Z",
+      "sourceSha": "2801003c1ef292fa90c5190dd89ac0325e40d582",
+      "mergeSha": "b5f6d67eab20aece3307cdad03b41f840cc6a8d5",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "2801003c1ef292fa90c5190dd89ac0325e40d582",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/39#pullrequestreview-5848796940",
+          "submittedAt": "2026-11-10T20:24:41Z"
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/42",
+      "title": "fix(auth): make session and exact expiry persistence atomic",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "headBranch": "fix/25-auth-save-atomicity",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-11T18:36:06Z",
+      "sourceSha": "4f25a153ba505eb95345971fee68e94195366a94",
+      "mergeSha": "2961014e6b21668f20321e0acade382e67972f1a",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "4f25a153ba505eb95345971fee68e94195366a94",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/42#pullrequestreview-5863694268",
+          "submittedAt": "2026-11-11T18:35:56Z"
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/43",
+      "title": "fix(ui): resolve Sprint 1 accessibility review findings",
+      "author": "R1NNE0",
+      "base": "staging",
+      "headBranch": "fix/25-ui-accessibility-recovery",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-12T08:27:47Z",
+      "sourceSha": "b75bf35210d5375ef3e48f3e74d943ccb7f8f5f1",
+      "mergeSha": "fa33e4cc2b57e5c140ffca892e507814b436829d",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "b75bf35210d5375ef3e48f3e74d943ccb7f8f5f1",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/43#pullrequestreview-5871353742",
+          "submittedAt": "2026-11-12T08:27:41Z"
+        }
+      ]
+    }
+  ]
+}

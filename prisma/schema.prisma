@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client"
+  output = "../apps/api/src/generated/prisma"
+  moduleFormat = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  RESPONDENT
+}
+enum SurveyStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+enum SurveyMode {
+  IDENTIFIED
+}
+enum QuestionType {
+  RATING
+  TEXT
+}
+
+model User {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email String @unique @db.VarChar(254)
+  passwordHash String
+  role Role
+  displayName String @db.VarChar(120)
+  sections Section[]
+  memberships Membership[]
+  surveys Survey[]
+  eligibility SurveyEligibility[]
+}
+
+model AuthSession {
+  sid String @id @db.VarChar
+  sess Json @db.Json
+  expire DateTime @db.Timestamp(6)
+  @@index([expire], map: "auth_session_expire_idx")
+  @@map("auth_session")
+}
+
+model Course {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code String @unique
+  title String
+  sections Section[]
+}
+
+model Section {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId String @db.Uuid
+  term String
+  sectionCode String
+  ownerId String @db.Uuid
+  course Course @relation(fields: [courseId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  memberships Membership[]
+  lectures Lecture[]
+  @@unique([courseId, term, sectionCode])
+  @@index([ownerId, courseId])
+}
+
+model Membership {
+  sectionId String @db.Uuid
+  studentId String @db.Uuid
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  student User @relation(fields: [studentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  @@id([sectionId, studentId])
+  @@index([studentId, sectionId])
+}
+
+model Lecture {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sectionId String @db.Uuid
+  title String
+  lectureDate DateTime @db.Date
+  sequence Int
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  survey Survey?
+  @@unique([sectionId, sequence])
+  @@index([sectionId, lectureDate])
+}
+
+model Survey {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lectureId String @unique @db.Uuid
+  ownerId String @db.Uuid
+  title String @default("") @db.VarChar(120)
+  status SurveyStatus @default(DRAFT)
+  mode SurveyMode @default(IDENTIFIED)
+  definitionRevision Int @default(1)
+  publishedAt DateTime? @db.Timestamptz(3)
+  closedAt DateTime? @db.Timestamptz(3)
+  lecture Lecture @relation(fields: [lectureId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  questions Question[]
+  eligibility SurveyEligibility[]
+  @@index([status])
+  bundles ResponseBundle[]
+}
+
+model Question {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  surveyId String @db.Uuid
+  position Int
+  prompt String @db.VarChar(500)
+  type QuestionType
+  required Boolean
+  ratingMin Int?
+  ratingMax Int?
+  ratingMinLabel String? @db.VarChar(120)
+  ratingMaxLabel String? @db.VarChar(120)
+  scaleInterpretation String? @db.VarChar(500)
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  answers Answer[]
+  @@unique([surveyId, position])
+  @@unique([surveyId, id])
+}
+
+model SurveyEligibility {
+  surveyId String @db.Uuid
+  studentId String @db.Uuid
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  student User @relation(fields: [studentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  participation Participation?
+  bundles ResponseBundle[]
+  @@id([surveyId, studentId])
+  @@index([studentId, surveyId])
+}
+
+model Participation {
+  surveyId String @db.Uuid
+  studentId String @db.Uuid
+  eligibility SurveyEligibility @relation(fields: [surveyId, studentId], references: [surveyId, studentId], onDelete: Restrict, onUpdate: Restrict)
+  @@id([surveyId, studentId])
+}
+
+model ResponseBundle {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  surveyId String @db.Uuid
+  identifiedStudentId String? @db.Uuid
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  eligibility SurveyEligibility? @relation(fields: [surveyId, identifiedStudentId], references: [surveyId, studentId], onDelete: Restrict, onUpdate: Restrict)
+  answers Answer[]
+  @@unique([surveyId, identifiedStudentId])
+  @@unique([surveyId, id])
+}
+
+model Answer {
+  bundleId String @db.Uuid
+  questionId String @db.Uuid
+  surveyId String @db.Uuid
+  ratingValue Int?
+  textValue String?
+  bundle ResponseBundle @relation(fields: [surveyId, bundleId], references: [surveyId, id], onDelete: Restrict, onUpdate: Restrict)
+  question Question @relation(fields: [surveyId, questionId], references: [surveyId, id], onDelete: Restrict, onUpdate: Restrict)
+  @@id([bundleId, questionId])
+  @@index([surveyId, questionId])
+}

@@ -1,0 +1,439 @@
+{
+  "issue": 23,
+  "recordedDateBangkok": "2026-11-10",
+  "sourceState": "Uncommitted working tree on baseline; no new commit or release claimed",
+  "baselineSha": "d096a17c57b9ad0f49ec539a96905f729697100b",
+  "sourceSha256": {
+    "playwright.features.config.ts": "adbe94f17ad97017a9c31ffd4738ef62e51ed55e6c09dd0188a85d4d3ed4fefd",
+    "tests/browser/feedback.spec.ts": "bf3d6c0948daaab356b69884921b1c1e5e07ec452b0299f48eea153e7e8c7732",
+    "tests/browser/sprint1-rejections.spec.ts": "965bf0436251a84970ced140d06e81356c06ccca90a725fc08bafb44923250c9",
+    "tests/browser/sprint1-recovery-states.spec.ts": "93170c224b8e3b09ad47dbf227fe644c5283259517b106daa928fb478cd0f93e",
+    "tests/browser/support/real-app.ts": "4a80c8a86da2b567cfed89cc62163a4fb8c6031bb26ee58e54ca4845a49512f9",
+    "tests/browser/support/fixtures.ts": "29300d94e5a89c33dda6a21889358c7b4da774504200ece1f756c1b979c49ad5",
+    "package-lock.json": "7de43c3d6d767cc74c9ea049ad6ca63acc7f381ce9205e9bb7e0082dcce3a186",
+    "apps/api/src/app.ts": "73edb5129eb0244708788786cc6e5b47e7f1743d82927a6e065fbf7e810736c0",
+    "apps/api/src/auth.ts": "056bb42969ff17012a11a3535c0fcab5dd9a17ffb6f3529d092ab849030b3cd2",
+    "apps/api/src/feedback.ts": "5804bfa4adc47dabb2f6a5c5f95914c5998148f2fbe1c99820a1fc94b9ca2e10",
+    "apps/web/src/main.tsx": "1e2dbf16740a1b2fcc2aea24c04f1107847f46cc5e0cb34da471ac73e85406d4",
+    "tests/browser/review-recovery.spec.ts": "e4424b5a0d8a4cce272741e8df4eca0a4975d8144f4ade9f68fd9ea9c36ae65e"
+  },
+  "runtime": {
+    "node": "24.22.1",
+    "npm": "10.9.2",
+    "postgresql": "17.11",
+    "playwright": "1.65.0",
+    "chromium": "158.0.8127.18 (1254)",
+    "os": "Windows"
+  },
+  "database": {
+    "finalName": "lectra_test_issue23_d",
+    "target": "task-created cluster on loopback 55423",
+    "preparation": "New empty task-owned database; actual data_directory, version17.11 and zero public tables verified; existing assertTestDatabase and ALLOW_BROWSER_TESTS preparation retained.",
+    "cleanup": "Scenario-owned domain rows deleted; final 7 Users/3 Lectures/1 Draft/2 Questions and zero Participation/ResponseBundle/Answer; task-created server stopped. Session/migration rows remain only in the stopped disposable cluster."
+  },
+  "runs": [
+    {
+      "command": "npm run test:e2e:features -- --output .local/evidence/issue23-def-fix-feature --reporter=list,json",
+      "classification": "Real browser / real Express / PostgreSQL17 with controlled delivery faults",
+      "exitCode": 0,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTimeUtc": "2026-11-09T19:44:23.835Z",
+      "rawLocalReport": ".local/evidence/issue23-def-fix-feature.json"
+    },
+    {
+      "command": "npm run test:e2e:recovery -- --output .local/evidence/issue23-def-fix-recovery --reporter=list,json",
+      "classification": "Isolated React/browser mocked HTTP; original18 plus one lifecycle/status failure scenario, at both widths",
+      "exitCode": 0,
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTimeUtc": "2026-11-09T19:44:24.029Z",
+      "rawLocalReport": ".local/evidence/issue23-def-fix-recovery.json"
+    },
+    {
+      "command": "npm run test:e2e -- --output .local/evidence/issue23-def-fix-smoke --reporter=list,json",
+      "classification": "Two browser liveness and two API-request smoke executions; unavailable dummy DB",
+      "exitCode": 0,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTimeUtc": "2026-11-09T19:44:22.744Z",
+      "rawLocalReport": ".local/evidence/issue23-def-fix-smoke.json"
+    }
+  ],
+  "buildChecks": [
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "note": "Executed after the DEF fix using pinned runtime and permitted subprocess execution. Production source remained unchanged during the final test runs."
+    }
+  ],
+  "scenarios": [
+    {
+      "testName": "B23-01 real owner → student → closed results, persisted reload/relogin and validation",
+      "file": "tests/browser/feedback.spec.ts",
+      "line": 3,
+      "executions": [
+        {
+          "project": "chromium-wide",
+          "status": "passed",
+          "retry": 0
+        },
+        {
+          "project": "chromium-narrow",
+          "status": "passed",
+          "retry": 0
+        }
+      ],
+      "id": "B23-01",
+      "acceptanceCriteria": [
+        "AC-F03-22",
+        "AC-F03-24",
+        "AC-F04-01",
+        "AC-F04-02",
+        "AC-F04-15",
+        "AC-F04-17",
+        "AC-F04-23",
+        "AC-F04-25",
+        "AC-F05-02",
+        "AC-F05-03",
+        "AC-F05-09",
+        "AC-F05-13",
+        "AC-F05-18",
+        "AC-F05-20"
+      ],
+      "plannedStsReferences": [
+        "TEST-F03-E01",
+        "TEST-F03-E04",
+        "TEST-F04-E01",
+        "TEST-F04-E02",
+        "TEST-F04-H02",
+        "TEST-F04-H03",
+        "TEST-F05-E01",
+        "TEST-F05-E03"
+      ],
+      "classification": "real browser / real Express API / PostgreSQL17",
+      "deliveryInterception": false,
+      "stsDisposition": "Partial selected evidence; not execution of every condition in the planned STS row",
+      "status": "Passed selected scenario"
+    },
+    {
+      "testName": "B23-02 real invalid then keyboard login and one StrictMode bootstrap",
+      "file": "tests/browser/feedback.spec.ts",
+      "line": 66,
+      "executions": [
+        {
+          "project": "chromium-wide",
+          "status": "passed",
+          "retry": 0
+        },
+        {
+          "project": "chromium-narrow",
+          "status": "passed",
+          "retry": 0
+        }
+      ],
+      "id": "B23-02",
+      "acceptanceCriteria": [
+        "AC-F01-03",
+        "AC-F01-04",
+        "AC-F01-15"
+      ],
+      "plannedStsReferences": [
+        "TEST-F01-E01"
+      ],
+      "classification": "real browser / real Express API / PostgreSQL17",
+      "deliveryInterception": false,
+      "stsDisposition": "Partial selected evidence; not execution of every condition in the planned STS row",
+      "status": "Passed selected scenario"
+    },
+    {
+      "testName": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows",
+      "file": "tests/browser/sprint1-rejections.spec.ts",
+      "line": 3,
+      "executions": [
+        {
+          "project": "chromium-wide",
+          "status": "passed",
+          "retry": 0
+        },
+        {
+          "project": "chromium-narrow",
+          "status": "passed",
+          "retry": 0
+        }
+      ],
+      "id": "B23-03",
+      "acceptanceCriteria": [
+        "AC-F04-08",
+        "AC-F04-10",
+        "AC-F04-15",
+        "AC-F04-17",
+        "AC-F04-19",
+        "AC-F03-04"
+      ],
+      "plannedStsReferences": [
+        "TEST-F04-E01",
+        "TEST-F03-E04",
+        "TEST-F04-I10",
+        "TEST-F04-I11"
+      ],
+      "classification": "real browser / real Express API / PostgreSQL17",
+      "deliveryInterception": false,
+      "stsDisposition": "Partial selected evidence; not execution of every condition in the planned STS row",
+      "status": "Passed selected scenario",
+      "limit": "Original soft defect assertion retained; stronger real GET/status/Closed/no-Submit/no-replay assertions now pass before reload. I10/I11 remain partial cross-level references, not full Issue22 API-case execution."
+    },
+    {
+      "testName": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access",
+      "file": "tests/browser/sprint1-rejections.spec.ts",
+      "line": 49,
+      "executions": [
+        {
+          "project": "chromium-wide",
+          "status": "passed",
+          "retry": 0
+        },
+        {
+          "project": "chromium-narrow",
+          "status": "passed",
+          "retry": 0
+        }
+      ],
+      "id": "B23-04",
+      "acceptanceCriteria": [
+        "AC-F01-12",
+        "AC-F02-02",
+        "AC-F02-07",
+        "AC-F03-02",
+        "AC-F04-06",
+        "AC-F04-16"
+      ],
+      "plannedStsReferences": [
+        "TEST-F03-E04",
+        "TEST-F01-H02",
+        "TEST-F04-I08",
+        "TEST-F04-I17"
+      ],
+      "classification": "real browser / real Express API / PostgreSQL17",
+      "deliveryInterception": false,
+      "stsDisposition": "Partial selected evidence; not execution of every condition in the planned STS row",
+      "status": "Passed selected scenario",
+      "limit": "Browser-session access probes supplement Issue22; do not certify its full authorization matrix."
+    },
+    {
+      "testName": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload",
+      "file": "tests/browser/sprint1-recovery-states.spec.ts",
+      "line": 3,
+      "executions": [
+        {
+          "project": "chromium-wide",
+          "status": "passed",
+          "retry": 0
+        },
+        {
+          "project": "chromium-narrow",
+          "status": "passed",
+          "retry": 0
+        }
+      ],
+      "id": "B23-05",
+      "acceptanceCriteria": [
+        "AC-F01-07",
+        "AC-F01-09",
+        "AC-F01-14",
+        "AC-F01-16",
+        "AC-F04-20"
+      ],
+      "plannedStsReferences": [
+        "TEST-F01-E02",
+        "TEST-F01-E03",
+        "TEST-F02-E03",
+        "TEST-F04-E04"
+      ],
+      "classification": "real browser / real Express API / PostgreSQL17",
+      "deliveryInterception": true,
+      "stsDisposition": "Partial selected evidence; not execution of every condition in the planned STS row",
+      "status": "Passed selected scenario",
+      "limit": "Expiry is observed via real browser fetch /auth/me followed by visibility revalidation; not a full UI expiry matrix."
+    },
+    {
+      "testName": "B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation",
+      "file": "tests/browser/sprint1-recovery-states.spec.ts",
+      "line": 43,
+      "executions": [
+        {
+          "project": "chromium-wide",
+          "status": "passed",
+          "retry": 0
+        },
+        {
+          "project": "chromium-narrow",
+          "status": "passed",
+          "retry": 0
+        }
+      ],
+      "id": "B23-06",
+      "acceptanceCriteria": [
+        "AC-F04-17",
+        "AC-F04-18"
+      ],
+      "plannedStsReferences": [
+        "TEST-F04-E03"
+      ],
+      "classification": "real browser / real Express API / PostgreSQL17",
+      "deliveryInterception": true,
+      "stsDisposition": "Partial selected evidence; not execution of every condition in the planned STS row",
+      "status": "Passed selected scenario"
+    },
+    {
+      "testName": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry",
+      "file": "tests/browser/sprint1-recovery-states.spec.ts",
+      "line": 80,
+      "executions": [
+        {
+          "project": "chromium-wide",
+          "status": "passed",
+          "retry": 0
+        },
+        {
+          "project": "chromium-narrow",
+          "status": "passed",
+          "retry": 0
+        }
+      ],
+      "id": "B23-07",
+      "acceptanceCriteria": [
+        "AC-F02-14",
+        "AC-F02-15",
+        "AC-F02-18",
+        "AC-F05-10",
+        "AC-F05-19",
+        "AC-F05-20"
+      ],
+      "plannedStsReferences": [
+        "TEST-F02-E01",
+        "TEST-F02-E02",
+        "TEST-F02-E04",
+        "TEST-F05-E02",
+        "TEST-F05-E04"
+      ],
+      "classification": "real browser / real Express API / PostgreSQL17",
+      "deliveryInterception": true,
+      "stsDisposition": "Partial selected evidence; not execution of every condition in the planned STS row",
+      "status": "Passed selected scenario"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "docs/sprints/sprint-1/issue-23-evidence/closed-results-wide.png",
+      "scenario": "B23-01",
+      "source": ".local/evidence/issue23-feature-c/feedback-B23-01-real-owner-b3ae3-load-relogin-and-validation-chromium-wide/closed-results.png",
+      "sha256": "e5234953f1a8ced31adb85e182e8f5ab32b0b8b9200429fa9bd106d3c322975d",
+      "versionBoundary": "Historical pre-fix run C; retained unchanged"
+    },
+    {
+      "file": "docs/sprints/sprint-1/issue-23-evidence/closed-stale-rejection-narrow.png",
+      "scenario": "B23-03",
+      "source": ".local/evidence/issue23-feature-c/sprint1-rejections-B23-03--9946b-missions-without-extra-rows-chromium-narrow/closed-stale-rejection.png",
+      "sha256": "e77156c1758f63b76524a596a23fd00442ae39efb032723c7e0de2682cf5f663",
+      "versionBoundary": "Historical pre-fix run C; retained unchanged"
+    },
+    {
+      "file": "docs/sprints/sprint-1/issue-23-evidence/uncertain-recovered-narrow.png",
+      "scenario": "B23-06",
+      "source": ".local/evidence/issue23-feature-c/sprint1-recovery-states-B2-ad691-al-persisted-reconciliation-chromium-narrow/real-uncertain-outcome-recovered.png",
+      "sha256": "9d9028366ad3bb64c329e72a3d75ef6377e56ddecb1345831e5b539787c29052",
+      "versionBoundary": "Historical pre-fix run C; retained unchanged"
+    },
+    {
+      "file": "docs/sprints/sprint-1/issue-23-evidence/zero-results-narrow.png",
+      "scenario": "B23-07",
+      "source": ".local/evidence/issue23-feature-c/sprint1-recovery-states-B2-f1807--error-and-successful-retry-chromium-narrow/zero-results-recovered.png",
+      "sha256": "cec46d7892b5181b87fae208da77aba893b340791cb987fe9d73867a214d11cd",
+      "versionBoundary": "Historical pre-fix run C; retained unchanged"
+    },
+    {
+      "file": "docs/sprints/sprint-1/issue-23-evidence/closed-recovered-chromium-wide.png",
+      "scenario": "B23-03",
+      "source": ".local/evidence/issue23-def-fix-feature/sprint1-rejections-B23-03--9946b-missions-without-extra-rows-chromium-wide/closed-recovered-without-reload.png",
+      "sha256": "0fe988399b1e77f1df03e0002151cc07fc613e3f32e8e0f7eaa6ea59e3f50177",
+      "versionBoundary": "Post-fix run D; actual Closed state without reload"
+    },
+    {
+      "file": "docs/sprints/sprint-1/issue-23-evidence/closed-recovered-chromium-narrow.png",
+      "scenario": "B23-03",
+      "source": ".local/evidence/issue23-def-fix-feature/sprint1-rejections-B23-03--9946b-missions-without-extra-rows-chromium-narrow/closed-recovered-without-reload.png",
+      "sha256": "44888ec5264c8c13ee86f04964d8f4a1340098fcbe7fb555ff57692f28128921",
+      "versionBoundary": "Post-fix run D; actual Closed state without reload"
+    }
+  ],
+  "findings": [
+    {
+      "id": "DEF-B23-01",
+      "severity": "Minor",
+      "status": "Resolved in this uncommitted working tree; real14/14 and supplemental failure paths passed",
+      "file": "apps/web/src/main.tsx",
+      "lines": [
+        398,
+        481,
+        513,
+        531
+      ],
+      "expected": "After authoritative Closed rejection, submission is no longer offered as enabled",
+      "actual": "Specific409 INVALID_STATE triggers real Survey GET plus own-status reconciliation; authoritative Closed renders without reload and no Submit exists. Recovery failures stay blocked; unrelated409 does not implyClosed. One rejectedPOST, unchanged stored rows.",
+      "owner": "User explicitly expanded this PR to authorize the DEF-B23-01 production fix in apps/web/src/main.tsx only.",
+      "ac": [
+        "AC-F04-08",
+        "AC-F04-17",
+        "AC-F04-19"
+      ],
+      "reproductionCase": "B23-03 at both viewports",
+      "beforeFixFileLines": [
+        499,
+        502,
+        504,
+        518
+      ],
+      "beforeFixActual": "409 INVALID_STATE then own-status false clears uncertainty without refreshing Survey status; stale PUBLISHED form and enabled Submit remain until reload"
+    }
+  ],
+  "limits": [
+    "No whole-STS Passed claims; API I-cases are references to shared rules, not complete API execution.",
+    "No production HTTPS/proxy, broad keyboard/assistive-technology certification, P15 human usability, process restart or assessed release claim.",
+    "Prior real runs: A=14 passed before the definitive Closed UI assertion; B=11 passed/3 failed (same UI defect twice plus a test-side pre-close read race); race corrected by awaiting CLOSED, not weakening assertions.",
+    "All commands/results here were executed by this assistant in this task; prior author-reported115 results are not combined.",
+    "Raw reports and private environment paths are local ignored artifacts, not published attachments.",
+    "Only apps/web/src/main.tsx changed in production, solely for the user-authorized DEF-B23-01 fix. Original recovery scenarios preserved; one new mocked failure scenario added. No schema/migration/contracts/Issue22/historical PDF changes.",
+    "Pre-fix evidence remains preserved; final run D14 passed /0 failed, mocked38 passed and smoke4 passed are separate execution classes, not whole-STS or release certification."
+  ],
+  "scope": "Issue23 browser tests plus explicitly authorized narrow DEF-B23-01 frontend lifecycle-recovery fix",
+  "historicalEvidence": {
+    "file": "docs/sprints/sprint-1/issue-23-evidence/pre-fix-coverage.json",
+    "sha256": "384cf85ea90c696955206d98ce408df1bb635cbd5009cf30088293e66d2be6dc",
+    "note": "Preserves pre-fix 12 passed / 2 failed, source hashes, mappings and screenshot provenance."
+  },
+  "featureEnvironment": "Private browser-d.env loaded into the command process before npm; pre-existing environment takes precedence over the npm script Node --env-file=.local/browser.env. No existing environment file was overwritten.",
+  "supplementaryMockedRegression": {
+    "file": "tests/browser/review-recovery.spec.ts",
+    "testName": "DEF-B23-01: failed lifecycle and status reads stay blocked until explicit reconciliation",
+    "executions": 2,
+    "status": "Passed at both viewports",
+    "ac": [
+      "AC-F04-08",
+      "AC-F04-17",
+      "AC-F04-18",
+      "AC-F04-19"
+    ],
+    "classification": "Mocked HTTP, not real server/database evidence"
+  }
+}
