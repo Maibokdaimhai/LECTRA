@@ -145,23 +145,35 @@ function App() {
     const retainedLogoutToken = useRef('');
     const generation = useRef(0);
     const token = useRef('');
-    const bootstrapFlight = useRef<Promise<Session> | null>(null);
+    const bootstrapFlight = useRef<{ version: number; promise: Promise<Session> } | null>(null);
+    const logoutPending = useRef(false);
     const identity = useRef('');
     const [verified, setVerified] = useState(true);
     const bootstrap = useCallback(async () => {
+        if (logoutPending.current) return;
         const version = generation.current;
+        let flight = bootstrapFlight.current;
+        let applied = false;
         setLoading(true);
         try {
-            // Coalesce StrictMode/visibility callers: ignored responses can still set browser cookies.
-            bootstrapFlight.current ??= (async () => {
+            // Drain an old flight before starting a new one: even ignored fetches
+            // can still change cookies. Never adopt an older flight's identity.
+            if (flight && flight.version !== version) {
+                try { await flight.promise; } catch { /* fresh check below */ }
+                if (version !== generation.current || logoutPending.current) return;
+                if (bootstrapFlight.current === flight) bootstrapFlight.current = null;
+                flight = bootstrapFlight.current?.version === version ? bootstrapFlight.current : null;
+            }
+            flight ??= { version, promise: (async () => {
                 const response = await fetch('/api/auth/session', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000) });
                 const value = await response.json();
                 if (!response.ok)
                     throw new ApiError(response.status, value.error?.code ?? 'UNAVAILABLE', value.error?.message ?? 'Service unavailable.');
                 return value.data as Session;
-            })();
-            const value = await bootstrapFlight.current;
-            if (version !== generation.current)
+            })() };
+            bootstrapFlight.current = flight;
+            const value = await flight.promise;
+            if (flight.version !== generation.current || logoutPending.current)
                 return;
             const nextIdentity = value.user ? `${value.user.id}:${value.user.role}` : '';
             if (identity.current !== nextIdentity) generation.current++;
@@ -169,22 +181,22 @@ function App() {
             token.current = value.csrfToken;
             setVerified(true);
             setSession(value);
-            setPendingLogout(false);
+            applied = true;
         }
         catch (e) {
-            if (version === generation.current) {
+            if (version === generation.current && !logoutPending.current) {
                 setError(reason(e));
                 setVerified(false);
             }
         }
         finally {
-            bootstrapFlight.current = null;
-            setLoading(false);
+            if (bootstrapFlight.current === flight) bootstrapFlight.current = null;
+            if (version === generation.current || applied) setLoading(false);
         }
     }, []);
     useEffect(() => { void bootstrap(); const controller = new AbortController(); fetch('/api/health', { cache: 'no-store', signal: controller.signal }).then(r => { if (!r.ok)
         throw Error(); setHealth('Service connection ready.'); }).catch(() => { if (!controller.signal.aborted)
-        setHealth('Service is unavailable.'); }); return () => { controller.abort(); generation.current++; }; }, [bootstrap]);
+        setHealth('Service is unavailable.'); }); return () => { controller.abort(); }; }, [bootstrap]);
     useEffect(() => {
         const revalidate = () => { if (document.visibilityState === 'visible' && !pendingLogout)
             void bootstrap(); };
@@ -245,6 +257,7 @@ function App() {
         if (busy)
             return;
         setBusy(true);
+        logoutPending.current = true;
         setPendingLogout(true);
         retainedLogoutToken.current ||= token.current;
         generation.current++;
@@ -258,6 +271,7 @@ function App() {
                 throw Error();
             retainedLogoutToken.current = '';
             token.current = '';
+            logoutPending.current = false;
             setPendingLogout(false);
             await bootstrap();
         }
@@ -271,7 +285,7 @@ function App() {
     return <main><header className="brand"><div><p className="eyebrow">LECTURE FEEDBACK</p><h1>LECTRA</h1></div><p role="status">{health}</p></header>
     <ErrorBox message={error}/>
     {loading && <p role="status">Checking your session…</p>}
-    {!verified && <button disabled={loading} onClick={() => void bootstrap()}>Check session / reconnect</button>}
+    {!verified && !pendingLogout && <button disabled={loading} onClick={() => void bootstrap()}>Check session / reconnect</button>}
     {loading && !session ? null : pendingLogout ? <section className="card"><h2>Signing out</h2><p>Private content is hidden until sign-out is confirmed.</p><button disabled={busy} onClick={() => void logout()}>Retry sign-out</button></section> : session?.authenticated && session.user ? <>
       <div className="userbar"><span>{session.user.displayName} · {session.user.role === 'OWNER' ? 'Instructor' : 'Student'}</span><button onClick={() => void logout()} disabled={busy}>Log out</button></div>
       <fieldset className="workspace" disabled={loading || !verified}><legend className="sr-only">Classroom workspace</legend><Workspace key={`${session.user.id}:${session.user.role}`} user={session.user} api={api}/></fieldset>

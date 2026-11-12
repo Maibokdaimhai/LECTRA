@@ -21,13 +21,14 @@ if (process.env.ALLOW_FEATURE_TESTS !== expected)
 const pool = new Pool({ connectionString: options.testUrl, options: '-c timezone=UTC' });
 let app: Express;
 let clock = Date.now();
+let advancingClock = false;
 const config = readConfig({ NODE_ENV: 'test', APP_ORIGIN: origin, DATABASE_URL: options.testUrl, SESSION_SECRET: secret });
 beforeAll(async () => {
     expect((await pool.query("SELECT tablename FROM pg_tables WHERE schemaname='public'")).rowCount).toBe(0);
     execFileSync(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], { env: { ...process.env, DATABASE_URL: options.testUrl }, stdio: 'pipe' });
     await seedSyntheticDatabase({ ...options, seedName: expected, ownerPassword: password, respondentPassword: password });
 });
-beforeEach(() => { clock = Date.now(); app = createApp(config, () => clock); });
+beforeEach(() => { clock = Date.now(); advancingClock = false; app = createApp(config, () => advancingClock ? clock++ : clock); });
 afterEach(async () => { await app.locals.close(); });
 afterAll(async () => { await pool.end(); });
 async function login(email = 'owner.1@example.test') {
@@ -36,6 +37,40 @@ async function login(email = 'owner.1@example.test') {
     const logged = await agent.post('/api/auth/login').set('Origin', origin).set('X-CSRF-Token', boot.body.data.csrfToken).send({ email, password }).expect(200);
     return { agent, token: logged.body.data.csrfToken as string, logged, boot };
 }
+it('DEEP40-02: guest timestamps use one instant even when the clock ticks between reads', async () => {
+    const start = clock;
+    advancingClock = true;
+    const agent = request.agent(app);
+    const boot = await agent.get('/api/auth/session').expect(200);
+    const row = (await pool.query("SELECT sess FROM auth_session WHERE sess->>'guestCreatedAt'=$1", [String(start)])).rows[0].sess;
+    expect(row.guestExpiresAt - row.guestCreatedAt).toBe(1800000);
+    await agent.post('/api/auth/login').set('Origin', origin).set('X-CSRF-Token', boot.body.data.csrfToken).send({ email: 'owner.1@example.test', password }).expect(200);
+    await agent.get('/api/auth/me').expect(200);
+});
+it('DEEP40-02: advancing-clock login persists a valid exact eight-hour identity', async () => {
+    const agent = request.agent(app);
+    const boot = await agent.get('/api/auth/session').expect(200);
+    advancingClock = true;
+    const logged = await agent.post('/api/auth/login').set('Origin', origin).set('X-CSRF-Token', boot.body.data.csrfToken).send({ email: 'owner.1@example.test', password }).expect(200);
+    const expiresAt = Date.parse(logged.body.data.expiresAt);
+    const rows = (await pool.query("SELECT sess FROM auth_session WHERE sess->>'authExpiresAt'=$1 AND sess->>'userId'=$2", [String(expiresAt), fixtureId(1)])).rows;
+    expect(rows.length).toBeGreaterThan(0);
+    for (const row of rows) expect(row.sess.authExpiresAt - row.sess.authenticatedAt).toBe(28800000);
+    await agent.get('/api/auth/me').expect(200);
+});
+it('DEEP40-03: real store accepts deadline minus one millisecond and denies at/after the fractional deadline', async () => {
+    clock = Math.floor(Date.now() / 1000) * 1000 + 123;
+    const { logged } = await login();
+    const cookie = String(logged.headers['set-cookie']![0]).split(';')[0]!;
+    const deadline = Date.parse(logged.body.data.expiresAt);
+    // Explicit replay isolates store precision from HTTP Expires rounding.
+    clock = deadline - 1;
+    await request(app).get('/api/auth/me').set('Cookie', cookie).expect(200);
+    clock = deadline;
+    await request(app).get('/api/auth/me').set('Cookie', cookie).expect(401);
+    clock = deadline + 1;
+    await request(app).get('/api/auth/me').set('Cookie', cookie).expect(401);
+});
 it('TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection', async () => {
     const { agent, logged, boot } = await login('  OWNER.1@EXAMPLE.TEST  ');
     expect(logged.body.data.csrfToken).not.toBe(boot.body.data.csrfToken);
