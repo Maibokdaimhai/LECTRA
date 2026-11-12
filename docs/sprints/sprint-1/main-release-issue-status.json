@@ -1,0 +1,202 @@
+{
+  "dateBangkok": "2026-11-12",
+  "items": [
+    {
+      "number": 1,
+      "title": "docs: define product scope, decisions, and SRS (Part A)",
+      "state": "closed",
+      "assignees": []
+    },
+    {
+      "number": 2,
+      "title": "docs: map requirements to features and sprints (Part B)",
+      "state": "closed",
+      "assignees": []
+    },
+    {
+      "number": 3,
+      "title": "docs: design system architecture, data, access, and delivery (Part C)",
+      "state": "closed",
+      "assignees": []
+    },
+    {
+      "number": 4,
+      "title": "docs: plan three sprints and team responsibilities (Part D)",
+      "state": "closed",
+      "assignees": []
+    },
+    {
+      "number": 5,
+      "title": "docs: specify Sprint 1 feature contracts, AC, STS, and DoD (Part E)",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai",
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 6,
+      "title": "docs: plan Deliverable 1 evidence and PDF structure (Part F readiness)",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai",
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 8,
+      "title": "plan: track Sprint 1 delivery and acceptance readiness",
+      "state": "open",
+      "assignees": [
+        "Maibokdaimhai",
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 9,
+      "title": "chore: establish Sprint 1 board and teammate review workflow",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 10,
+      "title": "docs: contract F-01 authentication, sessions, and backend access (Sprint 1)",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 11,
+      "title": "docs: contract F-02 owned context and eligible survey discovery (Sprint 1)",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 12,
+      "title": "docs: contract F-03 survey authoring, publication, and closing (Sprint 1)",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 13,
+      "title": "docs: contract F-04 validated one-time responses and persisted retrieval (Sprint 1)",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 14,
+      "title": "docs: contract F-05 identified aggregate results and privacy projections (Sprint 1)",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 15,
+      "title": "chore: initialize Sprint 1 workspace and verification tooling",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 16,
+      "title": "feat: add Sprint 1 PostgreSQL schema, migrations, and synthetic seed",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 17,
+      "title": "feat: implement F-01 authentication, sessions, and server-side access",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 18,
+      "title": "feat: implement F-02 owned context selection and eligible survey lists",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 19,
+      "title": "feat: implement F-03 identified survey drafting, publication, and closing",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 20,
+      "title": "feat: implement F-04 atomic one-time feedback and own-response retrieval",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 21,
+      "title": "feat: implement F-05 identified owner results and score distributions",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 22,
+      "title": "test: verify Sprint 1 access, persistence, and concurrent domain rules",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 23,
+      "title": "test: cover critical Sprint 1 browser journeys and rejection states",
+      "state": "closed",
+      "assignees": [
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 24,
+      "title": "docs: document reproducible Sprint 1 setup and safe demo handoff",
+      "state": "open",
+      "assignees": [
+        "Maibokdaimhai"
+      ]
+    },
+    {
+      "number": 25,
+      "title": "release: verify integrated Sprint 1 and record reviewed main release",
+      "state": "closed",
+      "assignees": [
+        "Maibokdaimhai",
+        "R1NNE0"
+      ]
+    },
+    {
+      "number": 26,
+      "title": "docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF",
+      "state": "open",
+      "assignees": [
+        "Maibokdaimhai",
+        "R1NNE0"
+      ]
+    }
+  ]
+}
