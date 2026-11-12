@@ -256,6 +256,7 @@ function App() {
     async function logout() {
         if (busy)
             return;
+        const retry = logoutPending.current;
         setBusy(true);
         logoutPending.current = true;
         setLoading(false);
@@ -267,6 +268,22 @@ function App() {
         setPassword('');
         setError('');
         try {
+            if (retry) {
+                // A stale bootstrap can install its cookie before its body/token
+                // arrives. Drain it, then read the session for the current cookie;
+                // neither response may reopen the authenticated workspace.
+                const flight = bootstrapFlight.current;
+                if (flight) {
+                    try { await flight.promise; } catch { /* reconcile below */ }
+                    if (bootstrapFlight.current === flight) bootstrapFlight.current = null;
+                }
+                const response = await fetch('/api/auth/session', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000) });
+                const value = await response.json();
+                if (!response.ok || typeof value?.data?.csrfToken !== 'string' || !value.data.csrfToken)
+                    throw Error();
+                retainedLogoutToken.current = value.data.csrfToken;
+            }
+            // Exactly one POST per user action; failed reconciliation sends none.
             const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': retainedLogoutToken.current }, body: '{}', signal: AbortSignal.timeout(15000) });
             if (response.status !== 204)
                 throw Error();
