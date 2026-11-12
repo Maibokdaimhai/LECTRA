@@ -1,0 +1,17 @@
+Node 24.22.1 new temporary cluster <new task-owned temporary cluster> port 52690
+Verified PostgreSQL 17.11
+PASS A: corrupt verifier input safely fails without authentication
+PASS B: Draft reorder/remove/add retains IDs and persisted ordering
+PASS B: replacement failure rolls back deletes, staged positions and revision
+PASS B: publication failure rolls back inserted eligibility and lifecycle
+PASS B: delete rollback, valid cascade deletion and same-Lecture recreation
+PASS C: definition parent/questions remain one snapshot across concurrent edit
+PASS C: discovery count/items stay consistent across concurrent publication
+PASS C: Published results keep prior snapshot during concurrent submission
+PASS C: results projection stays consistent across concurrent Close
+PASS D: real PostgreSQL read failure returns no partial result and retry recovers
+PASS D: injected SQLSTATE 40P01 rolls back and permits deliberate retry; not a cyclic-deadlock test
+PASS E: captured failure diagnostics contain no injected marker or known secrets
+REVIEW_CHECKS_PASSED 12 captured diagnostic entries 0
+REMAINING_TEMP_FUNCTIONS 0
+Temporary cluster shutdown exit 0

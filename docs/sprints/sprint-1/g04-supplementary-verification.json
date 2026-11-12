@@ -1,0 +1,673 @@
+{
+  "recordedAt": "2026-11-12T08:57:54.608550+00:00",
+  "purpose": "Recover earlier actual results and propose local Sprint 1 G-04 dispositions; not new execution or human acceptance",
+  "candidate": "fa33e4cc2b57e5c140ffca892e507814b436829d",
+  "originalTestedSource": "2961014e6b21668f20321e0acade382e67972f1a",
+  "originalSourceEvidence": "Retained tool output: HEAD 2961014..., HASHES 59 FAILURES [], clean index/worktree; final worktree differences []",
+  "retainedExecution": {
+    "sessionBasename": "rollout-2026-11-06T15-52-36-01a1b00f-52c5-7702-9a04-13999d2f4389.jsonl",
+    "eventId": "exec-dd371722-36c3-4753-b34a-ef0626096962",
+    "eventLine1Based": 3542,
+    "completionTimestamp": "2026-11-12T07:18:37.928Z",
+    "eventCanonicalSha256": "32ca0c419d89c1336a37a43c6dcc62435cd57f0999fb3bb0e545d35daec9318b",
+    "exitCode": 0,
+    "durationSeconds": 27.1992644,
+    "launcher": "Pinned Node on PATH; PowerShell here-string piped to node --import tsx --input-type=module",
+    "originalRuntime": {
+      "node": "24.22.1",
+      "postgresql": "17.11"
+    },
+    "dependencyVersions": "Lockfile/configuration covered by original 59-file source verification; package/runtime provenance in existing authentication evidence",
+    "capturedDiagnosticEntries": 0,
+    "remainingTemporaryFunctions": 0,
+    "temporaryClusterShutdownExit": 0
+  },
+  "recoveredChecks": [
+    {
+      "id": "G04-S01",
+      "name": "A: corrupt verifier input safely fails without authentication",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F01-05",
+        "AC-F01-13"
+      ],
+      "plannedSts": [
+        "TEST-F01-I26"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Corrupt stored PHC input only; arbitrary verifier exceptions and actual post-COMMIT network acknowledgement loss not generated.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S02",
+      "name": "B: Draft reorder/remove/add retains IDs and persisted ordering",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F03-05"
+      ],
+      "plannedSts": [
+        "TEST-F03-I05"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Reorder/remove/add and retained IDs; not every malformed replacement variant.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S03",
+      "name": "B: replacement failure rolls back deletes, staged positions and revision",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F03-20"
+      ],
+      "plannedSts": [
+        "TEST-F03-I20"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Question INSERT fault after delete/position staging; not every SQL or COMMIT failure stage.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S04",
+      "name": "B: publication failure rolls back inserted eligibility and lifecycle",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F03-20"
+      ],
+      "plannedSts": [
+        "TEST-F03-I20"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "State-update fault after eligibility insertion; not every publication statement fault.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S05",
+      "name": "B: delete rollback, valid cascade deletion and same-Lecture recreation",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F03-10",
+        "AC-F03-20"
+      ],
+      "plannedSts": [
+        "TEST-F03-I10",
+        "TEST-F03-I20"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "AFTER DELETE failure and successful cascade/recreation; not every connection failure stage.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S06",
+      "name": "C: definition parent/questions remain one snapshot across concurrent edit",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F03-04"
+      ],
+      "plannedSts": [
+        "TEST-F03-I24"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Actual PostgreSQL queries with driver-delivery barrier; no query results fabricated.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S07",
+      "name": "C: discovery count/items stay consistent across concurrent publication",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F02-17"
+      ],
+      "plannedSts": [
+        "TEST-F02-I18"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Publication between actual count and items reads; other participation-change permutations not exhaustively repeated.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S08",
+      "name": "C: Published results keep prior snapshot during concurrent submission",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F05-02",
+        "AC-F05-15"
+      ],
+      "plannedSts": [
+        "TEST-F05-I10"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "One concurrent second response; uncommitted/other permutations remain covered only where separately evidenced.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S09",
+      "name": "C: results projection stays consistent across concurrent Close",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F05-15"
+      ],
+      "plannedSts": [
+        "TEST-F05-I11"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Close between state and later results reads; real Close/submit lock orders are separate existing suite evidence.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S10",
+      "name": "D: real PostgreSQL read failure returns no partial result and retry recovers",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F05-16"
+      ],
+      "plannedSts": [
+        "TEST-F05-I12"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Real PostgreSQL function raises 57P03 during Answer read; not an actual stopped server/network outage or every results stage.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S11",
+      "name": "D: injected SQLSTATE 40P01 rolls back and permits deliberate retry; not a cyclic-deadlock test",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F04-18",
+        "AC-F04-19"
+      ],
+      "plannedSts": [
+        "TEST-F04-I20"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "Real trigger raises SQLSTATE 40P01; not a generated wait cycle or SQLSTATE 40001 serialization failure.",
+      "sourceApplicableToCandidate": true
+    },
+    {
+      "id": "G04-S12",
+      "name": "E: captured failure diagnostics contain no injected marker or known secrets",
+      "result": "Pass for listed assertions",
+      "acceptanceCriteria": [
+        "AC-F01-14",
+        "AC-F04-20",
+        "AC-F05-14"
+      ],
+      "plannedSts": [
+        "TEST-F01-I23",
+        "TEST-F04-I21"
+      ],
+      "plannedStsDisposition": "Partial; not relabelled as fully Passed",
+      "limitation": "console.error/warn spy saw ZERO entries; proves silence for exercised paths, not exhaustive logger-boundary/transport/analytics certification.",
+      "sourceApplicableToCandidate": true
+    }
+  ],
+  "historicalCountBoundary": {
+    "recoveredChecksPassed": 12,
+    "newApplicationTestsExecutedThisTask": 0,
+    "addedToHistorical138Or144": false,
+    "retriesOrRepeatsCountedAsDistinct": false
+  },
+  "sourceComparison": [
+    {
+      "file": "apps/api/package.json",
+      "originalNormalizedSha256": "5c5f5a9cfd3c1a83c622e11bf1f56bf8b60b9042cb70c3d8d55254fd36694916",
+      "candidateNormalizedSha256": "5c5f5a9cfd3c1a83c622e11bf1f56bf8b60b9042cb70c3d8d55254fd36694916",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/app.ts",
+      "originalNormalizedSha256": "4abc5409d560b6479dfc5f894a00b501f3e2ff6826098b8cb3bf339d673bd51b",
+      "candidateNormalizedSha256": "4abc5409d560b6479dfc5f894a00b501f3e2ff6826098b8cb3bf339d673bd51b",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/auth-rules.ts",
+      "originalNormalizedSha256": "7e74da2bd1e1de581c65e505a1626e241f740b32bbcfa840de3f98f3165945ed",
+      "candidateNormalizedSha256": "7e74da2bd1e1de581c65e505a1626e241f740b32bbcfa840de3f98f3165945ed",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/auth.ts",
+      "originalNormalizedSha256": "60cab0632bf3718eecc5b000d32a026122374e3aef3ab0340afd596ce08c7869",
+      "candidateNormalizedSha256": "60cab0632bf3718eecc5b000d32a026122374e3aef3ab0340afd596ce08c7869",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/config.ts",
+      "originalNormalizedSha256": "d258b3003ac4b00c7c24bce90424f6ff260dc23af10d702104ca697e956ed5db",
+      "candidateNormalizedSha256": "d258b3003ac4b00c7c24bce90424f6ff260dc23af10d702104ca697e956ed5db",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/database.ts",
+      "originalNormalizedSha256": "465dff80dabc017bcc48bb25dd3553dec58d4d00ced6bf0be0338b6ff20637a8",
+      "candidateNormalizedSha256": "465dff80dabc017bcc48bb25dd3553dec58d4d00ced6bf0be0338b6ff20637a8",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/feedback-rules.ts",
+      "originalNormalizedSha256": "8c7849a2fd90a67de3bd4f05dc17045b689c38681600c6cfcf9f50e859c0bb50",
+      "candidateNormalizedSha256": "8c7849a2fd90a67de3bd4f05dc17045b689c38681600c6cfcf9f50e859c0bb50",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/feedback.ts",
+      "originalNormalizedSha256": "dbd69992e07791024a6244505fe963d05c3c659c75a81e945544173a6fb5ce5b",
+      "candidateNormalizedSha256": "dbd69992e07791024a6244505fe963d05c3c659c75a81e945544173a6fb5ce5b",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/http.ts",
+      "originalNormalizedSha256": "115093e9a90d12a783f11ba33ba1a4fc50e55041037ae3d826e251f6b635bfd7",
+      "candidateNormalizedSha256": "115093e9a90d12a783f11ba33ba1a4fc50e55041037ae3d826e251f6b635bfd7",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/server.ts",
+      "originalNormalizedSha256": "1cef1484f525b62bde74f31783b0644d881262db8bc52048d70d54c7fa852e81",
+      "candidateNormalizedSha256": "1cef1484f525b62bde74f31783b0644d881262db8bc52048d70d54c7fa852e81",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/src/test-database.ts",
+      "originalNormalizedSha256": "6e6b1879a4991d99b20e709ad98f50cad10e6ed67877846155767084db95693a",
+      "candidateNormalizedSha256": "6e6b1879a4991d99b20e709ad98f50cad10e6ed67877846155767084db95693a",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/api/health.test.ts",
+      "originalNormalizedSha256": "44a40219b6464588cf20cfbdd386975b77bc973a278e46a4784e8cfedd24a16d",
+      "candidateNormalizedSha256": "44a40219b6464588cf20cfbdd386975b77bc973a278e46a4784e8cfedd24a16d",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/db/postgres.test.ts",
+      "originalNormalizedSha256": "511a146fde9dacd63537f435cdc2bcad4659fc07c1c8c23875a1108ae226fa3a",
+      "candidateNormalizedSha256": "511a146fde9dacd63537f435cdc2bcad4659fc07c1c8c23875a1108ae226fa3a",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "originalNormalizedSha256": "1663335d13c79bea3d31c74a24d601413d0b728dac49ec2c61878d8533fb7155",
+      "candidateNormalizedSha256": "1663335d13c79bea3d31c74a24d601413d0b728dac49ec2c61878d8533fb7155",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "originalNormalizedSha256": "c2efa025bbf74f67cf1ee65f09d21e092ddd184c633e72b657496822cd7692f4",
+      "candidateNormalizedSha256": "c2efa025bbf74f67cf1ee65f09d21e092ddd184c633e72b657496822cd7692f4",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/unit/argon2-compatibility.test.ts",
+      "originalNormalizedSha256": "d1fd266139b50f418593be1a8c01c52b9f0e8b5ac219bfbb3a9d3acd512f7e2e",
+      "candidateNormalizedSha256": "d1fd266139b50f418593be1a8c01c52b9f0e8b5ac219bfbb3a9d3acd512f7e2e",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/unit/auth-rules.test.ts",
+      "originalNormalizedSha256": "10bd1ef240ba41ca8ca48997fa53c02574458271a86aa1406431bcfdcc3ae91b",
+      "candidateNormalizedSha256": "10bd1ef240ba41ca8ca48997fa53c02574458271a86aa1406431bcfdcc3ae91b",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "originalNormalizedSha256": "5e9cdfda6b0c2d15f28564f282f468378ef1d4f8a95d026a2e75961d70dcc0f3",
+      "candidateNormalizedSha256": "5e9cdfda6b0c2d15f28564f282f468378ef1d4f8a95d026a2e75961d70dcc0f3",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/unit/database-seed.test.ts",
+      "originalNormalizedSha256": "3396c6684ea4370be3e614b8dd7b9c727fc2e7e67c55548b957c2ad4534a601d",
+      "candidateNormalizedSha256": "3396c6684ea4370be3e614b8dd7b9c727fc2e7e67c55548b957c2ad4534a601d",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/unit/feedback-rules.test.ts",
+      "originalNormalizedSha256": "749d786a223753b347676313880d23167fc6f10e178e6f0c5ad60795610bc82b",
+      "candidateNormalizedSha256": "749d786a223753b347676313880d23167fc6f10e178e6f0c5ad60795610bc82b",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tests/unit/test-database.test.ts",
+      "originalNormalizedSha256": "24d55ca9a85ea4ec36e4102edf011336d6fd5e858f7600c2c34f227685c0215e",
+      "candidateNormalizedSha256": "24d55ca9a85ea4ec36e4102edf011336d6fd5e858f7600c2c34f227685c0215e",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tsconfig.build.json",
+      "originalNormalizedSha256": "d1f7ee6aee1124f74a982fae3f9ad21592fd56b8775d7cea64addf850d0f8e78",
+      "candidateNormalizedSha256": "d1f7ee6aee1124f74a982fae3f9ad21592fd56b8775d7cea64addf850d0f8e78",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/api/tsconfig.json",
+      "originalNormalizedSha256": "5ecc53436802f7544282d3f4bdbf6de590648dce676821710b46e446694c2235",
+      "candidateNormalizedSha256": "5ecc53436802f7544282d3f4bdbf6de590648dce676821710b46e446694c2235",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/web/index.html",
+      "originalNormalizedSha256": "689dccebc353b5ae84aa4ce6c24a519b9318d0803aaa5ed5e2c7fc181cf3c1b6",
+      "candidateNormalizedSha256": "689dccebc353b5ae84aa4ce6c24a519b9318d0803aaa5ed5e2c7fc181cf3c1b6",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/web/package.json",
+      "originalNormalizedSha256": "923a37582756956caabd0325f79c5c0b93436a53aaa026fb05d1aff9c494ef69",
+      "candidateNormalizedSha256": "923a37582756956caabd0325f79c5c0b93436a53aaa026fb05d1aff9c494ef69",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/web/src/main.tsx",
+      "originalNormalizedSha256": "239073df02c96e07c50c902831f9c5bd235fdba2e4789edc582b66e3fec3395c",
+      "candidateNormalizedSha256": "1f4e16feab2bbf5ed834649cc0ae91037a1948585f277a30b3c88da39c47f522",
+      "unchanged": false,
+      "relevantToRecoveredBackendHarness": false
+    },
+    {
+      "file": "apps/web/src/theme.css",
+      "originalNormalizedSha256": "40a78d61ddc5b771d441b6eba2f4282f0de1356ffe493c09c82f6a977e4f783d",
+      "candidateNormalizedSha256": "afc988eb86070119f458f1d0d15c634aebc439f62deea66842a6ca6f8d929606",
+      "unchanged": false,
+      "relevantToRecoveredBackendHarness": false
+    },
+    {
+      "file": "apps/web/tsconfig.json",
+      "originalNormalizedSha256": "3ed2c54364e03a507dfbd98a619c45697f9501beadd9f4c956a4a7cacf919a34",
+      "candidateNormalizedSha256": "3ed2c54364e03a507dfbd98a619c45697f9501beadd9f4c956a4a7cacf919a34",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "apps/web/vite.config.ts",
+      "originalNormalizedSha256": "1889e4323d7c99c57e9100f4e6d965481e065c06dff2da0ab048b479e767e0da",
+      "candidateNormalizedSha256": "1889e4323d7c99c57e9100f4e6d965481e065c06dff2da0ab048b479e767e0da",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "package-lock.json",
+      "originalNormalizedSha256": "05e41efa900ff8bd92c914e6ffac68183d51f0e4dbafd906bc3f69adb6c1b9d7",
+      "candidateNormalizedSha256": "05e41efa900ff8bd92c914e6ffac68183d51f0e4dbafd906bc3f69adb6c1b9d7",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "package.json",
+      "originalNormalizedSha256": "68e2792973556bed61d1688fa5c7542164df1ec2496ba6f59727aea44ea6be60",
+      "candidateNormalizedSha256": "68e2792973556bed61d1688fa5c7542164df1ec2496ba6f59727aea44ea6be60",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "playwright.config.ts",
+      "originalNormalizedSha256": "74cfb2838d930c3a2a2790b8cb253f3a0beab7d4a362e89f5f727f020da1b276",
+      "candidateNormalizedSha256": "74cfb2838d930c3a2a2790b8cb253f3a0beab7d4a362e89f5f727f020da1b276",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "playwright.features.config.ts",
+      "originalNormalizedSha256": "266d91e0b28a5875526b10a9d5d9421db724edc08699ceca71b5b51bf35eb530",
+      "candidateNormalizedSha256": "9a9abc322a0aa680d338b42ad464d32a98c32581abce71808485d1d10925e2f7",
+      "unchanged": false,
+      "relevantToRecoveredBackendHarness": false
+    },
+    {
+      "file": "playwright.recovery.config.ts",
+      "originalNormalizedSha256": "2f1905522209639eecd4cda859245f8a740cb7663362c44d8d26ef19f493da7a",
+      "candidateNormalizedSha256": "e8e5b4fcbbffce956e91d5b9b2f1f8aec34b58196829b3ca780a5a9acdfd4471",
+      "unchanged": false,
+      "relevantToRecoveredBackendHarness": false
+    },
+    {
+      "file": "prisma.config.ts",
+      "originalNormalizedSha256": "ad93d016f0bef0497212d3867caec49ff4409d21482c90fbc9a87a79e5bc1faf",
+      "candidateNormalizedSha256": "ad93d016f0bef0497212d3867caec49ff4409d21482c90fbc9a87a79e5bc1faf",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "prisma/fixtures.ts",
+      "originalNormalizedSha256": "24a1ca2895ceecd795d457522db0dd19a0a1591b1e9899737532d07736e254d8",
+      "candidateNormalizedSha256": "24a1ca2895ceecd795d457522db0dd19a0a1591b1e9899737532d07736e254d8",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "prisma/migrations/202611080001_user_session/migration.sql",
+      "originalNormalizedSha256": "3045896c1242b42b47e69b05b368da783e5c35513da39016add64f284f15c308",
+      "candidateNormalizedSha256": "3045896c1242b42b47e69b05b368da783e5c35513da39016add64f284f15c308",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "prisma/migrations/202611080002_academic_context/migration.sql",
+      "originalNormalizedSha256": "e71a7af9f789aad3a228dc348c50f02aab344897dcb98c7712c266fc178b29e3",
+      "candidateNormalizedSha256": "e71a7af9f789aad3a228dc348c50f02aab344897dcb98c7712c266fc178b29e3",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "prisma/migrations/202611080003_survey_response/migration.sql",
+      "originalNormalizedSha256": "c01e453af2da54ff889ec6d760d457bae6ec7d404d1b3e7343423fb8720ab171",
+      "candidateNormalizedSha256": "c01e453af2da54ff889ec6d760d457bae6ec7d404d1b3e7343423fb8720ab171",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "prisma/migrations/migration_lock.toml",
+      "originalNormalizedSha256": "1db17a8d051aa136110736752c5e1f8b7ed92b6ea8e803112fbbe2497047c210",
+      "candidateNormalizedSha256": "1db17a8d051aa136110736752c5e1f8b7ed92b6ea8e803112fbbe2497047c210",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "prisma/schema.prisma",
+      "originalNormalizedSha256": "9ca6e9f910d2e32738139143b66a054a269d48c5e39f0e4085121cdd06e2568a",
+      "candidateNormalizedSha256": "9ca6e9f910d2e32738139143b66a054a269d48c5e39f0e4085121cdd06e2568a",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/build-review-report.py",
+      "originalNormalizedSha256": "61e92f0e34aed6334a87e1037d9d709934948c11231d8fd6830fe84a66719f30",
+      "candidateNormalizedSha256": "61e92f0e34aed6334a87e1037d9d709934948c11231d8fd6830fe84a66719f30",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/check-runtime.mjs",
+      "originalNormalizedSha256": "3f3d5199b93e8b5d8cb73d2c4d6f61cf7ab69a40120f9ad0774feb6096a8da79",
+      "candidateNormalizedSha256": "3f3d5199b93e8b5d8cb73d2c4d6f61cf7ab69a40120f9ad0774feb6096a8da79",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/database.ts",
+      "originalNormalizedSha256": "023fdd869eec3a3607c239270fda86cea370494efff580bee30cb359d13433db",
+      "candidateNormalizedSha256": "023fdd869eec3a3607c239270fda86cea370494efff580bee30cb359d13433db",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/demo-config.ts",
+      "originalNormalizedSha256": "e7ac1b36831a5fb88ffd5286cb9105e577655c4fb9bc39ba99dec09c505f5864",
+      "candidateNormalizedSha256": "e7ac1b36831a5fb88ffd5286cb9105e577655c4fb9bc39ba99dec09c505f5864",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/dev.mjs",
+      "originalNormalizedSha256": "acdad7e1ed10d05fc81159525c3dfa1fd6a2c7a6fd3ffc4da45d5bf364ee5c30",
+      "candidateNormalizedSha256": "acdad7e1ed10d05fc81159525c3dfa1fd6a2c7a6fd3ffc4da45d5bf364ee5c30",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/orm-smoke.ts",
+      "originalNormalizedSha256": "5f05a5d826e133e4a573572b42e7a041cdc566323aafcc9f662a42129d02e2d5",
+      "candidateNormalizedSha256": "5f05a5d826e133e4a573572b42e7a041cdc566323aafcc9f662a42129d02e2d5",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/playwright.mjs",
+      "originalNormalizedSha256": "658aa4d742347d9a33f9257dadc6b91c9bfcb3befb64d49d85b2a7664562a364",
+      "candidateNormalizedSha256": "658aa4d742347d9a33f9257dadc6b91c9bfcb3befb64d49d85b2a7664562a364",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/prepare-browser.ts",
+      "originalNormalizedSha256": "944a81ceb18133d145e1b915c252064bd2a4ece0c21866cf4ace547ab90bc462",
+      "candidateNormalizedSha256": "944a81ceb18133d145e1b915c252064bd2a4ece0c21866cf4ace547ab90bc462",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/seed-database.ts",
+      "originalNormalizedSha256": "b34af97f7cd2e3be54a4b7742030793c7de7352f9de6cbdc0cb74392ad3e1957",
+      "candidateNormalizedSha256": "b34af97f7cd2e3be54a4b7742030793c7de7352f9de6cbdc0cb74392ad3e1957",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/setup-local.mjs",
+      "originalNormalizedSha256": "45486ecdfdb2dac3731f12e42516d82148ecb9679a459f45c96537b3076646cd",
+      "candidateNormalizedSha256": "45486ecdfdb2dac3731f12e42516d82148ecb9679a459f45c96537b3076646cd",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "scripts/verify-restart.ts",
+      "originalNormalizedSha256": "6c441b9932fbb9b1dba34be37b400b2eaab58d348fbd7a6442ee65b391489418",
+      "candidateNormalizedSha256": "6c441b9932fbb9b1dba34be37b400b2eaab58d348fbd7a6442ee65b391489418",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "tsconfig.base.json",
+      "originalNormalizedSha256": "4a299e962345448d9b2f4405329875989767afbec1538117fdf1ecb2b159b19e",
+      "candidateNormalizedSha256": "4a299e962345448d9b2f4405329875989767afbec1538117fdf1ecb2b159b19e",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "tsconfig.tooling.json",
+      "originalNormalizedSha256": "52623d5f9f9c46aa7b6cced4ed8265116b84b9a254de4865c1cdf9e3124e4d62",
+      "candidateNormalizedSha256": "52623d5f9f9c46aa7b6cced4ed8265116b84b9a254de4865c1cdf9e3124e4d62",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "vitest.api.config.ts",
+      "originalNormalizedSha256": "6f5f4f663c6c072492fd3ea8c283e99d5fb2749e6eaebd2c143b44d783b42a80",
+      "candidateNormalizedSha256": "6f5f4f663c6c072492fd3ea8c283e99d5fb2749e6eaebd2c143b44d783b42a80",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "vitest.db.config.ts",
+      "originalNormalizedSha256": "424de06d329281e19af2ea41bc384df8e02f0de91d4f11a1ff447a880afd6794",
+      "candidateNormalizedSha256": "424de06d329281e19af2ea41bc384df8e02f0de91d4f11a1ff447a880afd6794",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "vitest.features.config.ts",
+      "originalNormalizedSha256": "804d571e33cd229bf2024a28811e2c589c8856cff6f4325a1f61b114c5277ad1",
+      "candidateNormalizedSha256": "804d571e33cd229bf2024a28811e2c589c8856cff6f4325a1f61b114c5277ad1",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "vitest.foundation.config.ts",
+      "originalNormalizedSha256": "1d2d1867fc9b0cccebc9768efa3a57269b3d94eb2efae53a072c3d9a8af4d98c",
+      "candidateNormalizedSha256": "1d2d1867fc9b0cccebc9768efa3a57269b3d94eb2efae53a072c3d9a8af4d98c",
+      "unchanged": true,
+      "relevantToRecoveredBackendHarness": true
+    },
+    {
+      "file": "vitest.unit.config.ts",
+      "originalNormalizedSha256": "e4da662b80884d490c18ffa89e8ef05423a9f5f7b8b8d8c7a7dce60963d1f9d3",
+      "candidateNormalizedSha256": "c56f41a713254beb220ff7ba2aeb64efaf4a79175ca4a8c7475a2d4d94992765",
+      "unchanged": false,
+      "relevantToRecoveredBackendHarness": false
+    }
+  ],
+  "uiEvidence": {
+    "record": "pr40-ui-accessibility-verification.json",
+    "sourceHashesMatch": 76,
+    "screenshotHashesMatch": 8,
+    "counts": {
+      "unit": 41,
+      "mockedHttpBrowser": 74,
+      "realBrowserApiPostgresql": 22,
+      "databaseFreeSmoke": 4,
+      "total": 141,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "notCompleteAcStsCertification": true
+    },
+    "actualTestedState": "Working-tree hashes on 2961014 baseline, subsequently committed/reviewed as b75bf352 and merged as fa33e4cc; no relabelled execution SHA"
+  },
+  "artifacts": [
+    {
+      "file": "g04-supplementary-evidence/original-stdin.mjs",
+      "sha256": "d0444643798bec40b1c581aed22198c71086980ce7a42e081c8b5a4ac6069e5a",
+      "purpose": "Exact recovered stdin JavaScript payload; do not execute directly by filename: original imports resolve from repository-root stdin module"
+    },
+    {
+      "file": "g04-supplementary-evidence/original-output.txt",
+      "sha256": "dff7e3825850a2a0b465f5cef544d9aebbe946e516e21a3187dff46834026fdb",
+      "redaction": "Only generated local temporary-directory path replaced with placeholder; assertions/counts/shutdown unchanged"
+    }
+  ],
+  "databaseSafety": "Original run created a fresh loopback cluster, verified data_directory, new empty allowlisted DB and private synthetic credentials; temporary SQL fixtures restored, app/pool closed and cluster stopped. Recovery did not connect to or change that database.",
+  "outstandingNotRun": [
+    "Actual TCP connection-loss-after-COMMIT acknowledgement permutations",
+    "Every create/replacement/publication/read SQL failure stage",
+    "Actual cyclic deadlock generation and separate 40001 serialization fixture",
+    "Complete logger/analytics boundary matrix",
+    "Human screen-reader testing and full WCAG certification",
+    "Deployed HTTPS/proxy/distributed profile and later P15 sessions"
+  ],
+  "recommendedDisposition": "Accept demonstrated local behavior with explicit remaining Partial/Not run boundaries and source/transaction reasoning in canonical register. Proposed nonblocking for local release; project owner/opposite-member reviewer must decide. No accepted waiver or release approval claimed.",
+  "retainedOriginalSourceVerification": {
+    "sessionLine1Based": 3505,
+    "callId": "call_3c131f8202ac4afaa513eea1bc0f5dfb",
+    "originalOutput": "HEAD 2961014e6b21668f20321e0acade382e67972f1a HASHES 59 FAILURES []\r\nSINCE_CORRECTION ['docs/sprints/sprint-1/implementation-evidence.md', 'docs/sprints/sprint-1/pr40-auth-save-fix.md', 'docs/sprints/sprint-1/pr40-auth-save-verification.json', 'docs/sprints/sprint-1/release-readiness.md']\r\nINDEX_DIFF []\r\nWORKTREE_DIFF []\r\nUNTRACKED_CANDIDATES []\r\n42_HEAD_INCLUDED True\r\nPARENTS ['0737d8253271a91dd28cf10b5f348137abb54d58', '4f25a153ba505eb95345971fee68e94195366a94']\r\n",
+    "originalOutputSha256": "7b2656466ff5b7dbaa72663c842231a3acca0ba3775608be43deae0fedf206ce"
+  },
+  "finalClosureFollowup": {
+    "record": "g04-final-verification.json",
+    "meaning": "Historical recovery above remains unchanged. A later physical acknowledgement-loss test found DEF-G04-01; working-tree patch and 49 final selected executions are separately source-bound. Do not apply old unchanged-source statements to the new patch without this qualification."
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "recordedDateBangkok": "2026-11-11",
-  "source": "Read-only GitHub API observations; actual metadata, not invented review or contribution; PR #39 metadata supplied as verified by the project owner",
+  "recordedDateBangkok": "2026-11-12",
+  "source": "Read-only GitHub API observations; actual metadata, not invented review or contribution; PR #39 metadata supplied as verified by the project owner; PR #42/#43 approval and merge metadata independently re-read through read-only GitHub connector on 2026-11-12",
   "pullRequests": [
     {
       "number": 7,
@@ -350,6 +350,50 @@
           "sourceSha": "2801003c1ef292fa90c5190dd89ac0325e40d582",
           "url": "https://github.com/Maibokdaimhai/LECTRA/pull/39#pullrequestreview-5848796940",
           "submittedAt": "2026-11-10T20:24:41Z"
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/42",
+      "title": "fix(auth): make session and exact expiry persistence atomic",
+      "author": "Maibokdaimhai",
+      "base": "staging",
+      "headBranch": "fix/25-auth-save-atomicity",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-11T18:36:06Z",
+      "sourceSha": "4f25a153ba505eb95345971fee68e94195366a94",
+      "mergeSha": "2961014e6b21668f20321e0acade382e67972f1a",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "4f25a153ba505eb95345971fee68e94195366a94",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/42#pullrequestreview-5863694268",
+          "submittedAt": "2026-11-11T18:35:56Z"
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "url": "https://github.com/Maibokdaimhai/LECTRA/pull/43",
+      "title": "fix(ui): resolve Sprint 1 accessibility review findings",
+      "author": "R1NNE0",
+      "base": "staging",
+      "headBranch": "fix/25-ui-accessibility-recovery",
+      "state": "closed",
+      "merged": true,
+      "mergedAt": "2026-11-12T08:27:47Z",
+      "sourceSha": "b75bf35210d5375ef3e48f3e74d943ccb7f8f5f1",
+      "mergeSha": "fa33e4cc2b57e5c140ffca892e507814b436829d",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "b75bf35210d5375ef3e48f3e74d943ccb7f8f5f1",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/43#pullrequestreview-5871353742",
+          "submittedAt": "2026-11-12T08:27:41Z"
         }
       ]
     }
