@@ -1,0 +1,24 @@
+{
+  "dateBangkok": "2026-11-12",
+  "pdf": "docs/deliverable-1/lectra-deliverable-1.pdf",
+  "sha256": "c462a316009b3eb2a5875e7385c360647d39faad7a8c55aa03db455d75b0d3be",
+  "pages": 266,
+  "partsStartPages": {
+    "A": 3,
+    "B": 30,
+    "C": 44,
+    "D": 73,
+    "E": 95,
+    "F": 221
+  },
+  "assessedApplication": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "tag": "sprint-1",
+  "reportSourceCommit": "efd1e10d41388d2b3c1a44602305ac4de8e5d8ff",
+  "all113AcIdsPresent": true,
+  "actualNavigationRangesVerified": true,
+  "rosterAccountMapping": "Owner confirmed both mappings on 2026-11-12",
+  "contributionBasis": "Actual artifact authors/review history; no unreported pairing/hours invented",
+  "visualQa": "All 266 pages rendered to contact sheets; 226 unchanged earlier pages compared byte-identical to already-reviewed renders; updated contacts reviewed, selected pages inspected at 100 dpi; final changed cover and merge-image page re-rendered/inspected. No clipping/overlap observed in inspected output.",
+  "knownContentLimits": "Full A-E embedded. AC results preserve selected/Partial/Not run/manual limitations accepted in actual G-04 review; no complete WCAG or all-permutation certification. Mermaid model source retained, with an added rendered architecture diagram.",
+  "submission": "Not submitted to LEB2; team report review copy; actual release/check dates disclosed."
+}

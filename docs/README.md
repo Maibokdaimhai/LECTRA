@@ -1,5 +1,7 @@
 # LECTRA — Engineering Documentation Index
 
+Current assessed Sprint 1: [main release / sprint-1 with 214 post-main tests](sprints/sprint-1/main-release.md). Current [self-contained Deliverable 1 PDF and report navigation](deliverable-1/README.md) supersede the historical review draft; app/tag and report revisions remain distinct.
+
 **Current operational entry points (2026-11-10):** [root setup/demo guide](../README.md), [fresh setup and handoff](sprints/sprint-1/setup-and-handoff.md), [integrated setup verification](sprints/sprint-1/setup-verification.json) and [release readiness](sprints/sprint-1/release-readiness.md). PRs #35–#38 are integrated. The planning-PR status statements below are historical and must not be read as the current application state; assessed main release/PDF remain separate gates.
 
 Status: consolidated planning revision for PR [#7](https://github.com/Maibokdaimhai/LECTRA/pull/7). The owner explicitly renewed permission to commit/push this revision to the existing branch; teammate review and merge remain team responsibilities. The application is not implemented. This index does not replace the assessed PDF or eventual root README setup instructions.
