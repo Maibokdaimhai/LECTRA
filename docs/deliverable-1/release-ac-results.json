@@ -49,6 +49,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-02 real invalid then keyboard login and one StrictMode bootstrap [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -68,6 +72,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "TEST-F01-I09/I28: trusted role is resolved anew and authenticated login does not switch accounts"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-02 real invalid then keyboard login and one StrictMode bootstrap [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -135,6 +143,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -174,6 +186,10 @@
         {
           "file": "tests/browser/logout-csrf-rotation.spec.ts",
           "case": "PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -240,6 +256,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -277,6 +297,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -289,8 +313,13 @@
         "TEST-F01-E04",
         "TEST-F01-M01"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-02 real invalid then keyboard login and one StrictMode bootstrap [real browser/API/PostgreSQL; selected assertions]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F01-16",
@@ -304,6 +333,10 @@
         {
           "file": "tests/browser/logout-csrf-rotation.spec.ts",
           "case": "PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -388,6 +421,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-02: owner context is scoped even within a shared Course, and query pagination is strict"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -449,6 +486,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -556,8 +597,13 @@
         "TEST-F02-E01",
         "TEST-F02-E02"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F02-15",
@@ -566,8 +612,13 @@
         "TEST-F02-E03",
         "TEST-F02-E04"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F02-16",
@@ -597,8 +648,13 @@
         "TEST-F02-I19",
         "TEST-F02-E04"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F02-19",
@@ -655,6 +711,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -686,6 +746,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -697,8 +761,13 @@
         "TEST-F03-U05",
         "TEST-F03-I05"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F03-06",
@@ -711,6 +780,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -937,8 +1010,13 @@
         "TEST-F03-E01",
         "TEST-F03-E04"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F03-23",
@@ -947,8 +1025,13 @@
         "TEST-F03-E02",
         "TEST-F03-E03"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F03-24",
@@ -957,8 +1040,17 @@
         "TEST-F03-E05",
         "TEST-F03-M01"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F03-25",
@@ -1014,6 +1106,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-03/F-04: actual API close and submit serialize correctly in both lock orders"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1031,6 +1127,14 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-04: required/type/Unicode/association boundaries reject without any partial response"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1051,6 +1155,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1097,6 +1205,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1126,6 +1238,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1141,6 +1257,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1155,6 +1275,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1242,6 +1366,14 @@
         {
           "file": "scripts/verify-restart.ts",
           "case": "Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1257,6 +1389,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1268,8 +1404,25 @@
         "TEST-F04-E01",
         "TEST-F04-E02"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F04-18",
@@ -1282,6 +1435,14 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1307,6 +1468,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds"
+        },
+        {
+          "file": "tests/browser/sprint1-rejections.spec.ts",
+          "case": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1322,6 +1487,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1360,6 +1529,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1382,8 +1555,17 @@
         "TEST-F04-E04",
         "TEST-F04-M01"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/ui-accessibility-real.spec.ts",
+          "case": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F05-01",
@@ -1422,6 +1604,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1443,6 +1629,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1577,6 +1767,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1598,6 +1792,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1649,8 +1847,13 @@
         "TEST-F05-U06",
         "TEST-F05-E03"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F05-14",
@@ -1738,6 +1941,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1757,6 +1964,10 @@
         {
           "file": "apps/api/tests/features/workflows.test.ts",
           "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1768,8 +1979,17 @@
         "TEST-F05-E04",
         "TEST-F05-M01"
       ],
-      "actual": [],
-      "result": "No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed"
+      "actual": [
+        {
+          "file": "tests/browser/feedback.spec.ts",
+          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+        },
+        {
+          "file": "tests/browser/sprint1-recovery-states.spec.ts",
+          "case": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]"
+        }
+      ],
+      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F05-21",

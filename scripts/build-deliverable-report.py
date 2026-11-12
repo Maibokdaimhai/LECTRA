@@ -109,7 +109,7 @@ class Slice(Flowable):
 def figure(path,caption,narrow=False):
  from PIL import Image as Raster
  with Raster.open(root/path) as im:iw,ih=im.size
- w=350 if narrow else 495;total=ih*w/iw;tile=560;count=math.ceil(total/tile)
+ w=350 if narrow else 495;total=ih*w/iw;count=math.ceil(total/560);tile=total/count
  for i in range(count):
   story.append(PageBreak());para(caption+(' / panel '+str(i+1)+' of '+str(count) if count>1 else ''),'h2');para('Actual assessed-version evidence. Original bitmap preserved; tall capture paginated at a readable width.','small')
   story.append(Slice(str(root/path),w,i*tile,min(tile,total-i*tile)))
@@ -158,7 +158,7 @@ para('Complete S1 AC-to-test/results mapping','h1');markdown(root/'docs/delivera
 para('Two actual automated test excerpts','h1')
 text=(root/'apps/api/tests/features/workflows.test.ts').read_text()
 for term in ['F-04: an actual SQL fault','INT22-06:']:
- start=text.index("it('"+term);end=text.find('\nit(',start+1);excerpt=text[start:end if end!=-1 else len(text)]
+ start=text.index("it('"+term);end=text.find('\n});',start+1);excerpt=text[start:end+4 if end!=-1 else len(text)]
  para(term,'h2');para('Real PostgreSQL fixture, trusted synthetic role login, guarded disposable target. This scenario passed in the 41-case API/database run on assessed main. Helpers perform actual HTTP calls with the session-bound CSRF token; no identity header is trusted.','small')
  for line in excerpt.splitlines():story.append(Paragraph(html.escape(normalize(line)).replace(' ','&#160;') or '&#160;',styles['code']))
 para('Actual process, substantive reviews and contributions','h1');markdown(root/'docs/deliverable-1/release-process-and-contributions.md')

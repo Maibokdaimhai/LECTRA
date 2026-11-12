@@ -20,14 +20,14 @@ Exact login/logout schema and transport/decoded bounds reject malformed, oversiz
 Each seeded role can log in with exact password and normalized email; /me returns the trusted safe current identity.
 
 **Planned STS:** TEST-F01-I03, TEST-F01-I04, TEST-F01-E01
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection; tests/browser/feedback.spec.ts — B23-02 real invalid then keyboard login and one StrictMode bootstrap [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-04
 Unknown email and wrong password return the same 401 body without authenticated session; existing auth is not silently switched/renewed by login.
 
 **Planned STS:** TEST-F01-I05, TEST-F01-I28
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — TEST-F01-I05/I15: generic credential errors, exact schemas and body security; apps/api/tests/features/workflows.test.ts — TEST-F01-I09/I28: trusted role is resolved anew and authenticated login does not switch accounts
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — TEST-F01-I05/I15: generic credential errors, exact schemas and body security; apps/api/tests/features/workflows.test.ts — TEST-F01-I09/I28: trusted role is resolved anew and authenticated login does not switch accounts; tests/browser/feedback.spec.ts — B23-02 real invalid then keyboard login and one StrictMode bootstrap [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-05
@@ -48,7 +48,7 @@ Successful login regenerates SID/token, destroys guest SID and waits for durable
 Auth is valid just before eight hours and denied exactly at/after it; reads/touch/save/restart cannot extend cookie/store/server deadline. Invalid/future timestamps fail.
 
 **Planned STS:** TEST-F01-U02, TEST-F01-U07, TEST-F01-I08, TEST-F01-I20
-**Actual executed mapping:** apps/api/tests/unit/auth-rules.test.ts — TEST-F01-U02: exact absolute deadline rejects expiry without renewal; apps/api/tests/unit/auth-rules.test.ts — TEST-F01-U07: future, missing and inconsistent timestamps cannot authenticate; apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie; scripts/verify-restart.ts — Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison; apps/api/tests/features/workflows.test.ts — DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline
+**Actual executed mapping:** apps/api/tests/unit/auth-rules.test.ts — TEST-F01-U02: exact absolute deadline rejects expiry without renewal; apps/api/tests/unit/auth-rules.test.ts — TEST-F01-U07: future, missing and inconsistent timestamps cannot authenticate; apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie; scripts/verify-restart.ts — Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison; apps/api/tests/features/workflows.test.ts — DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline; tests/browser/sprint1-recovery-states.spec.ts — B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-08
@@ -62,7 +62,7 @@ Every protected request resolves trusted User/role; deleted/invalid users lose a
 Confirmed logout revokes the stored session; cookie replay is unauthorized; repeated/absent-session logout follows the documented token no-op policy.
 
 **Planned STS:** TEST-F01-I16, TEST-F01-I17, TEST-F01-E02
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie; tests/browser/logout-csrf-rotation.spec.ts — PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie; tests/browser/logout-csrf-rotation.spec.ts — PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry; tests/browser/sprint1-recovery-states.spec.ts — B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-10
@@ -83,7 +83,7 @@ Local HTTP versus HTTPS cookies, clearing and validated proxy/configuration beha
 Guard boundary gives unauthenticated 401, authenticated wrong-role 403 and missing/out-of-scope 404 without private data. Real domain integrations remain explicitly assigned.
 
 **Planned STS:** TEST-F01-U04, TEST-F01-I10, TEST-F01-I11, TEST-F01-I12, TEST-F01-H01, TEST-F01-H02, TEST-F01-H03, TEST-F01-H04
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-01: unsupported methods, foreign origins and forged cookies fail without authority; apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — F-02: owner context is scoped even within a shared Course, and query pagination is strict
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-01: unsupported methods, foreign origins and forged cookies fail without authority; apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — F-02: owner context is scoped even within a shared Course, and query pagination is strict; tests/browser/sprint1-rejections.spec.ts — B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-13
@@ -97,21 +97,21 @@ DB/store/verifier failures produce safe failure, never memory fallback or succes
 Auth errors/identity projections/logs/cache behavior expose no credentials, SID, other-user payload or private cached content after session loss.
 
 **Planned STS:** TEST-F01-U05, TEST-F01-I23, TEST-F01-E02, TEST-F01-E03
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; tests/browser/sprint1-recovery-states.spec.ts — B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-15
 Login has usable labelled/keyboard/busy/error/timeout behavior and server-derived role navigation at the specified widths.
 
 **Planned STS:** TEST-F01-E01, TEST-F01-E04, TEST-F01-M01
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/feedback.spec.ts — B23-02 real invalid then keyboard login and one StrictMode bootstrap [real browser/API/PostgreSQL; selected assertions]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-16
 Session expiry/logout hides private UI, rechecks before protected re-entry and distinguishes server-revocation failure from success.
 
 **Planned STS:** TEST-F01-E02, TEST-F01-E03, TEST-F01-E05
-**Actual executed mapping:** tests/browser/logout-csrf-rotation.spec.ts — PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry
+**Actual executed mapping:** tests/browser/logout-csrf-rotation.spec.ts — PR45-CSRF real expiry/native guest-cookie/failure/deliberate current-token retry; tests/browser/sprint1-recovery-states.spec.ts — B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-17
@@ -153,7 +153,7 @@ Reproducible synthetic hierarchy satisfies required roles/FKs/unique relationshi
 All reads require trusted F-01 identity; owner context routes reject respondents before resource detail; client actor data grants nothing.
 
 **Planned STS:** TEST-F02-I02, TEST-F02-I03
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-02: owner context is scoped even within a shared Course, and query pagination is strict
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-02: owner context is scoped even within a shared Course, and query pagination is strict; tests/browser/sprint1-rejections.spec.ts — B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F02-03
@@ -188,7 +188,7 @@ Owner survey list is Section-scoped across all three states; optional lecture se
 Respondent list includes only own-eligible Published/Closed surveys and never Draft or unrelated context.
 
 **Planned STS:** TEST-F02-I08, TEST-F02-I09
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/sprint1-rejections.spec.ts — B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F02-08
@@ -237,15 +237,15 @@ Stable documented ordering/tiebreakers produce repeatable unchanged-data pages a
 Owner/Respondent empty/loading/availability distinctions and parent-reset/page actions match server data without invented workflow success.
 
 **Planned STS:** TEST-F02-I16, TEST-F02-E01, TEST-F02-E02
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/sprint1-recovery-states.spec.ts — B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F02-15
 Retry, permission/session-loss and superseded-request behavior never restores unrelated/private stale content or treats failure as empty success.
 
 **Planned STS:** TEST-F02-E03, TEST-F02-E04
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/sprint1-recovery-states.spec.ts — B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F02-16
 Both list journeys are labelled, keyboard-operable and usable at 360px/1280px with visible focus and wrapped content.
@@ -265,8 +265,8 @@ Reads leave domain data unchanged; one response's count/items/participation use 
 Database/auth dependency failure produces the safe defined error, no-store and no private diagnostics, not a fabricated empty collection.
 
 **Planned STS:** TEST-F02-I19, TEST-F02-E04
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/sprint1-recovery-states.spec.ts — B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F02-19
 Actions derive from current state/own status; target features revalidate stale/ineligible requests; no F-03/F-04 write is implemented in F-02.
@@ -293,7 +293,7 @@ Creating on an owned empty Lecture returns 201 empty IDENTIFIED Draft revision 1
 All six routes enforce §2 server-side; foreign-owner records are 404, Respondent management 403, unauthenticated access 401, with no mutation or private data.
 
 **Planned STS:** TEST-F03-I02, TEST-F03-I23
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; tests/browser/sprint1-rejections.spec.ts — B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F03-03
@@ -307,21 +307,21 @@ Concurrent creates for one Lecture yield exactly one Survey; committed winner 20
 Owner reads own three states; Respondent reads only frozen-eligible Published/Closed, never Draft. Projections, question order and disclosure match §5.2; no participant/answer/owner-identity leak.
 
 **Planned STS:** TEST-F03-U06, TEST-F03-I04, TEST-F03-I24, TEST-F03-E04
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot; tests/browser/sprint1-rejections.spec.ts — B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F03-05
 Save atomically adds/edits/removes/reorders questions with retained stable IDs and contiguous positions; invalid/foreign/duplicate IDs cause 422 and no change.
 
 **Planned STS:** TEST-F03-U05, TEST-F03-I05
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/ui-accessibility-real.spec.ts — UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F03-06
 Normalization and Unicode limits in §4 accept exact bounds and reject one over; Draft blanks allowed, publication blanks rejected, malformed Unicode/NUL safely rejected.
 
 **Planned STS:** TEST-F03-U01, TEST-F03-I06
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot; tests/browser/ui-accessibility-real.spec.ts — UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F03-07
@@ -433,22 +433,22 @@ Shared session/Origin/CSRF/access, route body ceilings, strict JSON/error preced
 Owner completes real create/save/publish and Published/Closed read-only navigation with persisted state confirmation, no premature success.
 
 **Planned STS:** TEST-F03-E01, TEST-F03-E04
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F03-23
 Validation, state/revision conflicts and network uncertainty show §8 recovery without automatic overwrite or false success; recoverable unsaved content retained, session loss clears private state.
 
 **Planned STS:** TEST-F03-E02, TEST-F03-E03
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/ui-accessibility-real.spec.ts — UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F03-24
 Core authoring/publication/closing controls are labelled, keyboard usable, focus/error handling visible at 360px and 1280px.
 
 **Planned STS:** TEST-F03-E05, TEST-F03-M01
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]; tests/browser/ui-accessibility-real.spec.ts — UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists [real; includes 320px/native 200% zoom]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F03-25
 After process restart against the same PostgreSQL database, committed Draft/Published/Closed definitions, IDs/order/revisions/timestamps and snapshots remain unchanged.
@@ -468,21 +468,21 @@ Before implementation, reviewed contract/schema/security/handoff agreements exis
 Eligible Published identified survey renders F-03 frozen definitions/disclosure and current own status, without creating another definition API.
 
 **Planned STS:** TEST-F04-E01, TEST-F04-H01
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-03/F-04: actual API close and submit serialize correctly in both lock orders
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-03/F-04: actual API close and submit serialize correctly in both lock orders; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-02
 Required/optional ratings are strict integers 1-5, with no default/coercion/optional zero; missing required rejects.
 
 **Planned STS:** TEST-F04-U01, TEST-F04-I02, TEST-F04-I03, TEST-F04-E02
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04: required/type/Unicode/association boundaries reject without any partial response
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04: required/type/Unicode/association boundaries reject without any partial response; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]; tests/browser/ui-accessibility-real.spec.ts — UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-03
 Text preserves valid nonblank content, enforces code-point/blank/NUL/surrogate rules and normalizes bounded optional blank to absence.
 
 **Planned STS:** TEST-F04-U02, TEST-F04-I04, TEST-F04-E02
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-04: accepts 2000 Unicode code points, preserves nonblank text, rejects 2001 and malformed Unicode; apps/api/tests/features/workflows.test.ts — INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-04: accepts 2000 Unicode code points, preserves nonblank text, rejects 2001 and malformed Unicode; apps/api/tests/features/workflows.test.ts — INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence; tests/browser/ui-accessibility-real.spec.ts — UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-04
@@ -503,7 +503,7 @@ Unknown/duplicate/wrong-survey IDs, wrong type and empty normalized response rej
 Actor is server-resolved; guest/wrong-role/spoofed identity cannot submit/read for another account.
 
 **Planned STS:** TEST-F04-I08, TEST-F04-I17
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; tests/browser/sprint1-rejections.spec.ts — B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-07
@@ -517,21 +517,21 @@ Frozen eligibility controls both endpoints despite later Membership changes; Dra
 Closed/non-Published requests never create a response; documented state/duplicate precedence holds.
 
 **Planned STS:** TEST-F04-I10, TEST-F04-I11
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering; tests/browser/sprint1-rejections.spec.ts — B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-09
 Valid POST commits one Participation/bundle/all normalized typed answers and returns only persisted own data in question-position order.
 
 **Planned STS:** TEST-F04-U06, TEST-F04-I01
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/ui-accessibility-real.spec.ts — UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-10
 Sequential repeat returns duplicate conflict without second/changed response.
 
 **Planned STS:** TEST-F04-I11
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering; tests/browser/sprint1-rejections.spec.ts — B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-11
@@ -566,42 +566,42 @@ Frozen definitions/required flags/scale are consumed without update; no response
 Own false/true status and persisted identified answers survive closure/logout-login/restart; consistent read does not fabricate integrity recovery.
 
 **Planned STS:** TEST-F04-I16, TEST-F04-E01
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results; scripts/verify-restart.ts — Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results; scripts/verify-restart.ts — Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]; tests/browser/sprint1-rejections.spec.ts — B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-16
 Other-student lookup, forged query/body identity and owner respondent-linked access are denied without leakage.
 
 **Planned STS:** TEST-F04-I17, TEST-F04-I21
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; tests/browser/sprint1-rejections.spec.ts — B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-17
 UI pending/confirmation/readonly states reflect real API outcomes; no duplicate UI POST or premature success.
 
 **Planned STS:** TEST-F04-E01, TEST-F04-E02
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]; tests/browser/sprint1-rejections.spec.ts — B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]; tests/browser/sprint1-recovery-states.spec.ts — B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation [real browser/API/PostgreSQL; selected assertions]; tests/browser/ui-accessibility-real.spec.ts — UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-18
 Ambiguous acknowledgement queries own persisted status before deliberate retry; no automatic response resend.
 
 **Planned STS:** TEST-F04-I20, TEST-F04-E03
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds; tests/browser/sprint1-recovery-states.spec.ts — B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation [real browser/API/PostgreSQL; selected assertions]; tests/browser/ui-accessibility-real.spec.ts — UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-19
 Auth/Origin/CSRF/method/schema/state errors match exact codes/precedence with no database/internal/input exposure.
 
 **Planned STS:** TEST-F04-U04, TEST-F04-I10, TEST-F04-I18, TEST-F04-I20
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering; apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering; apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds; tests/browser/sprint1-rejections.spec.ts — B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-20
 Private response data is absent from caches/storage/logs/other-user payloads; expiry/logout removes stale client content.
 
 **Planned STS:** TEST-F04-I21, TEST-F04-E04
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; tests/browser/sprint1-recovery-states.spec.ts — B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-21
@@ -622,7 +622,7 @@ Unsupported mode never stores or reveals an identified/anonymous fallback; no ex
 F-02 participation flag and F-05 count/denominator/text projections match actual committed normalized rows.
 
 **Planned STS:** TEST-F04-H02, TEST-F04-H03
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-24
@@ -636,8 +636,8 @@ Accepted contract/STS/DoD, real meaningful RED/GREEN, mapped outcomes, opposite-
 Core form/readback/errors support labelled keyboard/focus and narrow/wide layouts with truthful identified disclosure.
 
 **Planned STS:** TEST-F04-E01, TEST-F04-E02, TEST-F04-E04, TEST-F04-M01
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]; tests/browser/ui-accessibility-real.spec.ts — UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results [real; includes 320px/native 200% zoom]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-01
 Own Draft results GET is 409 RESULTS_NOT_AVAILABLE with no statistics; UI shows unavailable, never invented zeros.
@@ -650,14 +650,14 @@ Own Draft results GET is 409 RESULTS_NOT_AVAILABLE with no statistics; UI shows 
 Own identified Published GET returns exactly survey metadata and committed responseCount, including real zero; no answer/comment query or quantitative payload/DOM.
 
 **Planned STS:** TEST-F05-U04, TEST-F05-I02, TEST-F05-I10, TEST-F05-E02
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-03
 Own identified Closed GET returns full ordered frozen question results and identified comments; low counts are not suppressed and stored data is unchanged.
 
 **Planned STS:** TEST-F05-U04, TEST-F05-I02, TEST-F05-I11, TEST-F05-E01
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-04
@@ -699,14 +699,14 @@ Each rating has five ordered integer bins for scores 1–5, zeros included, summ
 Exact S/N is rounded once with proposed decimal half-up; §5's endpoint/tie/below/above fixtures and two-decimal strings match, without binary-float ambiguity.
 
 **Planned STS:** TEST-F05-U02, TEST-F05-I04, TEST-F05-E01
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-10
 R=0 and R>0/N=0 produce null means and all-zero bins with distinct no-data messages; never 0.00/NaN or fabricated observations.
 
 **Planned STS:** TEST-F05-U03, TEST-F05-U06, TEST-F05-I05, TEST-F05-E02
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results; tests/browser/sprint1-recovery-states.spec.ts — B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-11
@@ -727,8 +727,8 @@ Closed TEXT comments preserve literal strings, duplicates and line breaks, use d
 Unsafe comments and all user-authored metadata render as literal text; scripts/event handlers/embedded content do not execute.
 
 **Planned STS:** TEST-F05-U06, TEST-F05-E03
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-14
 JSON, DOM, cache/storage, logs and analytics exclude forbidden identity/participation/bundle/timing/auth fields and raw feedback in logs; notice makes no anonymity promise.
@@ -762,22 +762,22 @@ Repeated reads and restart against unchanged PostgreSQL preserve results/metadat
 Owner sees correct Published/Closed view, per-question denominator/mean/table, frozen meaning, comments and truthful identified notice at the proposed navigation handoff.
 
 **Planned STS:** TEST-F05-U06, TEST-F05-E01, TEST-F05-E02, TEST-F05-H01
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-19
 Loading, network/database errors, session expiry and denials show §8 states; old/private content is cleared and no premature/fabricated numbers displayed.
 
 **Planned STS:** TEST-F05-E04, TEST-F05-H02
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; tests/browser/sprint1-recovery-states.spec.ts — B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-20
 Results navigation/Retry and equivalent numerical table work by keyboard with labels/focus/readable layout at 360px and 1280px.
 
 **Planned STS:** TEST-F05-E04, TEST-F05-M01
-**Actual executed mapping:** No direct case established by this mapping.
-**Result / limitation:** No direct case established by this mapping; retain Not run/Partial boundary and actual G-04/process disposition; no full Pass claimed
+**Actual executed mapping:** tests/browser/feedback.spec.ts — B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]; tests/browser/sprint1-recovery-states.spec.ts — B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry [real browser/API/PostgreSQL; selected assertions]
+**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-21
 Own unsupported/anonymous mode is safely rejected with no text/count fallback; no S2 thresholds, export, history or overall instructor score are added.
