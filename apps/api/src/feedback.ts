@@ -29,6 +29,11 @@ function page(req: Request, allowed: string[] = []) {
 }
 async function transaction<T>(pool: Pool, action: (db: PoolClient) => Promise<T>, read = false): Promise<T> {
     const db = await pool.connect();
+    // pg-pool handles errors on idle clients; explicitly checked-out clients
+    // also emit errors when their connection disappears during a transaction.
+    let connectionError: Error | undefined;
+    const onConnectionError = (error: Error) => { connectionError = error; };
+    db.on('error', onConnectionError);
     try {
         await db.query(read ? 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY' : 'BEGIN');
         await db.query("SET LOCAL lock_timeout='5s'");
@@ -38,11 +43,17 @@ async function transaction<T>(pool: Pool, action: (db: PoolClient) => Promise<T>
         return result;
     }
     catch (error) {
-        await db.query('ROLLBACK');
+        if (!connectionError) {
+            try { await db.query('ROLLBACK'); }
+            catch (rollbackError) { connectionError = rollbackError instanceof Error ? rollbackError : new Error('Rollback unavailable'); }
+        }
+        // Preserve the original failure. A lost COMMIT acknowledgement does
+        // not prove rollback; callers must reconcile persisted state.
         throw error;
     }
     finally {
-        db.release();
+        try { db.release(connectionError); }
+        finally { db.off('error', onConnectionError); }
     }
 }
 async function scope(db: PoolClient, req: Request, lock = false) {
