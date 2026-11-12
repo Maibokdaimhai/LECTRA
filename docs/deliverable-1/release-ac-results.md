@@ -615,8 +615,8 @@ Reviewed real schema enforces relevant FK/unique/range/typed-column invariants w
 Unsupported mode never stores or reveals an identified/anonymous fallback; no extra student-linked anonymous retrieval.
 
 **Planned STS:** TEST-F04-I10
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering
-**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
+**Actual executed mapping:** apps/api/tests/post-release/ac-gaps.test.ts - PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes [PASS; additional post-release run]; apps/api/tests/post-release/ac-gaps.test.ts - PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback [FAIL; additional post-release run]; apps/api/tests/post-release/ac-gaps.test.ts - PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback [FAIL; additional post-release run]
+**Result / limitation:** Partial (Sprint 1). Additional post-release PR46-I01 PASS directly verifies unsupported ANONYMOUS submissions are rejected. Team decision: PR46-DEF-01 is a Known Limitation discovered during additional post-release verification. PR46-I04-PUBLISHED and PR46-I04-CLOSED are two observations of the same underlying unsupported-mode own-readback defect. AC-F04-22 remains a Sprint 1 AC with Partial disposition. Correction is deferred for team follow-up in Sprint 2 before enabling F-06 Anonymous Mode; regression tests must be rerun after correction. The defect is not fixed. The existing Sprint Plan and original assessed release are unchanged. Both failing readback results remain retained in the separate post-release investigation record.
 
 ## AC-F04-23
 F-02 participation flag and F-05 count/denominator/text projections match actual committed normalized rows.
@@ -643,8 +643,8 @@ Core form/readback/errors support labelled keyboard/focus and narrow/wide layout
 Own Draft results GET is 409 RESULTS_NOT_AVAILABLE with no statistics; UI shows unavailable, never invented zeros.
 
 **Planned STS:** TEST-F05-U04, TEST-F05-I02, TEST-F05-E02
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
-**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
+**Actual executed mapping:** apps/api/tests/post-release/ac-gaps.test.ts - PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation [PASS; additional post-release run]
+**Result / limitation:** Additional post-release API PASS: PR46-I02 confirms own Draft GET results returns exact 409 RESULTS_NOT_AVAILABLE with no statistics or persisted mutation, including Draft-before-mode precedence. Foreign-owner and wrong-role denials remain 404/403. UI unavailable-state TEST-F05-E02 is not executed by this API check; the broader STS/AC remains Partial. Original historical results unchanged.
 
 ## AC-F05-02
 Own identified Published GET returns exactly survey metadata and committed responseCount, including real zero; no answer/comment query or quantitative payload/DOM.
@@ -783,8 +783,8 @@ Results navigation/Retry and equivalent numerical table work by keyboard with la
 Own unsupported/anonymous mode is safely rejected with no text/count fallback; no S2 thresholds, export, history or overall instructor score are added.
 
 **Planned STS:** TEST-F05-U04, TEST-F05-I02
-**Actual executed mapping:** apps/api/tests/features/workflows.test.ts — INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
-**Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
+**Actual executed mapping:** apps/api/tests/post-release/ac-gaps.test.ts - PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback [PASS; additional post-release run]
+**Result / limitation:** Additional post-release API PASS: PR46-I03 confirms own ANONYMOUS Published and Closed results return exact 409 MODE_NOT_SUPPORTED with no count/text payload or persisted response changes. Identified count-only and Closed comment behavior are also checked. ANONYMOUS exists only in the isolated test fixture, not the production enum; no anonymous feature is enabled and the larger planned STS is not relabelled fully Passed.
 
 ## AC-F05-22
 Reviewed/versioned precode interfaces/schema/rounding and mapped STS exist before dependent implementation; later acceptance records actual results, meaningful TDD and human review, leaving release/PDF gates separate.

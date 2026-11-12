@@ -1,8 +1,8 @@
 {
   "dateBangkok": "2026-11-12",
   "pdf": "docs/deliverable-1/lectra-deliverable-1.pdf",
-  "sha256": "c462a316009b3eb2a5875e7385c360647d39faad7a8c55aa03db455d75b0d3be",
-  "pages": 266,
+  "sha256": "f4db809113e75751a751eaf785bdcac85463da43ed926cdf8458e6bbd7725822",
+  "pages": 275,
   "partsStartPages": {
     "A": 3,
     "B": 30,
@@ -13,12 +13,263 @@
   },
   "assessedApplication": "af2e1030984bcc816081b25b29c9de52a80efe30",
   "tag": "sprint-1",
-  "reportSourceCommit": "efd1e10d41388d2b3c1a44602305ac4de8e5d8ff",
+  "reportSourceCommit": "f3e0de05e3076e3805181e6e25f3e2a10a6d80f0",
   "all113AcIdsPresent": true,
   "actualNavigationRangesVerified": true,
   "rosterAccountMapping": "Owner confirmed both mappings on 2026-11-12",
   "contributionBasis": "Actual artifact authors/review history; no unreported pairing/hours invented",
-  "visualQa": "All 266 pages rendered to contact sheets; 226 unchanged earlier pages compared byte-identical to already-reviewed renders; updated contacts reviewed, selected pages inspected at 100 dpi; final changed cover and merge-image page re-rendered/inspected. No clipping/overlap observed in inspected output.",
-  "knownContentLimits": "Full A-E embedded. AC results preserve selected/Partial/Not run/manual limitations accepted in actual G-04 review; no complete WCAG or all-permutation certification. Mermaid model source retained, with an added rendered architecture diagram.",
-  "submission": "Not submitted to LEB2; team report review copy; actual release/check dates disclosed."
+  "visualQa": "Original fonts and layout retained. Parts A-E pages 3-220 are pixel-identical to the preceding reviewed PDF. Updated AC mappings and complete post-release PASS/FAIL record visually inspected; all 275 pages checked for out-of-bounds text, with none detected. Authentication and historical screenshot bitmaps unchanged; navigation refreshed.",
+  "knownContentLimits": "Full A-E embedded. AC results preserve selected/Partial/Not run/manual limitations accepted in actual G-04 review; no complete WCAG or all-permutation certification. Mermaid model source retained, with an added rendered architecture diagram. Additional direct post-release checks have 3 PASS and 2 FAIL: PR46-DEF-01 unsupported-mode own-readback is uncorrected. The historical 214-test pass result and prior coverage dispositions are not a new acceptance of this failure.",
+  "submission": "Not submitted to LEB2; team report review copy; actual release/check dates disclosed.",
+  "previousPdfSha256": "c462a316009b3eb2a5875e7385c360647d39faad7a8c55aa03db455d75b0d3be",
+  "previousReportSourceCommit": "efd1e10d41388d2b3c1a44602305ac4de8e5d8ff",
+  "referenceCorrectionVerification": {
+    "dateBangkok": "2026-11-13",
+    "sourceState": "Uncommitted reference corrections on review/pr-46; cover explicitly marks the uncommitted state.",
+    "corrections": [
+      "Closed-state rejection references AC-F04-08/18 rather than AC-F04-14/18.",
+      "Access denial references AC-F03-02, AC-F04-06 and AC-F05-04 rather than unrelated criteria.",
+      "Browser access-denial scenario references B23-04 rather than empty-state B23-07."
+    ],
+    "normalization": "Source SHA-256 uses UTF-8 with CRLF normalized to LF.",
+    "sourceSha256": {
+      "scripts/build-deliverable-report.py": "193c776f5612c2d0585cb42d1400bd615d8a154d0a151899786b98bd69d11a63",
+      "docs/sprints/sprint-1/main-release.md": "a8f320b77ffb86da64b6482dd17c5eea54e8fa2a0c2119d4fbc27ed35aadab28"
+    },
+    "pages": 266,
+    "rasterChangedPages": [
+      1,
+      223,
+      259,
+      260
+    ],
+    "rasterUnchangedPages": 262,
+    "pageRangesUnchanged": true,
+    "originalReproduction": "Scratch rebuild of unmodified sources reproduced all 266 original pages pixel-for-pixel using the embedded fonts recovered into ignored scratch files. No font substitution or layout redesign.",
+    "buildExecution": "Python 3.14 with -X utf8; ReportLab/pypdf/Pillow; recovered original fonts supplied through LECTRA_REPORT_FONT/LECTRA_REPORT_BOLD_FONT. subprocess.check_output mocked only for report source label; no Git command executed.",
+    "evidenceBoundary": "Assessed SHA/tag, test counts, reviews, contributions, AC/STS identifiers/dispositions, source snapshots and screenshot bitmaps preserved except the enumerated demonstration references. No application test suites rerun."
+  },
+  "referenceCorrectedPdfSha256": "75b1ec1dc21845dd44597557b52ee72b92024579f26a43b88db00222c580cd10",
+  "previousVisualQa": "All 266 pages rendered to contact sheets; 226 unchanged earlier pages compared byte-identical to already-reviewed renders; updated contacts reviewed, selected pages inspected at 100 dpi; final changed cover and merge-image page re-rendered/inspected. No clipping/overlap observed in inspected output.",
+  "finalMajorCorrectionsVerification": {
+    "dateBangkok": "2026-11-13",
+    "findingsResolved": [
+      "R46-01",
+      "R46-02"
+    ],
+    "sourceState": "Uncommitted report corrections on review/pr-46 at f3e0de05e3076e3805181e6e25f3e2a10a6d80f0; stated on the cover.",
+    "previousStage": "referenceCorrectionVerification describes the preceding 266-page R46-03 build and its historical stage-specific hashes; those are not asserted to match the current sources.",
+    "r46_01": {
+      "acResultPages": {
+        "AC-F04-22": 243,
+        "AC-F05-01": 244,
+        "AC-F05-21": 248
+      },
+      "correction": "Removed unrelated actual-case mappings; each AC states its specific absent direct execution evidence. Accepted Partial/Not run boundaries, IDs, requirements and planned tests retained. Other 110 AC records unchanged."
+    },
+    "r46_02": {
+      "record": "docs/deliverable-1/auth-demonstration.json",
+      "recordSha256": "9441107103c603365eded68e0354a39aed27e85bafcead2b4231d7b1990be76c",
+      "figurePages": {
+        "F-AUTH-01": [
+          253
+        ],
+        "F-AUTH-02": [
+          254
+        ],
+        "F-AUTH-03": [
+          255
+        ],
+        "F-AUTH-04": [
+          256
+        ]
+      },
+      "observedHttp": {
+        "login": 200,
+        "trustedOwnerIdentity": 200,
+        "logout": 204,
+        "protectedReadAfterLogout": 401
+      },
+      "historicalMatrixNotRerun": true
+    },
+    "partsPageRanges": {
+      "A": [
+        3,
+        29
+      ],
+      "B": [
+        30,
+        43
+      ],
+      "C": [
+        44,
+        72
+      ],
+      "D": [
+        73,
+        94
+      ],
+      "E": [
+        95,
+        220
+      ],
+      "F": [
+        221,
+        271
+      ]
+    },
+    "sourceSha256": {
+      "scripts/build-deliverable-report.py": "9a3c2e81e6fd6c9450b49cb8efc7c380814a19c4ed7973bf8d540403b7fabcca",
+      "docs/sprints/sprint-1/main-release.md": "a6aa27192ef157707c171f7e4587f6377865d2f6fe3d92cff18fe43efe658650",
+      "docs/deliverable-1/release-ac-results.json": "542e5dc83df3a3d3fcc825fc9521b1012367a4083be8b5266ef0816926540f12",
+      "docs/deliverable-1/release-ac-results.md": "a4c5d83c1a5cc55701021da4e2aaf62914368b2795e0cd14921b6d2aa1e23b45",
+      "docs/deliverable-1/auth-demonstration.json": "9441107103c603365eded68e0354a39aed27e85bafcead2b4231d7b1990be76c",
+      "docs/deliverable-1/README.md": "3893b7b714c54f1ec40365253bffc348eb7723c427d27c28072439b12d3695a0"
+    },
+    "normalization": "UTF-8 with CRLF normalized to LF; screenshot/PDF hashes are raw bytes.",
+    "checks": {
+      "acCount": 113,
+      "stsCount": 183,
+      "otherACRecordsUnchanged": 110,
+      "assessedSourceHashesMatch": 82,
+      "oldFigureHashesUnchanged": true,
+      "localMarkdownLinksValid": 16,
+      "outOfBoundsText": 0,
+      "r46_03Retained": true,
+      "historicalReleaseResults": "214 passed, 0 failed, 0 skipped; unchanged, not new execution",
+      "applicationBuild": "npm run build passed using Node 24.22.1 / npm 10.9.2",
+      "newApplicationTestSuiteRuns": 0,
+      "temporaryCaptureServicesAndClusterStopped": true
+    },
+    "build": "Existing ReportLab/pypdf builder, original recovered embedded fonts, UTF-8; two passes refresh actual navigation. Source-revision read supplied through a local mock, with uncommitted-state label; no Git command executed.",
+    "limits": "Supplementary real Owner flow at 360px, not exhaustive E01/E02 certification. Direct evidence for the three affected AC behaviors remains absent and disclosed; no new acceptance waiver, review approval or submission is claimed."
+  },
+  "preDirectVerificationPdfSha256": "242e038972a6a65faf80960b5af1d551f8447ef3f236d88ede2f2d643a666355",
+  "preDirectVerificationVisualQa": "Original typography retained. Parts A-E pages 3-220 are pixel-identical to the prior reviewed PDF. Updated navigation, three AC evidence limits and four authentication figures checked; all 271 pages checked for out-of-bounds text. Four new complete screenshots are readable without slice boundaries. No clipping observed on inspected affected pages.",
+  "postReleaseDirectChecksVerification": {
+    "dateBangkok": "2026-11-13",
+    "sourceState": "Uncommitted post-release test/evidence changes on review/pr-46; assessed production source unchanged. Cover identifies the report state.",
+    "currentRecommendation": "Requires correction/triage of PR46-DEF-01; the new run is not all passing.",
+    "previousStages": "referenceCorrectionVerification and finalMajorCorrectionsVerification describe preceding historical report builds and stage-specific hashes/page references, not the current source or newly discovered failure.",
+    "record": "docs/deliverable-1/post-release-ac-verification.json",
+    "recordSha256": "a8a69bad41795208401d282a34b6ebcf646ff3c0d658dfd6f876b7ad51089f05",
+    "counts": {
+      "passed": 3,
+      "failed": 2,
+      "skipped": 0,
+      "total": 5
+    },
+    "exitCode": 1,
+    "defect": "PR46-DEF-01: unsupported ANONYMOUS own-response GET returns 200/identified answers instead of 409 MODE_NOT_SUPPORTED in both Published and Closed fixture states. No production change made.",
+    "fixtureBoundary": "ANONYMOUS added only to a new empty explicitly allowlisted disposable PostgreSQL database; original production enum IDENTIFIED-only verified first. No repository schema/migration change or anonymous feature enabled.",
+    "acPages": {
+      "AC-F04-22": 244,
+      "AC-F05-01": 245,
+      "AC-F05-21": 249
+    },
+    "postReleaseRecordPages": [
+      249,
+      250,
+      251,
+      252
+    ],
+    "authFigurePages": {
+      "F-AUTH-01": [
+        257
+      ],
+      "F-AUTH-02": [
+        258
+      ],
+      "F-AUTH-03": [
+        259
+      ],
+      "F-AUTH-04": [
+        260
+      ]
+    },
+    "partsPageRanges": {
+      "A": [
+        3,
+        29
+      ],
+      "B": [
+        30,
+        43
+      ],
+      "C": [
+        44,
+        72
+      ],
+      "D": [
+        73,
+        94
+      ],
+      "E": [
+        95,
+        220
+      ],
+      "F": [
+        221,
+        275
+      ]
+    },
+    "sourceSha256": {
+      "apps/api/tests/post-release/ac-gaps.test.ts": "9e35ddf36128d2d86807eca58c37d4c655ba8fbc6abe1cd5a799c9af209243bc",
+      "vitest.post-release.config.ts": "a8db3ae2ac23bdfd179f533492c1e853804d5fda9156485df1cad008ee7fb425",
+      "scripts/build-deliverable-report.py": "a74af972fc378022d3ba07edcba9f9b829b165b024d8743c20ff9f0f668665d9",
+      "docs/sprints/sprint-1/main-release.md": "39fa9dd2421e79f5cecae448382e705998b76c2e39d95686c4f1434dc4f54098",
+      "docs/deliverable-1/release-ac-results.json": "aae1372573375f2d92a86b3b0567d836aa3c668b6af2f0604ef54134e005e919",
+      "docs/deliverable-1/release-ac-results.md": "f12fe3c06db9294a130674c95ea8a50bc8118a9074a6a410610ef34b2710c9d6",
+      "docs/deliverable-1/post-release-ac-verification.md": "cf85a10d86a327e464f80cabd09ee7617055bcdb369ecf9215ead93283850b54",
+      "docs/deliverable-1/post-release-ac-verification.json": "fa32f156dc8b8c0e06c68a560a58135287b3e8bf3ea0add8714d6c162ca1a070",
+      "docs/deliverable-1/post-release-ac-test-results.json": "50402954bca13ce4c447454d03f8736948097015e04c363df0296e9e18e41127",
+      "docs/deliverable-1/README.md": "748db1b06ee8520af39253632c1bba02127cc69e343784c71569d36319a77e84"
+    },
+    "normalization": "UTF-8 with CRLF normalized to LF; raw PDF/results/screenshot hashes elsewhere use original bytes.",
+    "validation": {
+      "acIds": 113,
+      "plannedStsIds": 183,
+      "otherACRowsUnchanged": 110,
+      "originalAssessedSourceHashesMatch": 82,
+      "allPriorFigureHashesUnchanged": true,
+      "partsAtoEPixelIdenticalPages": 218,
+      "outOfBoundsText": 0,
+      "localLinksChecked": 21,
+      "typecheckExit": 0,
+      "applicationTests": "Only five new focused cases, with necessary neighboring assertions inside them; no full historical matrix rerun.",
+      "historicalTests": "214 passed / 0 failed / 0 skipped unchanged; never added to or relabelled with this 3-pass/2-fail run.",
+      "r46_03Preserved": true,
+      "temporaryTestClusterStopped": true
+    },
+    "limits": [
+      "AC-F05-01 API only; no new UI E02 execution.",
+      "Selected mode/state assertions, not full exhaustive STS certification.",
+      "Two genuine failing readback cases remain; no GREEN claim for AC-F04-22 as a whole.",
+      "No full application matrix rerun, release/tag change, teammate approval or GitHub action."
+    ]
+  },
+  "previousDispositionPdfSha256": "6a7610d9fa9ba5bed4ed8b4fb70f2cc7e335efa92310f311b4fdf318673b0114",
+  "finalTeamDisposition": {
+    "decision": "PR46-DEF-01 Known Limitation; AC-F04-22 Partial in Sprint 1; Sprint 2 follow-up before F-06, with regressions after correction; not fixed",
+    "historicalResults": {
+      "passed": 214,
+      "failed": 0,
+      "skipped": 0
+    },
+    "additionalResults": {
+      "passed": 3,
+      "failed": 2,
+      "skipped": 0
+    },
+    "bothFailuresRetained": true,
+    "acCount": 113,
+    "stsCount": 183,
+    "applicationOrTestsChangedThisTask": false,
+    "applicationTestsRerun": false,
+    "dispositionPages": [
+      225,
+      251
+    ],
+    "priorStageMetadata": "Earlier verification sections are historical build-stage records, not current source hashes."
+  }
 }

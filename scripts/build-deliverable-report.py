@@ -106,10 +106,10 @@ class Slice(Flowable):
   with Raster.open(self.path) as im:iw,ih=im.size
   total=ih*self.width/iw;self.canv.saveState();p=self.canv.beginPath();p.rect(0,0,self.width,self.height);self.canv.clipPath(p,stroke=0,fill=0)
   self.canv.drawImage(self.path,0,self.height-total+self.offset,width=self.width,height=total,mask='auto');self.canv.restoreState()
-def figure(path,caption,narrow=False):
+def figure(path,caption,narrow=False,width=None):
  from PIL import Image as Raster
  with Raster.open(root/path) as im:iw,ih=im.size
- w=350 if narrow else 495;total=ih*w/iw;count=math.ceil(total/560);tile=total/count
+ w=width if width is not None else (350 if narrow else 495);total=ih*w/iw;count=math.ceil(total/560);tile=total/count
  for i in range(count):
   story.append(PageBreak());para(caption+(' / panel '+str(i+1)+' of '+str(count) if count>1 else ''),'h2');para('Actual assessed-version evidence. Original bitmap preserved; tall capture paginated at a readable width.','small')
   story.append(Slice(str(root/path),w,i*tile,min(tile,total-i*tile)))
@@ -155,6 +155,7 @@ para('Safe local setup summary','h1')
 para('Node 24.22.1 / npm 10.9.2 / PostgreSQL 17. Clone the repository and checkout sprint-1; install the lockfile with npm ci; use setup:local and the README private environment examples. Generate synthetic role credentials locally; migrate/seed only explicitly allowlisted isolated targets. npm run demo uses its private demo config. Never publish passwords/tokens or reuse shared data for reset-style tests. Stop/resume the named demo volume to retain data. README commands remain embedded below for reproducibility.')
 source('README.md')
 para('Complete S1 AC-to-test/results mapping','h1');markdown(root/'docs/deliverable-1/release-ac-results.md')
+para('Additional post-release direct AC checks: actual passing and failing results','h1');markdown(root/'docs/deliverable-1/post-release-ac-verification.md')
 para('Two actual automated test excerpts','h1')
 text=(root/'apps/api/tests/features/workflows.test.ts').read_text()
 for term in ['F-04: an actual SQL fault','INT22-06:']:
@@ -167,12 +168,18 @@ history=json.loads((root/'docs/sprints/sprint-1/main-release-review-history.json
 for review in r['reviews']:
  para(review['reviewer']+' / '+review['state']+' / '+review['submittedAt']+' / reviewed '+review['sourceSha'],'record');para(review['body'])
 para('Known incomplete or limited work','h1')
+para('The historical release matrix remains 214 passing tests. Additional post-release direct AC checks now have 3 passing and 2 failing executions: PR46-DEF-01 returns identified own answers for an unsupported-mode fixture. The team records the same underlying defect as a Known Limitation, deferred to Sprint 2 before enabling F-06 Anonymous Mode, with regression tests required after correction. AC-F04-22 remains Partial in Sprint 1; the defect is not fixed. See the complete direct-check record above.')
 para('Selected tests passed; broad STS rows remain Partial where every timing/fault/permutation/manual condition was not exercised. Actual opposite-member release review accepted the documented G-04 local MVP dispositions. Full human assistive-technology/WCAG testing was not run. Anonymous response separation, export, comparison/history, notes and P15 remain later planned work; Docker/complete CI/CD/GCP are later Lab 5 scope. No deployed security/usability outcome is certified. Pair sessions/hours were not supplied and are not invented; the contribution table records actual artifacts/reviews and confirmed identities.')
 para('Submission boundary: this assembled report is for team review; no LEB2 submission is performed. The application release is immutable; later report changes identify their own revision. #8/#26 remain delivery/report tracking until actual report review/completion. The prior review draft is superseded by this assessed-release report, not relabelled as a timely submitted artifact.')
 for path,caption in [
+ ('docs/sprints/sprint-1/main-release-evidence/auth-login-guest.png','Figure F-AUTH-01 / F-01 / AC-F01-03/15 / selected TEST-F01-E01: Guest opens Login before authentication; password empty, private workspace absent'),
+ ('docs/sprints/sprint-1/main-release-evidence/auth-login-owner.png','Figure F-AUTH-02 / F-01 / AC-F01-03 / selected TEST-F01-E01: valid Owner login 200; current identity 200/OWNER; authenticated workspace'),
+ ('docs/sprints/sprint-1/main-release-evidence/auth-logout-guest.png','Figure F-AUTH-03 / F-01 / AC-F01-09/16 / selected TEST-F01-E02: Owner clicks Log out; confirmed 204; guest Login form and no private workspace'),
+ ('docs/sprints/sprint-1/main-release-evidence/auth-logout-denied.png','Figure F-AUTH-04 / F-01 / AC-F01-09/16 / selected TEST-F01-E02: Guest directly opens protected /api/auth/me after logout; actual 401 AUTH_REQUIRED, no identity')]:figure(path,caption,True,width=190 if path.endswith('auth-login-owner.png') else 240)
+for path,caption in [
  ('docs/sprints/sprint-1/main-release-evidence/persisted-submission-narrow.png','F-04 / AC-F04-09/15/17: eligible student, saved answer readback after normal submission'),
  ('docs/sprints/sprint-1/main-release-evidence/closed-results-narrow.png','F-05 / AC-F05-03/08/17: owner, Closed persisted score distribution and written feedback'),
- ('docs/sprints/sprint-1/main-release-evidence/closed-rejection-recovered-narrow.png','F-04 / AC-F04-14/18: Closed-state rejection and persisted-status recovery; no automatic replay'),
+ ('docs/sprints/sprint-1/main-release-evidence/closed-rejection-recovered-narrow.png','F-04 / AC-F04-08/18: Closed-state rejection and persisted-status recovery; no automatic replay'),
  ('docs/sprints/sprint-1/main-release-evidence/foreign-owner-safe-list-narrow.png','F-02/F-03/F-05: different owner, scoped list; actual API assertions establish protected 404/403')]:figure(path,caption,True)
 for path,caption in [
  ('docs/sprints/sprint-1/main-release-evidence/main-merge-header.png','Actual GitHub PR #40 main merge; assessed SHA verified through API'),

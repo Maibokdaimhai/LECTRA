@@ -702,7 +702,7 @@
     },
     {
       "id": "AC-F03-02",
-      "requirement": "All six routes enforce \u00a72 server-side; foreign-owner records are 404, Respondent management 403, unauthenticated access 401, with no mutation or private data.",
+      "requirement": "All six routes enforce §2 server-side; foreign-owner records are 404, Respondent management 403, unauthenticated access 401, with no mutation or private data.",
       "plannedTests": [
         "TEST-F03-I02",
         "TEST-F03-I23"
@@ -735,7 +735,7 @@
     },
     {
       "id": "AC-F03-04",
-      "requirement": "Owner reads own three states; Respondent reads only frozen-eligible Published/Closed, never Draft. Projections, question order and disclosure match \u00a75.2; no participant/answer/owner-identity leak.",
+      "requirement": "Owner reads own three states; Respondent reads only frozen-eligible Published/Closed, never Draft. Projections, question order and disclosure match §5.2; no participant/answer/owner-identity leak.",
       "plannedTests": [
         "TEST-F03-U06",
         "TEST-F03-I04",
@@ -771,7 +771,7 @@
     },
     {
       "id": "AC-F03-06",
-      "requirement": "Normalization and Unicode limits in \u00a74 accept exact bounds and reject one over; Draft blanks allowed, publication blanks rejected, malformed Unicode/NUL safely rejected.",
+      "requirement": "Normalization and Unicode limits in §4 accept exact bounds and reject one over; Draft blanks allowed, publication blanks rejected, malformed Unicode/NUL safely rejected.",
       "plannedTests": [
         "TEST-F03-U01",
         "TEST-F03-I06"
@@ -790,7 +790,7 @@
     },
     {
       "id": "AC-F03-07",
-      "requirement": "RATING/TEXT and required booleans follow \u00a74; 1\u20135 scale fixed, labels/interpretation preserved; malformed scales, coercions and unsupported types return 422.",
+      "requirement": "RATING/TEXT and required booleans follow §4; 1–5 scale fixed, labels/interpretation preserved; malformed scales, coercions and unsupported types return 422.",
       "plannedTests": [
         "TEST-F03-U02",
         "TEST-F03-I07"
@@ -800,7 +800,7 @@
     },
     {
       "id": "AC-F03-08",
-      "requirement": "Save accepts 0\u201310 questions; publication rejects 0/text-only, accepts valid 1 or 10 with RATING, and rejects 11. No failed publication creates eligibility/state changes.",
+      "requirement": "Save accepts 0–10 questions; publication rejects 0/text-only, accepts valid 1 or 10 with RATING, and rejects 11. No failed publication creates eligibility/state changes.",
       "plannedTests": [
         "TEST-F03-U03",
         "TEST-F03-I08"
@@ -834,7 +834,7 @@
     },
     {
       "id": "AC-F03-11",
-      "requirement": "Only DRAFT\u2192PUBLISHED\u2192CLOSED is allowed. Published/Closed definitions, modes and eligibility cannot be edited/deleted/reopened; invalid transitions are 409 for valid-shaped requests.",
+      "requirement": "Only DRAFT→PUBLISHED→CLOSED is allowed. Published/Closed definitions, modes and eligibility cannot be edited/deleted/reopened; invalid transitions are 409 for valid-shaped requests.",
       "plannedTests": [
         "TEST-F03-U04",
         "TEST-F03-I11",
@@ -909,7 +909,7 @@
     },
     {
       "id": "AC-F03-15",
-      "requirement": "Controlled edit/publish races produce exactly \u00a77's two outcomes: save-first revision conflict or publish-first invalid-state rejection, never mixed published content.",
+      "requirement": "Controlled edit/publish races produce exactly §7's two outcomes: save-first revision conflict or publish-first invalid-state rejection, never mixed published content.",
       "plannedTests": [
         "TEST-F03-I15"
       ],
@@ -952,7 +952,7 @@
     },
     {
       "id": "AC-F03-18",
-      "requirement": "Sequential and concurrent duplicate publish/close produce one successful transition and subsequent 409, without timestamp/snapshot duplication or rewriting. Concurrent publish/close from Draft follows \u00a77: close-first 409 then Published; publish-first permits subsequent Closed.",
+      "requirement": "Sequential and concurrent duplicate publish/close produce one successful transition and subsequent 409, without timestamp/snapshot duplication or rewriting. Concurrent publish/close from Draft follows §7: close-first 409 then Published; publish-first permits subsequent Closed.",
       "plannedTests": [
         "TEST-F03-U04",
         "TEST-F03-I18"
@@ -986,7 +986,7 @@
     },
     {
       "id": "AC-F03-21",
-      "requirement": "Shared session/Origin/CSRF/access, route body ceilings, strict JSON/error precedence, safe logs and no-store responses follow \u00a75; spoofed actor/mode cannot bypass checks.",
+      "requirement": "Shared session/Origin/CSRF/access, route body ceilings, strict JSON/error precedence, safe logs and no-store responses follow §5; spoofed actor/mode cannot bypass checks.",
       "plannedTests": [
         "TEST-F03-I21",
         "TEST-F03-I23"
@@ -1013,14 +1013,14 @@
       "actual": [
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F03-23",
-      "requirement": "Validation, state/revision conflicts and network uncertainty show \u00a78 recovery without automatic overwrite or false success; recoverable unsaved content retained, session loss clears private state.",
+      "requirement": "Validation, state/revision conflicts and network uncertainty show §8 recovery without automatic overwrite or false success; recoverable unsaved content retained, session loss clears private state.",
       "plannedTests": [
         "TEST-F03-E02",
         "TEST-F03-E03"
@@ -1043,7 +1043,7 @@
       "actual": [
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -1109,7 +1109,7 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1130,7 +1130,7 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -1369,7 +1369,7 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -1407,7 +1407,7 @@
       "actual": [
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -1512,11 +1512,25 @@
       ],
       "actual": [
         {
-          "file": "apps/api/tests/features/workflows.test.ts",
-          "case": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering"
+          "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+          "case": "PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes",
+          "result": "PASS",
+          "evidence": "docs/deliverable-1/post-release-ac-verification.json"
+        },
+        {
+          "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+          "case": "PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
+          "result": "FAIL",
+          "evidence": "docs/deliverable-1/post-release-ac-verification.json"
+        },
+        {
+          "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+          "case": "PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
+          "result": "FAIL",
+          "evidence": "docs/deliverable-1/post-release-ac-verification.json"
         }
       ],
-      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+      "result": "Partial (Sprint 1). Additional post-release PR46-I01 PASS directly verifies unsupported ANONYMOUS submissions are rejected. Team decision: PR46-DEF-01 is a Known Limitation discovered during additional post-release verification. PR46-I04-PUBLISHED and PR46-I04-CLOSED are two observations of the same underlying unsupported-mode own-readback defect. AC-F04-22 remains a Sprint 1 AC with Partial disposition. Correction is deferred for team follow-up in Sprint 2 before enabling F-06 Anonymous Mode; regression tests must be rerun after correction. The defect is not fixed. The existing Sprint Plan and original assessed release are unchanged. Both failing readback results remain retained in the separate post-release investigation record."
     },
     {
       "id": "AC-F04-23",
@@ -1532,7 +1546,7 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1558,7 +1572,7 @@
       "actual": [
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -1577,15 +1591,13 @@
       ],
       "actual": [
         {
-          "file": "apps/api/tests/features/workflows.test.ts",
-          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
-        },
-        {
-          "file": "apps/api/tests/features/workflows.test.ts",
-          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+          "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+          "case": "PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation",
+          "result": "PASS",
+          "evidence": "docs/deliverable-1/post-release-ac-verification.json"
         }
       ],
-      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+      "result": "Additional post-release API PASS: PR46-I02 confirms own Draft GET results returns exact 409 RESULTS_NOT_AVAILABLE with no statistics or persisted mutation, including Draft-before-mode precedence. Foreign-owner and wrong-role denials remain 404/403. UI unavailable-state TEST-F05-E02 is not executed by this API check; the broader STS/AC remains Partial. Original historical results unchanged."
     },
     {
       "id": "AC-F05-02",
@@ -1607,7 +1619,7 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1632,7 +1644,7 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1660,7 +1672,7 @@
     },
     {
       "id": "AC-F05-05",
-      "requirement": "UUID/body/query/method/Origin and error precedence follow \u00a74.3; safe messages do not reveal private records or echo inputs.",
+      "requirement": "UUID/body/query/method/Origin and error precedence follow §4.3; safe messages do not reveal private records or echo inputs.",
       "plannedTests": [
         "TEST-F05-I01",
         "TEST-F05-I08",
@@ -1729,7 +1741,7 @@
     },
     {
       "id": "AC-F05-08",
-      "requirement": "Each rating has five ordered integer bins for scores 1\u20135, zeros included, summing exactly to answeredCount.",
+      "requirement": "Each rating has five ordered integer bins for scores 1–5, zeros included, summing exactly to answeredCount.",
       "plannedTests": [
         "TEST-F05-U01",
         "TEST-F05-I03",
@@ -1753,7 +1765,7 @@
     },
     {
       "id": "AC-F05-09",
-      "requirement": "Exact S/N is rounded once with proposed decimal half-up; \u00a75's endpoint/tie/below/above fixtures and two-decimal strings match, without binary-float ambiguity.",
+      "requirement": "Exact S/N is rounded once with proposed decimal half-up; §5's endpoint/tie/below/above fixtures and two-decimal strings match, without binary-float ambiguity.",
       "plannedTests": [
         "TEST-F05-U02",
         "TEST-F05-I04",
@@ -1770,7 +1782,7 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1850,7 +1862,7 @@
       "actual": [
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
@@ -1944,14 +1956,14 @@
         },
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         }
       ],
       "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
     },
     {
       "id": "AC-F05-19",
-      "requirement": "Loading, network/database errors, session expiry and denials show \u00a78 states; old/private content is cleared and no premature/fabricated numbers displayed.",
+      "requirement": "Loading, network/database errors, session expiry and denials show §8 states; old/private content is cleared and no premature/fabricated numbers displayed.",
       "plannedTests": [
         "TEST-F05-E04",
         "TEST-F05-H02"
@@ -1982,7 +1994,7 @@
       "actual": [
         {
           "file": "tests/browser/feedback.spec.ts",
-          "case": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
+          "case": "B23-01 real owner → student → closed results, persisted reload/relogin and validation [real browser/API/PostgreSQL; selected assertions]"
         },
         {
           "file": "tests/browser/sprint1-recovery-states.spec.ts",
@@ -2000,15 +2012,13 @@
       ],
       "actual": [
         {
-          "file": "apps/api/tests/features/workflows.test.ts",
-          "case": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data"
-        },
-        {
-          "file": "apps/api/tests/features/workflows.test.ts",
-          "case": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities"
+          "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+          "case": "PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback",
+          "result": "PASS",
+          "evidence": "docs/deliverable-1/post-release-ac-verification.json"
         }
       ],
-      "result": "Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04"
+      "result": "Additional post-release API PASS: PR46-I03 confirms own ANONYMOUS Published and Closed results return exact 409 MODE_NOT_SUPPORTED with no count/text payload or persisted response changes. Identified count-only and Closed comment behavior are also checked. ANONYMOUS exists only in the isolated test fixture, not the production enum; no anonymous feature is enabled and the larger planned STS is not relabelled fully Passed."
     },
     {
       "id": "AC-F05-22",
