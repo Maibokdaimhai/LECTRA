@@ -118,7 +118,11 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/auth-rules.test.ts",
-          "case": ""
+          "case": "TEST-F01-U02: exact absolute deadline rejects expiry without renewal"
+        },
+        {
+          "file": "apps/api/tests/unit/auth-rules.test.ts",
+          "case": "TEST-F01-U07: future, missing and inconsistent timestamps cannot authenticate"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -187,7 +191,7 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/auth-rules.test.ts",
-          "case": ""
+          "case": "TEST-F01-U03: malformed and cross-session CSRF tokens are rejected"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1042,7 +1046,7 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/feedback-rules.test.ts",
-          "case": ""
+          "case": "F-04: accepts 2000 Unicode code points, preserves nonblank text, rejects 2001 and malformed Unicode"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1496,7 +1500,7 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/feedback-rules.test.ts",
-          "case": ""
+          "case": "F-05: exact half-up two-decimal means use only actually answered ratings"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1520,7 +1524,7 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/feedback-rules.test.ts",
-          "case": ""
+          "case": "F-05: exact half-up two-decimal means use only actually answered ratings"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1544,7 +1548,7 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/feedback-rules.test.ts",
-          "case": ""
+          "case": "F-05: exact half-up two-decimal means use only actually answered ratings"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1568,7 +1572,7 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/feedback-rules.test.ts",
-          "case": ""
+          "case": "F-05: exact half-up two-decimal means use only actually answered ratings"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1589,7 +1593,7 @@
       "actual": [
         {
           "file": "apps/api/tests/unit/feedback-rules.test.ts",
-          "case": ""
+          "case": "F-05: exact half-up two-decimal means use only actually answered ratings"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",

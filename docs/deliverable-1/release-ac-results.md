@@ -48,7 +48,7 @@ Successful login regenerates SID/token, destroys guest SID and waits for durable
 Auth is valid just before eight hours and denied exactly at/after it; reads/touch/save/restart cannot extend cookie/store/server deadline. Invalid/future timestamps fail.
 
 **Planned STS:** TEST-F01-U02, TEST-F01-U07, TEST-F01-I08, TEST-F01-I20
-**Actual executed mapping:** apps/api/tests/unit/auth-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie; scripts/verify-restart.ts — Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison; apps/api/tests/features/workflows.test.ts — DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline
+**Actual executed mapping:** apps/api/tests/unit/auth-rules.test.ts — TEST-F01-U02: exact absolute deadline rejects expiry without renewal; apps/api/tests/unit/auth-rules.test.ts — TEST-F01-U07: future, missing and inconsistent timestamps cannot authenticate; apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie; scripts/verify-restart.ts — Actual built API process stop/start with unchanged database/secret, identity/deadline/survey/own answers/results comparison; apps/api/tests/features/workflows.test.ts — DEEP40-02 advancing-clock guest/auth; DEEP40-03 exact fractional deadline
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-08
@@ -69,7 +69,7 @@ Confirmed logout revokes the stored session; cookie replay is unauthorized; repe
 Login/logout/unsafe routes enforce exact Origin and session-bound CSRF, including cross-session/old-token rejection and the explicit logout-only no-op branch.
 
 **Planned STS:** TEST-F01-U03, TEST-F01-I13, TEST-F01-I14, TEST-F01-I17, TEST-F01-E04
-**Actual executed mapping:** apps/api/tests/unit/auth-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled; apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie
+**Actual executed mapping:** apps/api/tests/unit/auth-rules.test.ts — TEST-F01-U03: malformed and cross-session CSRF tokens are rejected; apps/api/tests/features/workflows.test.ts — TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled; apps/api/tests/features/workflows.test.ts — TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F01-11
@@ -482,7 +482,7 @@ Required/optional ratings are strict integers 1-5, with no default/coercion/opti
 Text preserves valid nonblank content, enforces code-point/blank/NUL/surrogate rules and normalizes bounded optional blank to absence.
 
 **Planned STS:** TEST-F04-U02, TEST-F04-I04, TEST-F04-E02
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-04: accepts 2000 Unicode code points, preserves nonblank text, rejects 2001 and malformed Unicode; apps/api/tests/features/workflows.test.ts — INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F04-04
@@ -678,35 +678,35 @@ UUID/body/query/method/Origin and error precedence follow §4.3; safe messages d
 responseCount equals committed distinct participating respondents, not eligibility, bundles/answers or current membership; joins cannot multiply it.
 
 **Planned STS:** TEST-F05-U01, TEST-F05-I03, TEST-F05-I10, TEST-F05-I14
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; apps/api/tests/features/workflows.test.ts — F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; apps/api/tests/features/workflows.test.ts — F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-07
 Each rating answeredCount includes only its own persisted valid answers; optional omissions add neither zero nor denominator weight.
 
 **Planned STS:** TEST-F05-U01, TEST-F05-I03, TEST-F05-I14
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; apps/api/tests/features/workflows.test.ts — F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; apps/api/tests/features/workflows.test.ts — F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-08
 Each rating has five ordered integer bins for scores 1–5, zeros included, summing exactly to answeredCount.
 
 **Planned STS:** TEST-F05-U01, TEST-F05-I03, TEST-F05-I14
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; apps/api/tests/features/workflows.test.ts — F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities; apps/api/tests/features/workflows.test.ts — F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-09
 Exact S/N is rounded once with proposed decimal half-up; §5's endpoint/tie/below/above fixtures and two-decimal strings match, without binary-float ambiguity.
 
 **Planned STS:** TEST-F05-U02, TEST-F05-I04, TEST-F05-E01
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-10
 R=0 and R>0/N=0 produce null means and all-zero bins with distinct no-data messages; never 0.00/NaN or fabricated observations.
 
 **Planned STS:** TEST-F05-U03, TEST-F05-U06, TEST-F05-I05, TEST-F05-E02
-**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — ; apps/api/tests/features/workflows.test.ts — INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results
+**Actual executed mapping:** apps/api/tests/unit/feedback-rules.test.ts — F-05: exact half-up two-decimal means use only actually answered ratings; apps/api/tests/features/workflows.test.ts — INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results
 **Result / limitation:** Selected mapped assertions PASS on main; complete larger STS subconditions remain Partial under accepted G-04
 
 ## AC-F05-11
