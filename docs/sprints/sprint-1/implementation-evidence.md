@@ -1,5 +1,7 @@
 # Sprint 1 working increment and evidence
 
+**Final MVP correction (2026-11-12):** [Session/logout and exact-lifetime correction](final-session-correction.md) records the three deep-review findings, production fixes, permanent regressions and [208 passing selected tests on the final code commit](final-session-verification.json), plus build/typecheck/ORM/restart. Actual correction integration, teammate release approval and post-main/tag steps remain required; earlier records below retain their original sources.
+
 **Release-review correction (2026-11-12):** R40-01 was independently reproduced after a teammate review was relayed by the owner. [Atomic authentication persistence correction and G-04 register](pr40-auth-save-fix.md) records actual RED/fix sources and 144 selected passing regression tests. The old 138-test record/hashes below remain historical; they do not cover this defect. Correction review/integration and G-04 acceptance remain required before main merge.
 
 **Integrated setup/release candidate follow-through (2026-11-10):** [fresh setup](setup-and-handoff.md) and [actual checks](setup-verification.json) record author/AI-assisted reproduction from staging `4ff4562` after both #37/#38 merges, followed by exact readiness-test candidate `037cb3f`: 138 selected tests, build/typecheck/ORM/restart and a separate demo/database-stop-start check. These are pre-main observations; [release readiness](release-readiness.md) retains actual peer review, coverage decisions and post-main gates. Earlier records below retain their source dates/versions.

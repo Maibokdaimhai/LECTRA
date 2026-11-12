@@ -45,6 +45,12 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
     const pool = new Pool({ connectionString: config.DATABASE_URL, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
     const Store = connectPgSimple(session);
     class AbsoluteStore extends Store {
+        override get(sid: string, callback: (error: unknown, value?: session.SessionData | null) => void) {
+            // Upstream rounds the lookup clock up to seconds, which rejects a
+            // fractional deadline early. Use the same clock/precision as auth.
+            void pool.query("SELECT sess FROM auth_session WHERE sid=$1 AND expire >= (to_timestamp($2::double precision / 1000) AT TIME ZONE 'UTC')", [sid, now()])
+                .then(result => callback(null, result.rows[0]?.sess ?? null), () => callback(new Error('Session persistence unavailable')));
+        }
         override set(sid: string, value: session.SessionData, callback?: (error?: unknown) => void) {
             const deadline = value.authExpiresAt ?? value.guestExpiresAt;
             if (typeof deadline !== 'number' || !Number.isSafeInteger(deadline)) {
@@ -157,7 +163,8 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
         if (!req.session || !req.session.csrfToken) {
             // regenerate works through middleware even after a destroyed session via req.sessionStore.
             await new Promise<void>((resolve, reject) => req.sessionStore.regenerate(req, error => error ? reject(new HttpError(503, 'AUTH_SERVICE_UNAVAILABLE')) : resolve()));
-            Object.assign(req.session, { csrfToken: token(), guestCreatedAt: now(), guestExpiresAt: now() + GUEST_LIFETIME });
+            const createdAt = now();
+            Object.assign(req.session, { csrfToken: token(), guestCreatedAt: createdAt, guestExpiresAt: createdAt + GUEST_LIFETIME });
             cap(req, req.session.guestExpiresAt!);
             await save(req, res);
         }
@@ -190,7 +197,8 @@ export function setupAuth(app: Express, config: AppConfig, now: () => number = D
         if (!valid || !user)
             fail(401, 'INVALID_CREDENTIALS', 'Email or password is incorrect.');
         await save(req, res, 'regenerate');
-        Object.assign(req.session, { userId: user.id, authenticatedAt: now(), authExpiresAt: now() + AUTH_LIFETIME, csrfToken: token() });
+        const authenticatedAt = now();
+        Object.assign(req.session, { userId: user.id, authenticatedAt, authExpiresAt: authenticatedAt + AUTH_LIFETIME, csrfToken: token() });
         cap(req, req.session.authExpiresAt!);
         await save(req, res);
         res.json({ data: { user: { id: user.id, displayName: user.displayName, role: user.role }, expiresAt: new Date(req.session.authExpiresAt!).toISOString(), csrfToken: req.session.csrfToken } });
