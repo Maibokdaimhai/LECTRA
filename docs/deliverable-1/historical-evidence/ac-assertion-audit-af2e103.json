@@ -1,0 +1,508 @@
+{
+  "date": "2026-11-13",
+  "method": "Individual callback/process inspection; source index generated with TypeScript AST; no test execution inferred from names or planned IDs",
+  "count": 113,
+  "sourceFiles": {
+    "apps/api/tests/features/workflows.test.ts": "16afd0d7bb7c34d3944059ba1ece70aeeaf092dbc502bc6349393b1f5876693c",
+    "apps/api/tests/foundation/database.test.ts": "c2efa025bbf74f67cf1ee65f09d21e092ddd184c633e72b657496822cd7692f4",
+    "apps/api/tests/post-release/ac-gaps.test.ts": "9e35ddf36128d2d86807eca58c37d4c655ba8fbc6abe1cd5a799c9af209243bc",
+    "apps/api/tests/release/g04.test.ts": "274faca16b50b610077ca0fa99af41aa78d1b94554d338bf01900cfd63e035e5",
+    "apps/api/tests/unit/argon2-compatibility.test.ts": "d1fd266139b50f418593be1a8c01c52b9f0e8b5ac219bfbb3a9d3acd512f7e2e",
+    "apps/api/tests/unit/config.test.ts": "5e9cdfda6b0c2d15f28564f282f468378ef1d4f8a95d026a2e75961d70dcc0f3",
+    "apps/api/tests/unit/feedback-rules.test.ts": "749d786a223753b347676313880d23167fc6f10e178e6f0c5ad60795610bc82b",
+    "docs/deliverable-1/release-process-and-contributions.md": "b4e2adb054cdce9912de4da41903bb2d0867d6db809a20244d69178f820d4929",
+    "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs": "d0444643798bec40b1c581aed22198c71086980ce7a42e081c8b5a4ac6069e5a",
+    "scripts/verify-restart.ts": "6c441b9932fbb9b1dba34be37b400b2eaab58d348fbd7a6442ee65b391489418",
+    "tests/browser/feedback.spec.ts": "bf3d6c0948daaab356b69884921b1c1e5e07ec452b0299f48eea153e7e8c7732",
+    "tests/browser/logout-csrf-rotation.spec.ts": "b8efd47fecca465f80fa9607b1f828286a849350e413aad84c016e90c782ac4d",
+    "tests/browser/sprint1-recovery-states.spec.ts": "93170c224b8e3b09ad47dbf227fe644c5283259517b106daa928fb478cd0f93e",
+    "tests/browser/sprint1-rejections.spec.ts": "965bf0436251a84970ced140d06e81356c06ccca90a725fc08bafb44923250c9",
+    "tests/browser/ui-accessibility-real.spec.ts": "baea622a0e9f7a71973d8317ac28b1a613974d5a947253f610e3993e0fb59eeb"
+  },
+  "automatedDefinitions": [
+    {
+      "file": "tests/browser/ui-accessibility-real.spec.ts",
+      "name": "UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists",
+      "start": 22,
+      "end": 50
+    },
+    {
+      "file": "tests/browser/ui-accessibility-real.spec.ts",
+      "name": "UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results",
+      "start": 51,
+      "end": 92
+    },
+    {
+      "file": "tests/browser/sprint1-rejections.spec.ts",
+      "name": "B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows",
+      "start": 3,
+      "end": 47
+    },
+    {
+      "file": "tests/browser/sprint1-rejections.spec.ts",
+      "name": "B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access",
+      "start": 49,
+      "end": 75
+    },
+    {
+      "file": "tests/browser/logout-csrf-rotation.spec.ts",
+      "name": "PR45-CSRF real expiry, native guest-cookie headers, failed logout and deliberate current-token retry",
+      "start": 98,
+      "end": 153
+    },
+    {
+      "file": "tests/browser/sprint1-recovery-states.spec.ts",
+      "name": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload",
+      "start": 3,
+      "end": 41
+    },
+    {
+      "file": "tests/browser/sprint1-recovery-states.spec.ts",
+      "name": "B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation",
+      "start": 43,
+      "end": 78
+    },
+    {
+      "file": "tests/browser/sprint1-recovery-states.spec.ts",
+      "name": "B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry",
+      "start": 80,
+      "end": 118
+    },
+    {
+      "file": "tests/browser/feedback.spec.ts",
+      "name": "B23-01 real owner \u2192 student \u2192 closed results, persisted reload/relogin and validation",
+      "start": 3,
+      "end": 64
+    },
+    {
+      "file": "tests/browser/feedback.spec.ts",
+      "name": "B23-02 real invalid then keyboard login and one StrictMode bootstrap",
+      "start": 66,
+      "end": 84
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "deploys the actual migration history onto an empty database and deploys again without changes",
+      "start": 31,
+      "end": 38
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "seeds synthetic role/context fixtures twice without changing hashes, IDs or sessions",
+      "start": 40,
+      "end": 52
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "refuses a conflicting repeat seed rather than overwriting an edited fixture",
+      "start": 54,
+      "end": 60
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "verifies real FK/unique/CHECK constraints, Unicode bounds, reorder and rollback",
+      "start": 62,
+      "end": 67
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "generates a typed client that reads native calendar dates and owner relationships",
+      "start": 69,
+      "end": 77
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "retains the mapped session table in a second schema comparison",
+      "start": 79,
+      "end": 83
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "round-trips persistent sessions through connect-pg-simple with UTC and no auto-create",
+      "start": 85,
+      "end": 101
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "enforces participation uniqueness between genuinely overlapping PostgreSQL transactions",
+      "start": 103,
+      "end": 127
+    },
+    {
+      "file": "apps/api/tests/foundation/database.test.ts",
+      "name": "never overwrites submitted associations during a repeat seed",
+      "start": 129,
+      "end": 134
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "DEEP40-02: guest timestamps use one instant even when the clock ticks between reads",
+      "start": 40,
+      "end": 49
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "DEEP40-02: advancing-clock login persists a valid exact eight-hour identity",
+      "start": 50,
+      "end": 60
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "DEEP40-03: real store accepts deadline minus one millisecond and denies at/after the fractional deadline",
+      "start": 61,
+      "end": 73
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I01/I03/I04/I07: bootstrap persists; login regenerates SID/token and returns trusted projection",
+      "start": 74,
+      "end": 86
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I05/I15: generic credential errors, exact schemas and body security",
+      "start": 87,
+      "end": 99
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "R40-01 / TEST-F01-I18: an exact-expiry persistence failure cannot leave a login cookie or usable session",
+      "start": 100,
+      "end": 139
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "R40-01 / TEST-F01-I18: failed guest persistence clears the cookie and leaves no row",
+      "start": 140,
+      "end": 159
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I18: unavailable %s lookup fails closed and recovers without fallback",
+      "start": 160,
+      "end": 174
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I18: failed %s destroy is reported honestly and can be retried",
+      "start": 175,
+      "end": 207
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I08/I16/I17: expiry is absolute and logout revokes a replayed cookie",
+      "start": 208,
+      "end": 219
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I09/I28: trusted role is resolved anew and authenticated login does not switch accounts",
+      "start": 220,
+      "end": 230
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled",
+      "start": 231,
+      "end": 240
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-02: owner context is scoped even within a shared Course, and query pagination is strict",
+      "start": 245,
+      "end": 260
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rejection and publication snapshot",
+      "start": 261,
+      "end": 288
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-04: required/type/Unicode/association boundaries reject without any partial response",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-04/F-05: concurrent duplicate submits persist exactly one result; privacy projection and close ordering",
+      "start": 300,
+      "end": 332
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-04: an actual SQL fault after participation/bundle insertion rolls the entire submission back",
+      "start": 333,
+      "end": 347
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-03/F-04: actual API close and submit serialize correctly in both lock orders",
+      "start": 366,
+      "end": 390
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-01: session-store failures return safe 503 and never create a memory fallback",
+      "start": 391,
+      "end": 403
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-05: corrupted persisted type/denominator data fails closed rather than producing plausible analytics",
+      "start": 404,
+      "end": 416
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F01-store: persisted and cookie expiry never extend past the exact absolute millisecond deadline",
+      "start": 417,
+      "end": 428
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "TEST-F01-I19/I21: reads overlapping logout never resurrect the cookie; independent sessions remain usable",
+      "start": 429,
+      "end": 437
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-01: unsupported methods, foreign origins and forged cookies fail without authority",
+      "start": 438,
+      "end": 447
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "F-03: concurrent Draft edit and publication commit only a consistent frozen revision",
+      "start": 448,
+      "end": 468
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "R3: publication validates and freezes one membership snapshot while membership changes concurrently",
+      "start": 476,
+      "end": 513
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "R3: invalid and empty membership snapshots leave the Draft and eligibility unchanged",
+      "start": 514,
+      "end": 530
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "N4: explicitly empty lecture filter fails validation instead of returning all surveys",
+      "start": 531,
+      "end": 540
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "N5: owner and eligible student list projections contain the required survey context",
+      "start": 541,
+      "end": 552
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-01: concurrent create produces one Draft and one conflict for the same owned lecture",
+      "start": 568,
+      "end": 575
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-02: frozen eligibility survives live membership changes and definitions remain immutable",
+      "start": 576,
+      "end": 602
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities",
+      "start": 603,
+      "end": 633
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-04: faults after each response write stage roll back all rows and permit one valid retry",
+      "start": 634,
+      "end": 652
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundaries before persistence",
+      "start": 653,
+      "end": 673
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data",
+      "start": 674,
+      "end": 698
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-07: exact chunked transport ceiling is accepted; oversized, compressed and malformed bodies never write",
+      "start": 699,
+      "end": 729
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds",
+      "start": 730,
+      "end": 744
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results",
+      "start": 745,
+      "end": 760
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-10: held-row barriers exercise both Draft save/publication orders with complete frozen revisions",
+      "start": 761,
+      "end": 781
+    },
+    {
+      "file": "apps/api/tests/features/workflows.test.ts",
+      "name": "INT22-11: scoped pagination retains totals/order at default, final and beyond-last pages and rejects malformed bounds",
+      "start": 782,
+      "end": 802
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes",
+      "start": 74,
+      "end": 87
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation",
+      "start": 89,
+      "end": 102
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback",
+      "start": 104,
+      "end": 119
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
+      "start": 121,
+      "end": 134
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "accepts the explicit local profile",
+      "start": 5,
+      "end": 5
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "rejects unsafe/non-origin APP_ORIGIN %s",
+      "start": 6,
+      "end": 8
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "requires HTTPS in production",
+      "start": 9,
+      "end": 9
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "does not echo secret/connection-string input in configuration errors",
+      "start": 10,
+      "end": 14
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "rejects invalid PORT %s",
+      "start": 15,
+      "end": 15
+    },
+    {
+      "file": "apps/api/tests/unit/feedback-rules.test.ts",
+      "name": "F-04: accepts 2000 Unicode code points, preserves nonblank text, rejects 2001 and malformed Unicode",
+      "start": 4,
+      "end": 8
+    },
+    {
+      "file": "apps/api/tests/unit/feedback-rules.test.ts",
+      "name": "F-03: Draft permits empty definitions while publication requires meaningful rating scales",
+      "start": 9,
+      "end": 14
+    },
+    {
+      "file": "apps/api/tests/unit/feedback-rules.test.ts",
+      "name": "F-05: exact half-up two-decimal means use only actually answered ratings",
+      "start": 15,
+      "end": 18
+    },
+    {
+      "file": "apps/api/tests/unit/argon2-compatibility.test.ts",
+      "name": "loads the native Argon2id package and verifies a synthetic round trip (setup only)",
+      "start": 3,
+      "end": 8
+    },
+    {
+      "file": "apps/api/tests/release/g04.test.ts",
+      "name": "G04-F01: physical loss of authenticated UPSERT acknowledgement suppresses cookie and automatic resave",
+      "start": 75,
+      "end": 92
+    },
+    {
+      "file": "apps/api/tests/release/g04.test.ts",
+      "name": "G04-F02: create failure after actual Survey insertion rolls back and permits same-Lecture creation",
+      "start": 94,
+      "end": 104
+    },
+    {
+      "file": "apps/api/tests/release/g04.test.ts",
+      "name": "G04-F03: physical loss after Draft COMMIT is reconciled by persisted definition without replay",
+      "start": 106,
+      "end": 116
+    },
+    {
+      "file": "apps/api/tests/release/g04.test.ts",
+      "name": "G04-F04: physical loss after response COMMIT preserves one response and own-status reconciliation",
+      "start": 118,
+      "end": 129
+    },
+    {
+      "file": "apps/api/tests/release/g04.test.ts",
+      "name": "G04-F05: a real two-connection deadlock aborts the route transaction and permits deliberate retry",
+      "start": 131,
+      "end": 166
+    },
+    {
+      "file": "apps/api/tests/release/g04.test.ts",
+      "name": "G04-F06: PostgreSQL serialization-error injection rolls back preceding writes and permits retry",
+      "start": 168,
+      "end": 178
+    },
+    {
+      "file": "apps/api/tests/release/g04.test.ts",
+      "name": "G04-F07: exercised pool logger and normal/error routes omit known secret and feedback markers",
+      "start": 180,
+      "end": 191
+    }
+  ],
+  "unchangedPlannedIds": true,
+  "newTestExecutionsDuringMappingAudit": 0,
+  "auditStatusCounts": {
+    "PARTIAL": 96,
+    "PASS": 11,
+    "PROCESS / PARTIAL": 5,
+    "PARTIAL / KNOWN FAILING BRANCH": 1
+  },
+  "assessedSourceHashesMatched": 82,
+  "originalAssessedSourceHashDifferences": [],
+  "correctionCandidate": {
+    "pr": 47,
+    "testedCommit": "609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e",
+    "selectedPassed": 53,
+    "notMergedOrHumanApprovedAtRecord": true
+  }
+}

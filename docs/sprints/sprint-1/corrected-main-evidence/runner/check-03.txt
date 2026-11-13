@@ -1,0 +1,13 @@
+
+> lectra@0.0.0 test:api
+> vitest run --config vitest.api.config.ts
+
+
+ RUN  v5.1.0 /private/var/folders/zw/td63sypn2fz4z5h9p0rc_lpw0000gn/T/lectra-corrected-main-_6nunyn3/LECTRA
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  22:02:35
+   Duration  216ms (import 71%, transform 20%, tests 8%, worker 1%)
+

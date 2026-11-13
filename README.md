@@ -2,7 +2,7 @@
 
 Lecture Evaluation, Classroom Thoughts, Reviews & Analytics — CPE334 identified lecture feedback.
 
-Sprint 1 provides real login, scoped Course/Section/Lecture discovery, Draft → Published → Closed surveys, one-time student feedback, saved own-answer readback and owner summaries. PRs #35–#38 are integrated on staging. An assessed main release and final Deliverable 1 PDF remain separate acceptance gates; see [release readiness](docs/sprints/sprint-1/release-readiness.md).
+Sprint 1 provides real login, scoped Course/Section/Lecture discovery, Draft → Published → Closed surveys, one-time student feedback, saved own-answer readback and owner summaries. Reviewed correction release **sprint-1.1 / b458cb6** is on main and passed **219 selected post-main tests**, plus typecheck/build/ORM/restart. The original sprint-1 release remains immutable. See [current release evidence](docs/sprints/sprint-1/corrected-main-release.md) and [Deliverable 1 report](docs/deliverable-1/README.md).
 
 ## Requirements
 
@@ -112,4 +112,8 @@ For ordinary development forward migrations, create the intended development DB 
 
 See [engineering docs](docs/README.md), [contracts](docs/sprints/sprint-1/README.md), [actual verification](docs/sprints/sprint-1/implementation-evidence.md), [fresh-setup evidence](docs/sprints/sprint-1/setup-and-handoff.md) and [release readiness](docs/sprints/sprint-1/release-readiness.md). Instructor requirements and team-selected designs remain distinct.
 
-The project owner chose author-run fresh-checkout reproduction followed by teammate PR review for #24. Record the actual executor, SHA, environment, commands, failures/skips and observations; do not rename an assistant run as teammate execution. Assessed release evidence must identify the accepted main SHA/tag and checks on that version. The existing PDF remains an earlier review draft until #26 regenerates it against the actual release.
+The project owner chose author-run fresh-checkout reproduction followed by teammate PR review for #24. Record the actual executor, SHA, environment, commands, failures/skips and observations; do not rename an assistant run as teammate execution. Assessed release evidence must identify the accepted main SHA/tag and checks on that version. The published Deliverable 1 PDF assesses the corrected sprint-1.1 release at b458cb65736029f5c7de55e49c9afd6bc8de702a; final report review and course submission remain separate human actions.
+
+## Corrected Sprint 1 regression
+
+The canonical focused suite is `apps/api/tests/post-release/ac-gaps.test.ts`, configured in `vitest.post-release.config.ts`. Run it with `node --env-file=.env.test.local node_modules/vitest/vitest.mjs run --config vitest.post-release.config.ts` only against its own new empty opted-in target, with `ALLOW_POST_RELEASE_TESTS` matching `ALLOW_TEST_DATABASE`. It verifies the original IDENTIFIED-only enum before extending only that disposable test database to exercise unsupported-mode rejection. Do not point it at an existing development/demo/shared database. This does not enable Anonymous Mode in the product.

@@ -1,0 +1,182 @@
+Browser tab: 4, Title: "Backlog · LECTRA Kanban", URL: "https://github.com/users/Maibokdaimhai/projects/7/views/1".
+1 AXWebArea Backlog · LECTRA Kanban, URL: github.com/users/Maibokdaimhai/projects/7/views/1
+	2 container
+		3 link Description: Skip to content, Value: github.com/users/Maibokdaimhai/projects/7/views/1#start-of-content
+		4 container Global navigation menu
+			5 pop up button Open menu
+			6 link Description: Homepage ( g then d ), Value: github.com/
+			7 container Breadcrumbs
+				8 content list
+					9 button (collapsed) Secondary Actions: Expand
+					10 link Description: LECTRA Kanban, Value: github.com/users/Maibokdaimhai/projects/7
+			11 button Open quick search dialog, type / to search
+			12 pop up button (collapsed) Create new..., Secondary Actions: Expand
+			13 link Description: You have no unread notifications ( g then n ), Value: github.com/notifications
+			14 pop up button Open user navigation menu
+				15 image Thanawat Suntarawattana
+	16 container
+		17 button Dismiss this message
+		18 button Enable 2FA
+		19 text  GitHub users are 
+		20 link Description: now required, Value: github.blog/2023-03-09-raising-the-bar-for-software-security-github-2fa-begins-march-13/
+		21 text  to enable two-factor authentication as an additional security measure. Your activity on GitHub includes you in this requirement. You will need to enable two-factor authentication on your account before November 25, 2026, or be restricted from account actions.
+	22 container js-repo-pjax-container
+		23 container memex-root
+			24 container
+				25 container Project
+					26 heading LECTRA Kanban, Value: 1
+						27 text LECTRA Kanban
+					28 button Add status update
+					29 link Description: Insights, Value: github.com/users/Maibokdaimhai/projects/7/insights
+					30 link Description: Workflows (7 enabled), Value: github.com/users/Maibokdaimhai/projects/7/workflows
+					31 button Project details
+					32 button View more options
+				33 container memex-project-view-root
+					34 container
+						35 container Select view
+							36 tab group
+								37 tab (selected, settable, boolean) Backlog, Value: 1
+Backlog
+								38 tab (settable) Priority board
+									39 container
+										40 text Priority board
+								41 tab (settable) Team items
+									42 container
+										43 text Team items
+								44 tab (settable) Roadmap
+									45 container
+										46 text Roadmap
+								47 tab (settable) My items
+									48 container
+										49 text My items
+								50 tab (collapsed, settable) New view, Secondary Actions: Expand
+						51 button View options for Backlog
+					52 container project-view:_r_n_
+						53 container View filters
+							54 container Description: Filter, ID: filter-bar-component
+								55 text Filter
+								56 container
+									57 image Search
+									58 combo box (collapsed, settable) Filter, ID: filter-bar-component-input, Secondary Actions: Expand
+							59 pop up button (collapsed) View, Secondary Actions: Expand
+								60 text View
+						61 container
+							62 container project-items-region
+								63 container Y3Vyc29yOnYyOpLOGjNuXadCYWNrbG9n
+									64 container
+										65 heading Backlog, Value: 2
+											66 text Backlog
+										67 text  (
+										68 text 1
+										69 text )
+									70 text Estimate :  0
+									71 pop up button (collapsed) Actions for column: Backlog, Secondary Actions: Expand
+									72 button Add item to Backlog
+									73 text Collection of raw, unclear issues
+									74 container
+										75 draggable docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF Open issue LECTRA #26
+											76 image Open issue
+											77 container board-card-header-title-296051976
+												78 text LECTRA  # 26
+											79 pop up button (collapsed) More actions, Secondary Actions: Expand
+											80 container
+												81 text Assignees:  R1NNE0 and Maibokdaimhai
+												82 button Maibokdaimhai
+													83 image Maibokdaimhai
+												84 button R1NNE0
+													85 image R1NNE0
+											86 button docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF
+												87 heading docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF, Value: 3, ID: board-card-title-296051976
+													88 text docs: assemble actual Sprint 1 evidence and final Deliverable 1 PDF
+											89 content list Fields
+											90 text Click a value to filter the view
+										91 button Add item
+								92 container Y3Vyc29yOnYyOpLOGjNuXalTcGVjaWZpZWQ=
+									93 container
+										94 heading Specified, Value: 2
+											95 text Specified
+										96 text  (
+										97 text 0
+										98 text )
+									99 text Estimate :  0
+									100 pop up button (collapsed) Actions for column: Specified, Secondary Actions: Expand
+									101 button Add item to Specified
+									102 text Detailed specs & requirements clear
+									103 button Add item
+								104 container Y3Vyc29yOnYyOpLOGjNuXadTdGFydGVk
+									105 container
+										106 heading Started, Value: 2
+											107 text Started
+										108 text  (
+										109 text 1
+										110 text )
+									111 text Estimate :  0
+									112 pop up button (collapsed) Actions for column: Started, Secondary Actions: Expand
+									113 button Add item to Started
+									114 text Development actively underway
+									115 container
+										116 draggable (disabled) plan: track Sprint 1 delivery and acceptance readiness Maibokdaimhai/LECTRA#8
+										117 button Add item
+								118 container Y3Vyc29yOnYyOpLOGjNuXalQUiBSZXZpZXc=
+									119 container
+										120 heading PR Review, Value: 2
+											121 text PR Review
+										122 text  (
+										123 text 0
+										124 text )
+									125 text Estimate :  0
+									126 pop up button (collapsed) Actions for column: PR Review, Secondary Actions: Expand
+									127 button Add item to PR Review
+									128 text Peer code review & verification
+									129 button Add item
+								130 container Y3Vyc29yOnYyOpLOGjNuXaZGaXhpbmc=
+									131 container
+										132 heading Fixing, Value: 2
+											133 text Fixing
+										134 text  (
+										135 text 0
+										136 text )
+									137 text Estimate :  0
+									138 pop up button (collapsed) Actions for column: Fixing, Secondary Actions: Expand
+									139 button Add item to Fixing
+									140 text Resolving pull request comments
+									141 button Add item
+								142 container Y3Vyc29yOnYyOpLOGjNuXaREb25l
+									143 container
+										144 heading Done, Value: 2
+											145 text Done
+										146 text  (
+										147 text 23
+										148 text )
+									149 text Estimate :  0
+									150 pop up button (collapsed) Actions for column: Done, Secondary Actions: Expand
+									151 button Add item to Done
+									152 text This has been completed
+									153 container
+										154 draggable (disabled) docs: define product scope, decisions, and SRS (Part A) Maibokdaimhai/LECTRA#1
+										155 draggable (disabled) docs: map requirements to features and sprints (Part B) Maibokdaimhai/LECTRA#2
+										156 draggable (disabled) docs: design system architecture, data, access, and delivery (Part C) Maibokdaimhai/LECTRA#3
+										157 draggable (disabled) docs: plan three sprints and team responsibilities (Part D) Maibokdaimhai/LECTRA#4
+										158 draggable (disabled) docs: specify Sprint 1 feature contracts, AC, STS, and DoD (Part E) Maibokdaimhai/LECTRA#5
+										159 draggable (disabled) docs: plan Deliverable 1 evidence and PDF structure (Part F readiness) Maibokdaimhai/LECTRA#6
+										160 draggable (disabled) chore: establish Sprint 1 board and teammate review workflow Maibokdaimhai/LECTRA#9
+										161 draggable (disabled) docs: contract F-01 authentication, sessions, and backend access (Sprint 1) Maibokdaimhai/LECTRA#10
+										162 draggable (disabled) docs: contract F-02 owned context and eligible survey discovery (Sprint 1) Maibokdaimhai/LECTRA#11
+										163 draggable (disabled) docs: contract F-03 survey authoring, publication, and closing (Sprint 1) Maibokdaimhai/LECTRA#12
+										164 draggable (disabled) docs: contract F-04 validated one-time responses and persisted retrieval (Sprint 1) Maibokdaimhai/LECTRA#13
+										165 draggable (disabled) docs: contract F-05 identified aggregate results and privacy projections (Sprint 1) Maibokdaimhai/LECTRA#14
+										166 draggable (disabled) chore: initialize Sprint 1 workspace and verification tooling Maibokdaimhai/LECTRA#15
+										167 draggable (disabled) feat: add Sprint 1 PostgreSQL schema, migrations, and synthetic seed Maibokdaimhai/LECTRA#16
+										168 draggable (disabled) feat: implement F-01 authentication, sessions, and server-side access Maibokdaimhai/LECTRA#17
+										169 draggable (disabled) feat: implement F-02 owned context selection and eligible survey lists Maibokdaimhai/LECTRA#18
+										170 draggable (disabled) feat: implement F-03 identified survey drafting, publication, and closing Maibokdaimhai/LECTRA#19
+										171 draggable (disabled) feat: implement F-04 atomic one-time feedback and own-response retrieval Maibokdaimhai/LECTRA#20
+										172 draggable (disabled) feat: implement F-05 identified owner results and score distributions Maibokdaimhai/LECTRA#21
+										173 draggable (disabled) test: verify Sprint 1 access, persistence, and concurrent domain rules Maibokdaimhai/LECTRA#22
+										174 draggable (disabled) test: cover critical Sprint 1 browser journeys and rejection states Maibokdaimhai/LECTRA#23
+										175 draggable (disabled) docs: document reproducible Sprint 1 setup and safe demo handoff Maibokdaimhai/LECTRA#24
+										176 draggable (disabled) release: verify integrated Sprint 1 and record reviewed main release Maibokdaimhai/LECTRA#25
+										177 button Add item
+								178 pop up button (collapsed) Add a new column to the board, Secondary Actions: Expand
+
+The focused UI element is 1 AXWebArea Backlog · LECTRA Kanban, URL: github.com/users/Maibokdaimhai/projects/7/views/1
