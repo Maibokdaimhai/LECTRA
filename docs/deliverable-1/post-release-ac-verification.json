@@ -1,0 +1,241 @@
+{
+  "dateBangkok": "2026-11-13",
+  "assessedApplication": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "releaseTag": "sprint-1",
+  "kind": "Additional post-release tests; not part of the historical 214-test run.",
+  "testedSource": "Production/assessed sources unchanged: all original 82 source/config/test hashes match. New uncommitted focused tests and configuration on review/pr-46. No production correction or Git operation.",
+  "sourceManifest": "docs/sprints/sprint-1/main-release-verification.json",
+  "sourceManifestSha256": "0d245ff3e03d60f8058fafcc3c91246a5e972e0ad9430f9e4301b2f1baf507c1",
+  "sourceHashesMatched": 82,
+  "additionalSourceSha256": {
+    "apps/api/tests/post-release/ac-gaps.test.ts": "9e35ddf36128d2d86807eca58c37d4c655ba8fbc6abe1cd5a799c9af209243bc",
+    "vitest.post-release.config.ts": "a8db3ae2ac23bdfd179f533492c1e853804d5fda9156485df1cad008ee7fb425"
+  },
+  "sourceHashNormalization": "UTF-8 with CRLF normalized to LF",
+  "command": "node node_modules/vitest/vitest.mjs run --config vitest.post-release.config.ts --reporter=default --reporter=json --outputFile=.local/evidence/pr46-direct-ac.json",
+  "runtime": {
+    "node": "24.22.1",
+    "npm": "10.9.2",
+    "vitest": "5.1.0",
+    "postgresql": "17.11",
+    "platform": "Windows"
+  },
+  "exitCode": 1,
+  "counts": {
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0,
+    "total": 5
+  },
+  "rawResults": "docs/deliverable-1/post-release-ac-test-results.json",
+  "rawResultsSha256": "50402954bca13ce4c447454d03f8736948097015e04c363df0296e9e18e41127",
+  "checks": [
+    {
+      "id": "PR46-I01",
+      "name": "PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes",
+      "ac": [
+        "AC-F04-22"
+      ],
+      "plannedSTS": [
+        "TEST-F04-I10"
+      ],
+      "result": "PASS",
+      "assertionLines": [
+        78,
+        80,
+        83,
+        84,
+        85
+      ],
+      "durationMs": 181.45519999999988,
+      "assertionHelperLine": 67,
+      "expected": "ANONYMOUS Published duplicate and first submission both 409 MODE_NOT_SUPPORTED, before duplicate handling; original response rows unchanged.",
+      "actual": "Both 409 MODE_NOT_SUPPORTED, exact error-only envelope, no sentinel, unchanged participation/bundle/answer snapshot. IDENTIFIED duplicate control returned RESPONSE_ALREADY_SUBMITTED.",
+      "actualAssertionSource": [
+        "expect((await mutate(student, path, body).expect(409)).body.error.code).toBe('RESPONSE_ALREADY_SUBMITTED');",
+        "expect(before.participation).toHaveLength(1); expect(before.bundles).toHaveLength(1); expect(before.answers).toHaveLength(2);",
+        "denial(await mutate(student, path, body), 'MODE_NOT_SUPPORTED');",
+        "denial(await mutate(other, path, body), 'MODE_NOT_SUPPORTED');",
+        "expect(await persisted(d.id)).toEqual(before);"
+      ]
+    },
+    {
+      "id": "PR46-I02",
+      "name": "PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation",
+      "ac": [
+        "AC-F05-01"
+      ],
+      "plannedSTS": [
+        "TEST-F05-I02"
+      ],
+      "result": "PASS",
+      "assertionLines": [
+        93,
+        94,
+        97,
+        98,
+        99,
+        100
+      ],
+      "durationMs": 236.5358000000001,
+      "assertionHelperLine": 67,
+      "expected": "Own Draft results 409 RESULTS_NOT_AVAILABLE in either mode; no data or mutation. Foreign Owner 404; Respondent 403.",
+      "actual": "Exact expected 409/error-only response for IDENTIFIED and ANONYMOUS Draft; unchanged Draft, empty response rows, correct 404/403 controls.",
+      "actualAssertionSource": [
+        "denial(await owner.agent.get(path), 'RESULTS_NOT_AVAILABLE');",
+        "expect((await pool.query('SELECT to_jsonb(s) AS row FROM \"Survey\" s WHERE id=$1', [d.id])).rows[0].row).toEqual(before);",
+        "denial(await owner.agent.get(path), 'RESULTS_NOT_AVAILABLE');",
+        "denial(await foreign.agent.get(path), 'NOT_FOUND', 404);",
+        "denial(await student.agent.get(path), 'FORBIDDEN_ROLE', 403);",
+        "expect(await persisted(d.id)).toEqual({ participation: [], bundles: [], answers: [] });"
+      ]
+    },
+    {
+      "id": "PR46-I03",
+      "name": "PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback",
+      "ac": [
+        "AC-F05-21"
+      ],
+      "plannedSTS": [
+        "TEST-F05-I02"
+      ],
+      "result": "PASS",
+      "assertionLines": [
+        108,
+        113,
+        114,
+        118
+      ],
+      "durationMs": 123.89480000000003,
+      "assertionHelperLine": 67,
+      "expected": "Own ANONYMOUS Published/Closed results 409 MODE_NOT_SUPPORTED, no result payload and unchanged responses; normal identified results still work.",
+      "actual": "Both states returned exact 409 MODE_NOT_SUPPORTED with no count/text, unchanged rows. IDENTIFIED count-only and Closed comment controls returned 200.",
+      "actualAssertionSource": [
+        "expect(Object.keys((await owner.agent.get(path).expect(200)).body.data).sort()).toEqual(['responseCount', 'survey']);",
+        "denial(await owner.agent.get(path), 'MODE_NOT_SUPPORTED');",
+        "expect(await persisted(d.id)).toEqual(before);",
+        "expect(normal.responseCount).toBe(1); expect(normal.questions[1].comments).toEqual([sentinel]);"
+      ]
+    },
+    {
+      "id": "PR46-I04-PUBLISHED",
+      "name": "PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
+      "ac": [
+        "AC-F04-22"
+      ],
+      "plannedSTS": [
+        "TEST-F04-I10"
+      ],
+      "result": "FAIL",
+      "assertionLines": [
+        128,
+        129,
+        130,
+        131,
+        132
+      ],
+      "durationMs": 107.1277,
+      "assertionHelperLine": 67,
+      "expected": "409 MODE_NOT_SUPPORTED, top-level error only, no synthetic answer sentinel, unchanged persisted rows.",
+      "actual": "200, no error.code, top-level data, synthetic answer sentinel present; persisted rows unchanged.",
+      "actualAssertionSource": [
+        "expect.soft(response.status).toBe(409);",
+        "expect.soft(response.body.error?.code).toBe('MODE_NOT_SUPPORTED');",
+        "expect.soft(Object.keys(response.body)).toEqual(['error']);",
+        "expect.soft(JSON.stringify(response.body).includes(sentinel)).toBe(false);",
+        "expect(await persisted(d.id)).toEqual(before);"
+      ]
+    },
+    {
+      "id": "PR46-I04-CLOSED",
+      "name": "PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
+      "ac": [
+        "AC-F04-22"
+      ],
+      "plannedSTS": [
+        "TEST-F04-I10"
+      ],
+      "result": "FAIL",
+      "assertionLines": [
+        128,
+        129,
+        130,
+        131,
+        132
+      ],
+      "durationMs": 108.17750000000024,
+      "assertionHelperLine": 67,
+      "expected": "409 MODE_NOT_SUPPORTED, top-level error only, no synthetic answer sentinel, unchanged persisted rows.",
+      "actual": "200, no error.code, top-level data, synthetic answer sentinel present; persisted rows unchanged.",
+      "actualAssertionSource": [
+        "expect.soft(response.status).toBe(409);",
+        "expect.soft(response.body.error?.code).toBe('MODE_NOT_SUPPORTED');",
+        "expect.soft(Object.keys(response.body)).toEqual(['error']);",
+        "expect.soft(JSON.stringify(response.body).includes(sentinel)).toBe(false);",
+        "expect(await persisted(d.id)).toEqual(before);"
+      ]
+    }
+  ],
+  "observedDefect": {
+    "id": "PR46-DEF-01",
+    "file": "apps/api/src/feedback.ts",
+    "line": 252,
+    "route": "GET /api/surveys/:id/my-submission",
+    "condition": "Eligible respondent with an existing identified response; a test-only ANONYMOUS survey fixture in PUBLISHED or CLOSED state.",
+    "expected": "409 MODE_NOT_SUPPORTED; error only; no answers.",
+    "actual": "200 with data, submitted status and the existing identified answers; the synthetic answer sentinel is present.",
+    "cause": "Readback applies role/eligibility/state scoping but has no mode guard before reading participation/bundle/answers. POST responses and GET results already reject unsupported mode.",
+    "impact": "Violation of AC-F04-22 / TEST-F04-I10 fail-closed readback. Conditional on unsupported mode existing in storage; production enum currently rejects ANONYMOUS, so no ordinary API path enabling anonymous collection or cross-user access was demonstrated.",
+    "productionChanged": false,
+    "disposition": "Team decision: PR46-DEF-01 is a Known Limitation discovered during additional post-release verification. PR46-I04-PUBLISHED and PR46-I04-CLOSED are two observations of the same underlying unsupported-mode own-readback defect. AC-F04-22 remains a Sprint 1 AC with Partial disposition. Correction is deferred for team follow-up in Sprint 2 before enabling F-06 Anonymous Mode; regression tests must be rerun after correction. The defect is not fixed. The existing Sprint Plan and original assessed release are unchanged.",
+    "classification": "Known Limitation"
+  },
+  "fixture": {
+    "actualApiAndPostgresql": true,
+    "httpOrSqlMocks": false,
+    "productionEnum": [
+      "IDENTIFIED"
+    ],
+    "unsupportedMode": "ANONYMOUS",
+    "testOnlySetup": "After migrations and seed in a new empty opted-in database, assert the enum is IDENTIFIED-only; autocommit ALTER TYPE SurveyMode ADD VALUE ANONYMOUS. Create/publish/respond through real routes, then SQL-toggle only the test-created Survey to ANONYMOUS. Restore every fixture Survey to IDENTIFIED in finally. No repository schema/migration change.",
+    "scopeLimits": "The enum extension makes a defensive contract branch testable; it is not proof of implemented anonymous submission/privacy or the unchanged production DDL accepting that mode."
+  },
+  "databaseSafety": {
+    "newCluster": true,
+    "physicalDataDirectoryVerified": true,
+    "newEmptyDatabaseVerified": true,
+    "optIns": [
+      "ALLOW_TEST_DATABASE",
+      "ALLOW_POST_RELEASE_TESTS"
+    ],
+    "database": "lectra_test_pr46_direct_ac_a531ce2b3be8",
+    "developmentReference": "Unused distinct loopback reference, never connected.",
+    "cleanup": "Per-test mode restoration in finally; application pools closed; zero remaining test functions and other open transactions; task-owned cluster stopped. Extended enum exists only in that discarded disposable target."
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "historicalResults": {
+    "passed": 214,
+    "failed": 0,
+    "skipped": 0,
+    "unchanged": true
+  },
+  "limits": [
+    "AC-F05-01 API only; no new UI E02 execution.",
+    "Selected mode/state assertions, not full exhaustive STS certification.",
+    "Two genuine failing readback cases remain; no GREEN claim for AC-F04-22 as a whole.",
+    "No full application matrix rerun, release/tag change, teammate approval or GitHub action."
+  ],
+  "historicalTeamDecision": "Team decision: PR46-DEF-01 is a Known Limitation discovered during additional post-release verification. PR46-I04-PUBLISHED and PR46-I04-CLOSED are two observations of the same underlying unsupported-mode own-readback defect. AC-F04-22 remains a Sprint 1 AC with Partial disposition. Correction is deferred for team follow-up in Sprint 2 before enabling F-06 Anonymous Mode; regression tests must be rerun after correction. The defect is not fixed. The existing Sprint Plan and original assessed release are unchanged.",
+  "currentDisposition": {
+    "date": "2026-11-13",
+    "assessedRelease": "Unchanged; original defect retained",
+    "candidatePr": 47,
+    "testedCorrectionCommit": "609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e",
+    "selectedPassed": 53,
+    "status": "Actual human review/main integration not claimed",
+    "note": "Original investigation remains 3PASS/2FAIL; counts never combined."
+  }
+}

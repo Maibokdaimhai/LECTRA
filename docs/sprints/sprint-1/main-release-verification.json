@@ -1,0 +1,249 @@
+{
+  "testedCommit": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "results": [
+    {
+      "command": "npm run typecheck",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "npm run test:unit",
+      "exit": 0,
+      "summary": [
+        "Test Files  7 passed (7)",
+        "Tests  41 passed (41)"
+      ]
+    },
+    {
+      "command": "npm run test:api",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-features.env node_modules/vitest/vitest.mjs run --config vitest.features.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  41 passed (41)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-release.env node_modules/vitest/vitest.mjs run --config vitest.release.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  7 passed (7)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-foundation.env node_modules/vitest/vitest.mjs run --config vitest.foundation.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  9 passed (9)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-tooling.env node_modules/vitest/vitest.mjs run --config vitest.db.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  2 passed (2)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-features.env --import tsx scripts/orm-smoke.ts",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "node --env-file=.local/main-features.env --import tsx scripts/verify-restart.ts",
+      "exit": 0,
+      "summary": [
+        "Built API process restart: same persisted sessions, absolute deadline, survey, own answers and results verified; no migration or reseed between starts."
+      ]
+    },
+    {
+      "command": "npm run test:e2e:recovery",
+      "exit": 0,
+      "summary": [
+        "84 passed (32.7s)"
+      ]
+    },
+    {
+      "command": "npm run test:e2e",
+      "exit": 0,
+      "summary": [
+        "4 passed (933ms)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-browser.env scripts/playwright.mjs test --config playwright.features.config.ts",
+      "exit": 0,
+      "summary": [
+        "22 passed (31.5s)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-logout.env scripts/playwright.mjs test --config playwright.logout.config.ts",
+      "exit": 0,
+      "summary": [
+        "2 passed (2.5s)"
+      ]
+    }
+  ],
+  "recordedDateBangkok": "2026-11-12",
+  "releaseTag": "sprint-1",
+  "tagTarget": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "releasePr": "https://github.com/Maibokdaimhai/LECTRA/pull/40",
+  "approvedSource": "5848d958885603143b000bea81950d8c9737716d",
+  "approvalUrl": "https://github.com/Maibokdaimhai/LECTRA/pull/40#pullrequestreview-5876302498",
+  "reviewer": "R1NNE0",
+  "acceptance": "Actual review explicitly accepts documented G-04 dispositions/remaining limitations for bounded Sprint 1 MVP, subject to post-main checks.",
+  "executor": "Author with AI assistance; actual teammate release approval separately recorded, not invented test execution.",
+  "runtime": {
+    "node": "24.22.1",
+    "npm": "10.9.2",
+    "postgresql": "17.11"
+  },
+  "cleanInstall": "New GitHub clone, detached actual merged main SHA, npm ci from unchanged lockfile; browser binary cache reused explicitly, no private configuration or DB state reused.",
+  "primarySelectedTestCount": 214,
+  "counts": {
+    "unit": 41,
+    "apiLiveness": 2,
+    "apiPostgresql": 41,
+    "releasePostgresql": 7,
+    "foundation": 9,
+    "databaseTooling": 2,
+    "isolatedHttpBrowser": 84,
+    "realBrowserApiPostgresql": 22,
+    "realLogoutApiPostgresql": 2,
+    "smoke": 4,
+    "finalFailures": 0,
+    "finalSkips": 0
+  },
+  "sourceSha256": {
+    ".env.example": "02c38661b2612cc36064256bec4642b647f633ee109e49eccacc07ee5e6f0f3b",
+    ".env.test.example": "f9fe2c72ae6e926bdd9461566e64e5f2ae1148dfba0c1406bd8b3ec788a0b668",
+    ".node-version": "d9f318747a126ce2247661af67852b185def7789492eabfad7bba322be087c33",
+    ".npmrc": "3b88d1057add6f92ec23dc22dd017e312ded13a042deb0ba6f08bad85d936456",
+    "apps/api/package.json": "5c5f5a9cfd3c1a83c622e11bf1f56bf8b60b9042cb70c3d8d55254fd36694916",
+    "apps/api/src/app.ts": "4abc5409d560b6479dfc5f894a00b501f3e2ff6826098b8cb3bf339d673bd51b",
+    "apps/api/src/auth-rules.ts": "7e74da2bd1e1de581c65e505a1626e241f740b32bbcfa840de3f98f3165945ed",
+    "apps/api/src/auth.ts": "77f582bbb4b1a3f7e108544ef7c4821688d1af839d11b4643401487cbc9f294d",
+    "apps/api/src/config.ts": "d258b3003ac4b00c7c24bce90424f6ff260dc23af10d702104ca697e956ed5db",
+    "apps/api/src/database.ts": "465dff80dabc017bcc48bb25dd3553dec58d4d00ced6bf0be0338b6ff20637a8",
+    "apps/api/src/feedback-rules.ts": "8c7849a2fd90a67de3bd4f05dc17045b689c38681600c6cfcf9f50e859c0bb50",
+    "apps/api/src/feedback.ts": "b14281452d50f402ee7b33bc1f3d160db1d3dc3f3536bd10fcfe9f8cdfb48e29",
+    "apps/api/src/http.ts": "115093e9a90d12a783f11ba33ba1a4fc50e55041037ae3d826e251f6b635bfd7",
+    "apps/api/src/server.ts": "1cef1484f525b62bde74f31783b0644d881262db8bc52048d70d54c7fa852e81",
+    "apps/api/src/test-database.ts": "6e6b1879a4991d99b20e709ad98f50cad10e6ed67877846155767084db95693a",
+    "apps/api/tests/api/health.test.ts": "44a40219b6464588cf20cfbdd386975b77bc973a278e46a4784e8cfedd24a16d",
+    "apps/api/tests/db/postgres.test.ts": "511a146fde9dacd63537f435cdc2bcad4659fc07c1c8c23875a1108ae226fa3a",
+    "apps/api/tests/features/workflows.test.ts": "16afd0d7bb7c34d3944059ba1ece70aeeaf092dbc502bc6349393b1f5876693c",
+    "apps/api/tests/foundation/database.test.ts": "c2efa025bbf74f67cf1ee65f09d21e092ddd184c633e72b657496822cd7692f4",
+    "apps/api/tests/release/acknowledgement-proxy.ts": "9937ea1f70d9e6cd38a565e094e0aecbf699e9033484c320f66e95fc79b78676",
+    "apps/api/tests/release/g04.test.ts": "274faca16b50b610077ca0fa99af41aa78d1b94554d338bf01900cfd63e035e5",
+    "apps/api/tests/unit/argon2-compatibility.test.ts": "d1fd266139b50f418593be1a8c01c52b9f0e8b5ac219bfbb3a9d3acd512f7e2e",
+    "apps/api/tests/unit/auth-rules.test.ts": "10bd1ef240ba41ca8ca48997fa53c02574458271a86aa1406431bcfdcc3ae91b",
+    "apps/api/tests/unit/config.test.ts": "5e9cdfda6b0c2d15f28564f282f468378ef1d4f8a95d026a2e75961d70dcc0f3",
+    "apps/api/tests/unit/database-seed.test.ts": "3396c6684ea4370be3e614b8dd7b9c727fc2e7e67c55548b957c2ad4534a601d",
+    "apps/api/tests/unit/feedback-rules.test.ts": "749d786a223753b347676313880d23167fc6f10e178e6f0c5ad60795610bc82b",
+    "apps/api/tests/unit/test-database.test.ts": "24d55ca9a85ea4ec36e4102edf011336d6fd5e858f7600c2c34f227685c0215e",
+    "apps/api/tsconfig.build.json": "d1f7ee6aee1124f74a982fae3f9ad21592fd56b8775d7cea64addf850d0f8e78",
+    "apps/api/tsconfig.json": "5ecc53436802f7544282d3f4bdbf6de590648dce676821710b46e446694c2235",
+    "apps/web/index.html": "689dccebc353b5ae84aa4ce6c24a519b9318d0803aaa5ed5e2c7fc181cf3c1b6",
+    "apps/web/package.json": "923a37582756956caabd0325f79c5c0b93436a53aaa026fb05d1aff9c494ef69",
+    "apps/web/src/main.tsx": "ab5d35bfc8ad81e687e5a4e4b4b055e5a57ff3942b467cfa9bedf78a368ff2d3",
+    "apps/web/src/theme.css": "afc988eb86070119f458f1d0d15c634aebc439f62deea66842a6ca6f8d929606",
+    "apps/web/src/ui-validation.ts": "9ca8dadc98bee08a0cc7818defbaf3f4c637d364ee58e20e51ca4775faae6e5d",
+    "apps/web/tests/ui-validation.test.ts": "aa2575ce3b4b246e1ac71b11d60540202f9e9fd173bbf7171c7b5e93102c4942",
+    "apps/web/tsconfig.json": "3ed2c54364e03a507dfbd98a619c45697f9501beadd9f4c956a4a7cacf919a34",
+    "apps/web/vite.config.ts": "1889e4323d7c99c57e9100f4e6d965481e065c06dff2da0ab048b479e767e0da",
+    "package-lock.json": "05e41efa900ff8bd92c914e6ffac68183d51f0e4dbafd906bc3f69adb6c1b9d7",
+    "package.json": "68e2792973556bed61d1688fa5c7542164df1ec2496ba6f59727aea44ea6be60",
+    "playwright.config.ts": "74cfb2838d930c3a2a2790b8cb253f3a0beab7d4a362e89f5f727f020da1b276",
+    "playwright.features.config.ts": "9a9abc322a0aa680d338b42ad464d32a98c32581abce71808485d1d10925e2f7",
+    "playwright.logout.config.ts": "c2fdd03dcb2f35d6a4bece858c6837acc93f6be301a0563a170a93fe423b1df4",
+    "playwright.recovery.config.ts": "0b11b8d82359954594e06a4620d7379bf573b460dfb5f382b0648bb16f324327",
+    "prisma.config.ts": "ad93d016f0bef0497212d3867caec49ff4409d21482c90fbc9a87a79e5bc1faf",
+    "prisma/fixtures.ts": "24a1ca2895ceecd795d457522db0dd19a0a1591b1e9899737532d07736e254d8",
+    "prisma/migrations/202611080001_user_session/migration.sql": "3045896c1242b42b47e69b05b368da783e5c35513da39016add64f284f15c308",
+    "prisma/migrations/202611080002_academic_context/migration.sql": "e71a7af9f789aad3a228dc348c50f02aab344897dcb98c7712c266fc178b29e3",
+    "prisma/migrations/202611080003_survey_response/migration.sql": "c01e453af2da54ff889ec6d760d457bae6ec7d404d1b3e7343423fb8720ab171",
+    "prisma/migrations/migration_lock.toml": "1db17a8d051aa136110736752c5e1f8b7ed92b6ea8e803112fbbe2497047c210",
+    "prisma/schema.prisma": "9ca6e9f910d2e32738139143b66a054a269d48c5e39f0e4085121cdd06e2568a",
+    "scripts/build-review-report.py": "61e92f0e34aed6334a87e1037d9d709934948c11231d8fd6830fe84a66719f30",
+    "scripts/check-runtime.mjs": "3f3d5199b93e8b5d8cb73d2c4d6f61cf7ab69a40120f9ad0774feb6096a8da79",
+    "scripts/database.ts": "023fdd869eec3a3607c239270fda86cea370494efff580bee30cb359d13433db",
+    "scripts/demo-config.ts": "e7ac1b36831a5fb88ffd5286cb9105e577655c4fb9bc39ba99dec09c505f5864",
+    "scripts/dev.mjs": "acdad7e1ed10d05fc81159525c3dfa1fd6a2c7a6fd3ffc4da45d5bf364ee5c30",
+    "scripts/orm-smoke.ts": "5f05a5d826e133e4a573572b42e7a041cdc566323aafcc9f662a42129d02e2d5",
+    "scripts/playwright.mjs": "658aa4d742347d9a33f9257dadc6b91c9bfcb3befb64d49d85b2a7664562a364",
+    "scripts/prepare-browser.ts": "944a81ceb18133d145e1b915c252064bd2a4ece0c21866cf4ace547ab90bc462",
+    "scripts/seed-database.ts": "b34af97f7cd2e3be54a4b7742030793c7de7352f9de6cbdc0cb74392ad3e1957",
+    "scripts/setup-local.mjs": "45486ecdfdb2dac3731f12e42516d82148ecb9679a459f45c96537b3076646cd",
+    "scripts/verify-restart.ts": "6c441b9932fbb9b1dba34be37b400b2eaab58d348fbd7a6442ee65b391489418",
+    "tests/browser/feedback.spec.ts": "bf3d6c0948daaab356b69884921b1c1e5e07ec452b0299f48eea153e7e8c7732",
+    "tests/browser/logout-csrf-rotation.spec.ts": "b8efd47fecca465f80fa9607b1f828286a849350e413aad84c016e90c782ac4d",
+    "tests/browser/review-recovery.spec.ts": "6afe2fdf23c8a76013628565a8c2ccc75d6aaafe1811e05084bded8a825530a1",
+    "tests/browser/session-lifecycle.spec.ts": "d473c100bc4819578f6c6067242b2a84d4934a01e8070556d64623f67d0983e7",
+    "tests/browser/sprint1-recovery-states.spec.ts": "93170c224b8e3b09ad47dbf227fe644c5283259517b106daa928fb478cd0f93e",
+    "tests/browser/sprint1-rejections.spec.ts": "965bf0436251a84970ced140d06e81356c06ccca90a725fc08bafb44923250c9",
+    "tests/browser/support/fixtures.ts": "29300d94e5a89c33dda6a21889358c7b4da774504200ece1f756c1b979c49ad5",
+    "tests/browser/support/real-app.ts": "4a80c8a86da2b567cfed89cc62163a4fb8c6031bb26ee58e54ca4845a49512f9",
+    "tests/browser/support/ui-keyboard.ts": "eb99b07e2cc2e2042d2735943bce4dc767ec97bf6bc9440da5a139d2b5544338",
+    "tests/browser/ui-accessibility-real.spec.ts": "baea622a0e9f7a71973d8317ac28b1a613974d5a947253f610e3993e0fb59eeb",
+    "tests/browser/ui-accessibility.spec.ts": "2bde3297afc249f68bc4d7186b863b358bb829794ae4dd7c3e58792930de1273",
+    "tests/database/constraints.sql": "d4531b5110f21e392aa50064f4d1aa8692c8228cf13148a6645ff79050d571d1",
+    "tests/e2e/workspace.spec.ts": "e8cb6945059e520d8206bf9fe724e76e94125f2e4ff3658e5e7a5946564ae7a7",
+    "tsconfig.base.json": "4a299e962345448d9b2f4405329875989767afbec1538117fdf1ecb2b159b19e",
+    "tsconfig.tooling.json": "52623d5f9f9c46aa7b6cced4ed8265116b84b9a254de4865c1cdf9e3124e4d62",
+    "vitest.api.config.ts": "6f5f4f663c6c072492fd3ea8c283e99d5fb2749e6eaebd2c143b44d783b42a80",
+    "vitest.db.config.ts": "424de06d329281e19af2ea41bc384df8e02f0de91d4f11a1ff447a880afd6794",
+    "vitest.features.config.ts": "804d571e33cd229bf2024a28811e2c589c8856cff6f4325a1f61b114c5277ad1",
+    "vitest.foundation.config.ts": "1d2d1867fc9b0cccebc9768efa3a57269b3d94eb2efae53a072c3d9a8af4d98c",
+    "vitest.release.config.ts": "45bbee6507a355e148e01f0d64423fe029eac03e0cccfe72a6c7a07273e80b3f",
+    "vitest.unit.config.ts": "c56f41a713254beb220ff7ba2aeb64efaf4a79175ca4a8c7475a2d4d94992765"
+  },
+  "figures": [
+    {
+      "path": "docs/sprints/sprint-1/main-release-evidence/closed-rejection-recovered-narrow.png",
+      "sha256": "7e966ad5e93c1267168b3e9a564a73c4ad11cc4d90dc149066b3c098ce06c839",
+      "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30",
+      "capture": "Actual post-main real-browser suite; synthetic fixtures; preserved before later suite overwrote runner attachments."
+    },
+    {
+      "path": "docs/sprints/sprint-1/main-release-evidence/closed-results-narrow.png",
+      "sha256": "57e23918a9bb268d5dd5e2308835b49e5e2a9756eac6d736820c9190c3a08b9b",
+      "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30",
+      "capture": "Actual post-main real-browser suite; synthetic fixtures; preserved before later suite overwrote runner attachments."
+    },
+    {
+      "path": "docs/sprints/sprint-1/main-release-evidence/foreign-owner-safe-list-narrow.png",
+      "sha256": "7c83b051c3cb8cede0c3691bd5933b720ab932fa8b7cc0d6422df2b1ed8bca94",
+      "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30",
+      "capture": "Actual post-main real-browser suite; synthetic fixtures; preserved before later suite overwrote runner attachments."
+    },
+    {
+      "path": "docs/sprints/sprint-1/main-release-evidence/persisted-submission-narrow.png",
+      "sha256": "4732df844f0618ec7844eb27876fe475506009b64af082a5f34ce8a46a643598",
+      "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30",
+      "capture": "Actual post-main real-browser suite; synthetic fixtures; preserved before later suite overwrote runner attachments."
+    }
+  ],
+  "safeEvidence": "No credentials or raw session identifiers included. Six new empty opted-in isolated PostgreSQL targets. Actual built-process stop/start used the unchanged feature DB without migrate/reseed between starts.",
+  "limits": [
+    "214 is selected runner executions, not certification of all planned STS subconditions or a coverage percentage.",
+    "No submission/deadline-compliance claim. Deployment/P15 and full human assistive-technology testing remain scoped separately as accepted in actual release review.",
+    "Final report/evidence revision is separate from immutable assessed main/tag."
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "assessedApplication": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "releaseTag": "sprint-1",
+  "capturedAtUtc": "2026-11-12T19:23:25.987Z",
+  "kind": "Supplementary browser demonstration, automated with Playwright; not a rerun of the historical test matrix.",
+  "source": {
+    "manifest": "docs/sprints/sprint-1/main-release-verification.json",
+    "manifestSha256": "0d245ff3e03d60f8058fafcc3c91246a5e972e0ad9430f9e4301b2f1baf507c1",
+    "matchingSourceFiles": 82,
+    "workingBranch": "review/pr-46",
+    "method": "All 82 assessed source/config/test hashes matched before and after capture. The unchanged application was rebuilt locally and launched from its built API and production web bundle; no Git checkout or application edit.",
+    "frontendBundle": "apps/web/dist/assets/index-BipY3lhw.js",
+    "frontendBundleSha256": "05c77c090c01db3a1941891961b72d354140c0a23622130fbe9baacb29aad4bd"
+  },
+  "runtime": {
+    "node": "v24.22.1",
+    "chromium": "158.0.8127.18",
+    "postgresql": "PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit",
+    "configuration": "Documented local HTTP demo profile; fresh generated isolated environment, not existing private demo files. Dynamic loopback ports; no populated demo/development database reused."
+  },
+  "databaseSafety": {
+    "newlyInitializedCluster": true,
+    "verifiedPhysicalDataDirectory": true,
+    "newDatabase": true,
+    "allowlist": "lectra_test_pr46_auth_34907126b95a",
+    "commands": [
+      "node --import tsx scripts/database.ts migrate-test",
+      "node --import tsx scripts/database.ts seed-test"
+    ],
+    "setup": "Explicit ALLOW_TEST_DATABASE and SEED_SYNTHETIC_DATA for the new test database; distinct unused development reference.",
+    "cleanup": "Browser and temporary API/preview processes stopped; only the task-owned temporary cluster stopped in finally."
+  },
+  "captures": [
+    {
+      "figure": "F-AUTH-01",
+      "path": "docs/sprints/sprint-1/main-release-evidence/auth-login-guest.png",
+      "sha256": "f3b6dcf8a44f20578e7e8578fe34380ae2724695189067c56b6e7f6a6f2b1106",
+      "route": "/",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "role": "Guest",
+      "acceptanceCriteria": [
+        "AC-F01-03",
+        "AC-F01-15"
+      ],
+      "plannedSTS": [
+        "TEST-F01-E01"
+      ],
+      "precondition": "Fresh browser and newly seeded isolated database; unauthenticated.",
+      "action": "Open the actual application.",
+      "expected": "Login form, empty password and no private workspace.",
+      "actual": "Login form enabled; password empty; private workspace absent.",
+      "result": "Observed"
+    },
+    {
+      "figure": "F-AUTH-02",
+      "path": "docs/sprints/sprint-1/main-release-evidence/auth-login-owner.png",
+      "sha256": "fb73fd5b02a008b1d9fffa0fe678798f0ed7eb2a7aa43d69be7afcfad5ac9ec1",
+      "route": "/",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "role": "Survey Owner",
+      "acceptanceCriteria": [
+        "AC-F01-03"
+      ],
+      "plannedSTS": [
+        "TEST-F01-E01"
+      ],
+      "precondition": "Guest form with locally generated synthetic owner credentials.",
+      "action": "Submit valid login; read /api/auth/me.",
+      "expected": "200 login and trusted OWNER identity; owner workspace visible.",
+      "actual": "Login 200, current identity 200/OWNER, owner workspace visible; no password field remains.",
+      "http": {
+        "login": 200,
+        "currentIdentity": 200
+      },
+      "result": "Observed"
+    },
+    {
+      "figure": "F-AUTH-03",
+      "path": "docs/sprints/sprint-1/main-release-evidence/auth-logout-guest.png",
+      "sha256": "eb4354e6a538d76613597f722b012ee29907fbe165b995450d181d13775992ef",
+      "route": "/",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "role": "Guest after Survey Owner logout",
+      "acceptanceCriteria": [
+        "AC-F01-09",
+        "AC-F01-16"
+      ],
+      "plannedSTS": [
+        "TEST-F01-E02"
+      ],
+      "precondition": "Authenticated synthetic Survey Owner.",
+      "action": "Click Log out; wait for the actual server response.",
+      "expected": "204 and guest Login form; private workspace absent.",
+      "actual": "Logout 204, enabled Login form, empty password and no private workspace.",
+      "http": {
+        "logout": 204
+      },
+      "result": "Observed"
+    },
+    {
+      "figure": "F-AUTH-04",
+      "path": "docs/sprints/sprint-1/main-release-evidence/auth-logout-denied.png",
+      "sha256": "6a8f49fda06bc9218fb2663b7812f3f357be598a811fe3f15d42e5ee4b3250bf",
+      "route": "/api/auth/me",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "role": "Guest after logout",
+      "acceptanceCriteria": [
+        "AC-F01-09",
+        "AC-F01-16"
+      ],
+      "plannedSTS": [
+        "TEST-F01-E02"
+      ],
+      "precondition": "Actual logout has returned 204; guest session only.",
+      "action": "Navigate directly to protected /api/auth/me.",
+      "expected": "401 AUTH_REQUIRED with no private identity.",
+      "actual": "Real API response 401 AUTH_REQUIRED; browser displays the safe error JSON.",
+      "http": {
+        "protectedRead": 401,
+        "errorCode": "AUTH_REQUIRED"
+      },
+      "result": "Observed"
+    }
+  ],
+  "historicalTestCountsUnchanged": true,
+  "limits": "One owner normal login/logout sequence at 360px; this is selected demonstration evidence for E01/E02, not full STS execution, all roles/widths, expiry/replay or failure-permutation certification. No credentials, raw session cookies or CSRF tokens recorded."
+}
