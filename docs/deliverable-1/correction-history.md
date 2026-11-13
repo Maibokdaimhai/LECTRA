@@ -17,7 +17,7 @@ The first three passing cases checked unsupported-mode POST before duplicate, Dr
 
 ## Production correction and candidate GREEN
 
-Commit 609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e added the guard immediately after trusted scope authorization and before participation/bundle/answer queries. The enhanced regression preserves all original expectations and additionally checks eligible unsubmitted409, ineligible404 and owner403. Actual selected candidate verification passed 5 focused cases, 41 feature and 7 release cases:53 selected passes, plus build/typecheck/restart. These candidate results remain separate from both historical and current full matrices. PR #47 received actual human review/approval; R47-01 canonical test synchronization was completed through PR #46 before integration.
+Commit 609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e added the guard immediately after trusted scope authorization and before participation/bundle/answer queries. The enhanced regression preserves all original expectations and additionally checks eligible unsubmitted 409, ineligible 404 and owner 403. Actual selected candidate verification passed 5 focused cases, 41 feature and 7 release cases: 53 selected passes, plus build/typecheck/restart. These candidate results remain separate from both historical and current full matrices. PR #47 received actual human review/approval; R47-01 canonical test synchronization was completed through PR #46 before integration.
 
 ```typescript
 const row = await scope(db, req);
@@ -27,7 +27,7 @@ if (row.mode !== 'IDENTIFIED')
 
 ## Current exact-main GREEN
 
-The reviewed correction is in assessed main b458cb65736029f5c7de55e49c9afd6bc8de702a / sprint-1.1. A new clone and new databases ran the full selected matrix:219 PASS / 0 FAIL / 0 SKIP, including all 5 focused PostgreSQL cases. The mode boundary now rejects both lifecycle states without returning identified fallback answers and preserves authorization precedence. No production enum/migration or Anonymous Mode was introduced.
+The reviewed correction is in assessed main b458cb65736029f5c7de55e49c9afd6bc8de702a / sprint-1.1. A new clone and new databases ran the full selected matrix: 219 PASS / 0 FAIL / 0 SKIP, including all 5 focused PostgreSQL cases. The mode boundary now rejects both lifecycle states without returning identified fallback answers and preserves authorization precedence. No production enum/migration or Anonymous Mode was introduced.
 
 ```text
 vitest.post-release.config.ts
@@ -35,4 +35,4 @@ Test Files  1 passed (1)
 Tests       5 passed (5)
 ```
 
-Original sprint-1/af2e103214 PASS and originaladditional3PASS/2FAIL remain recorded as they actually occurred. They are neither overwritten nor summed into the current 219.
+Original sprint-1 / af2e103: 214 PASS; original additional investigation: 3 PASS / 2 FAIL remain recorded as they actually occurred. They are neither overwritten nor summed into the current 219.

@@ -1,12 +1,12 @@
 # Complete Sprint 1 assertion-audited AC results
 
-Assessed release:sprint-1.1/b458cb65736029f5c7de55e49c9afd6bc8de702a. All 113 AC and 183 original planned STS cases are retained. Current 219 post-main selected executions passed with 0 failed / 0 skipped. A passing scenario is not exhaustive proof of every wider planned condition.
+Assessed release: sprint-1.1 / b458cb65736029f5c7de55e49c9afd6bc8de702a. All 113 AC and 183 original planned STS cases are retained. Current 219 post-main selected executions passed with 0 failed / 0 skipped. A passing scenario is not exhaustive proof of every wider planned condition.
 
 ## Evidence provenance
-MAIN=current post-main execution, corrected-main-verification.json. HISTORICAL G04=the 12 recovered real-PostgreSQL checks on 2961014, with original source and limitations retained; not 12 extra current executions. PROCESS=actual commits/reviews/ancestry, not automated application tests. Original 214 PASS and original additional 3 PASS / 2 FAIL are historical only.
+MAIN = current post-main execution, corrected-main-verification.json. HISTORICAL G04 = the 12 recovered real-PostgreSQL checks on 2961014, with original source and limitations retained; not 12 extra current executions. PROCESS = actual commits/reviews/ancestry, not automated application tests. Original 214 PASS and original additional 3 PASS / 2 FAIL are historical only.
 
 ## Current AC dispositions
-{"PARTIAL": 96, "PASS": 11, "PROCESS / PARTIAL": 5, "PARTIAL / ACCEPTED MINOR": 1}. AC-F04-22 is now supported by the corrected-main regression, including both lifecycle states and authorization precedence. AC-F05-08 retains the explicitly accepted Minor label/order assertion gap. Other Partial entries identify unproved wider conditions; actual human release review accepted the bounded increment without further actionable findings. No missing assertions are fabricated or changed to Pass.
+11 AC have direct Pass for the stated behavior; 96 retain Partial evidence, 5 process/history criteria retain Partial acceptance boundaries, and 1 has the explicitly accepted Minor evidence limitation. Total: 113. AC-F04-22 is now supported by the corrected-main regression, including both lifecycle states and authorization precedence. AC-F05-08 retains the explicitly accepted Minor label/order assertion gap. Other Partial entries identify unproved wider conditions; actual human release review accepted the bounded increment without further actionable findings. No missing assertions are fabricated or changed to Pass.
 
 ## AC-F01-01
 Bootstrap returns a persisted session-bound token, correct guest/auth projection and no-store; repeated live bootstrap does not renew token/deadline.

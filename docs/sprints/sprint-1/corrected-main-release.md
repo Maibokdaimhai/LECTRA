@@ -1,6 +1,6 @@
 # Corrected Sprint 1 main release
 
-**Assessed application: `sprint-1.1` → `b458cb65736029f5c7de55e49c9afd6bc8de702a`.** Release PR #48 received R1NNE0's substantive approval of staging `4070a872e4ee925bf777b607c2787cfdb6af6f97` and merged into main. The actual main commit then passed the checks below before the distinct annotated correction tag was published. The original `sprint-1` tag still points to `af2e103`; it was not moved.
+**Assessed application: `sprint-1.1` -> `b458cb65736029f5c7de55e49c9afd6bc8de702a`.** Release PR #48 received R1NNE0's substantive approval of staging `4070a872e4ee925bf777b607c2787cfdb6af6f97` and merged into main. The actual main commit then passed the checks below before the distinct annotated correction tag was published. The original `sprint-1` tag still points to `af2e103`; it was not moved.
 
 ## Current result and reproducibility
 

@@ -10,7 +10,7 @@
     "apps/api/tests/unit/argon2-compatibility.test.ts": "d1fd266139b50f418593be1a8c01c52b9f0e8b5ac219bfbb3a9d3acd512f7e2e",
     "apps/api/tests/unit/config.test.ts": "5e9cdfda6b0c2d15f28564f282f468378ef1d4f8a95d026a2e75961d70dcc0f3",
     "apps/api/tests/unit/feedback-rules.test.ts": "749d786a223753b347676313880d23167fc6f10e178e6f0c5ad60795610bc82b",
-    "docs/deliverable-1/release-process-and-contributions.md": "598944f19d58252f0a292fc3ee821014fe905e1dd7f416fcb721c6cb90693373",
+    "docs/deliverable-1/release-process-and-contributions.md": "9b6a2b780565de4855ac8c89fcdd49b70a2f9e8eb2aff00f33c93364c8621869",
     "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs": "d0444643798bec40b1c581aed22198c71086980ce7a42e081c8b5a4ac6069e5a",
     "scripts/verify-restart.ts": "6c441b9932fbb9b1dba34be37b400b2eaab58d348fbd7a6442ee65b391489418",
     "tests/browser/feedback.spec.ts": "bf3d6c0948daaab356b69884921b1c1e5e07ec452b0299f48eea153e7e8c7732",
