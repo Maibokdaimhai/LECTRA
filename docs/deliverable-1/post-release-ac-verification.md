@@ -1,10 +1,10 @@
 # Additional post-release direct AC verification
 
-Assessed application: **af2e1030984bcc816081b25b29c9de52a80efe30 / sprint-1**. Recorded 13 November 2026 (Asia/Bangkok). These new tests run the unchanged production implementation with new uncommitted test/configuration files on `review/pr-46`; they are not part of the historical 214-test run. All original 82 assessed source hashes still match.
+Assessed application: **af2e1030984bcc816081b25b29c9de52a80efe30 / sprint-1**. Recorded 13 November 2026 (Asia/Bangkok). The original execution ran unchanged production implementation with then-uncommitted test/configuration files on `review/pr-46`, subsequently published in report commit 2310e1574ad8156a8c8e24b50d2b42d6389807ce; they are not part of the historical 214-test run. All original 82 assessed source hashes still match.
 
 ## Actual result and exact scope
 
-**3 PASS / 2 FAIL / 0 skipped**, five selected real API/PostgreSQL executions; exit code **1**. `npm run typecheck` passed. No full-matrix rerun or production correction was performed. The original **214 passed / 0 failed / 0 skipped** remains a separate historical result, not the outcome of this run.
+**3 PASS / 2 FAIL / 0 skipped**, five selected real API/PostgreSQL executions; exit code **1**. `npm run typecheck` passed. No full-matrix rerun or production correction was performed in that original investigation. The later correction candidate is recorded separately below. The original **214 passed / 0 failed / 0 skipped** remains a separate historical result, not the outcome of this run.
 
 Actual source: `apps/api/tests/post-release/ac-gaps.test.ts`. Dedicated configuration: `vitest.post-release.config.ts`; existing feature/release configurations and tests remain unchanged. The new execution IDs below supplement the accepted planned STS IDs; they do not rename or add retroactive preimplementation cases.
 
@@ -104,7 +104,7 @@ This is a confirmed **conditional fail-closed contract defect**, not a claim tha
 
 AC-F04-22 therefore has a passing duplicate-submission branch and a **failing own-readback branch**. It must not be reported wholly Passed. AC-F05-01 has direct API evidence, but its UI unavailable-state check was not run here. AC-F05-21 has direct selected mode-rejection evidence; broader STS permutations remain Partial. The prior G-04 acceptance and release history are preserved as historical facts, not a new acceptance of this defect.
 
-Team decision: PR46-DEF-01 is a Known Limitation discovered during additional post-release verification. PR46-I04-PUBLISHED and PR46-I04-CLOSED are two observations of the same underlying unsupported-mode own-readback defect. AC-F04-22 remains a Sprint 1 AC with Partial disposition. Correction is deferred for team follow-up in Sprint 2 before enabling F-06 Anonymous Mode; regression tests must be rerun after correction. The defect is not fixed. The existing Sprint Plan and original assessed release are unchanged.
+PR46-DEF-01 remains reproducible on the immutable assessed release af2e103; the original 3-PASS/2-FAIL record is preserved. A separate minimal Sprint 1 defensive correction has now been implemented and verified in [PR #47](https://github.com/Maibokdaimhai/LECTRA/pull/47), source 609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e. It rejects unsupported-mode own readback after authorization and before answer reads. Real PostgreSQL verification passed 5 regression, 41 feature and 7 release cases (53 selected), plus typecheck/build/built-process restart. The RED version eef5e75 reproduced 3 PASS / 2 FAIL first. Candidate evidence is retained in mode-readback-correction.json/md and its raw logs. This does not enable F-06, modify the production enum, replace the old tag, establish human approval or claim the original release was fixed. AC-F04-22 stays Partial for that assessed release. The earlier proposal to defer the guard to Sprint 2 is superseded by this separate correction candidate; it was not an instructor requirement or a newly accepted waiver. Actual teammate review and release integration remain separate gates.
 
 ## Commands and retained output
 

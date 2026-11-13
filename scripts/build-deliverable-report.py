@@ -128,6 +128,7 @@ for student in snapshot['students']:para(student['id']+' - '+student['name']+' /
 para('Repository: https://github.com/Maibokdaimhai/LECTRA')
 para('Assessed immutable application: '+snapshot['releaseTag']+' -> '+snapshot['testedCommit'])
 para('Report/source revision: '+source_commit+'. The later PDF publication commit does not replace the assessed application/tag.')
+para('Assessment boundary: original main/tag with disclosed PR46-DEF-01. Separate PR #47 correction has passed selected checks but is awaiting actual teammate review/integration. This document does not certify all AC/DoD complete.','small')
 para('Prepared '+snapshot['date']+'. The original instructor deadline was 8 November 2026, 23:59 Asia/Bangkok. This report records actual later release/check dates and makes no timely-submission or LEB2 submission claim.')
 para('Authority: instructor deliverable/group specifications define assessment requirements. LECTRA policies, exact limits, theme and sprint allocations are team decisions. Parts A-D cover the whole product; E-F cover the bounded Sprint 1 increment.')
 para('Navigation - actual page ranges','h2')
@@ -156,6 +157,7 @@ para('Node 24.22.1 / npm 10.9.2 / PostgreSQL 17. Clone the repository and checko
 source('README.md')
 para('Complete S1 AC-to-test/results mapping','h1');markdown(root/'docs/deliverable-1/release-ac-results.md')
 para('Additional post-release direct AC checks: actual passing and failing results','h1');markdown(root/'docs/deliverable-1/post-release-ac-verification.md')
+para('Separate correction candidate: PR46-DEF-01','h1');markdown(root/'docs/sprints/sprint-1/mode-readback-correction.md')
 para('Two actual automated test excerpts','h1')
 text=(root/'apps/api/tests/features/workflows.test.ts').read_text()
 for term in ['F-04: an actual SQL fault','INT22-06:']:
@@ -168,7 +170,7 @@ history=json.loads((root/'docs/sprints/sprint-1/main-release-review-history.json
 for review in r['reviews']:
  para(review['reviewer']+' / '+review['state']+' / '+review['submittedAt']+' / reviewed '+review['sourceSha'],'record');para(review['body'])
 para('Known incomplete or limited work','h1')
-para('The historical release matrix remains 214 passing tests. Additional post-release direct AC checks now have 3 passing and 2 failing executions: PR46-DEF-01 returns identified own answers for an unsupported-mode fixture. The team records the same underlying defect as a Known Limitation, deferred to Sprint 2 before enabling F-06 Anonymous Mode, with regression tests required after correction. AC-F04-22 remains Partial in Sprint 1; the defect is not fixed. See the complete direct-check record above.')
+para('The historical assessed release remains sprint-1 / af2e103 with 214 passing tests. The later direct investigation has 3 PASS and 2 FAIL, proving one conditional unsupported-mode readback defect. A minimal defensive fix is implemented separately in PR #47 at 609bbcd with 53 selected passing tests plus typecheck/build/restart. This candidate does not enable Anonymous Mode and is not integrated into the assessed tag. AC-F04-22 remains Partial for the original release. Actual teammate review/integration is required before claiming a corrected release; old release acceptance does not cover the new failure or candidate.')
 para('Selected tests passed; broad STS rows remain Partial where every timing/fault/permutation/manual condition was not exercised. Actual opposite-member release review accepted the documented G-04 local MVP dispositions. Full human assistive-technology/WCAG testing was not run. Anonymous response separation, export, comparison/history, notes and P15 remain later planned work; Docker/complete CI/CD/GCP are later Lab 5 scope. No deployed security/usability outcome is certified. Pair sessions/hours were not supplied and are not invented; the contribution table records actual artifacts/reviews and confirmed identities.')
 para('Submission boundary: this assembled report is for team review; no LEB2 submission is performed. The application release is immutable; later report changes identify their own revision. #8/#26 remain delivery/report tracking until actual report review/completion. The prior review draft is superseded by this assessed-release report, not relabelled as a timely submitted artifact.')
 for path,caption in [

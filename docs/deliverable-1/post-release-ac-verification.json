@@ -228,5 +228,14 @@
     "Two genuine failing readback cases remain; no GREEN claim for AC-F04-22 as a whole.",
     "No full application matrix rerun, release/tag change, teammate approval or GitHub action."
   ],
-  "teamDecision": "Team decision: PR46-DEF-01 is a Known Limitation discovered during additional post-release verification. PR46-I04-PUBLISHED and PR46-I04-CLOSED are two observations of the same underlying unsupported-mode own-readback defect. AC-F04-22 remains a Sprint 1 AC with Partial disposition. Correction is deferred for team follow-up in Sprint 2 before enabling F-06 Anonymous Mode; regression tests must be rerun after correction. The defect is not fixed. The existing Sprint Plan and original assessed release are unchanged."
+  "historicalTeamDecision": "Team decision: PR46-DEF-01 is a Known Limitation discovered during additional post-release verification. PR46-I04-PUBLISHED and PR46-I04-CLOSED are two observations of the same underlying unsupported-mode own-readback defect. AC-F04-22 remains a Sprint 1 AC with Partial disposition. Correction is deferred for team follow-up in Sprint 2 before enabling F-06 Anonymous Mode; regression tests must be rerun after correction. The defect is not fixed. The existing Sprint Plan and original assessed release are unchanged.",
+  "currentDisposition": {
+    "date": "2026-11-13",
+    "assessedRelease": "Unchanged; original defect retained",
+    "candidatePr": 47,
+    "testedCorrectionCommit": "609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e",
+    "selectedPassed": 53,
+    "status": "Actual human review/main integration not claimed",
+    "note": "Original investigation remains 3PASS/2FAIL; counts never combined."
+  }
 }
