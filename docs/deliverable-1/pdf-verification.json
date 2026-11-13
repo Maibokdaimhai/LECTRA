@@ -1,9 +1,9 @@
 {
   "dateBangkok": "2026-11-13",
   "pdf": "docs/deliverable-1/lectra-deliverable-1.pdf",
-  "sha256": "03eca21d3a86f4089abbc44096ea616bcc807100c59f91a430f34d377f4ec1af",
-  "bytes": 1418583,
-  "pages": 284,
+  "pages": 279,
+  "sha256": "21c951910a240784fddacadd704ee5c91929573b9ec63abbef40e8e9e027f5a3",
+  "bytes": 1444031,
   "partsStartPages": {
     "A": 3,
     "B": 30,
@@ -35,97 +35,66 @@
     ],
     "F": [
       221,
-      284
+      279
     ]
   },
-  "assessedApplication": "af2e1030984bcc816081b25b29c9de52a80efe30",
-  "tag": "sprint-1",
-  "reportSourceCommit": "7e237c99c47ab99871d32f37c34fa862bc28a2f9",
+  "assessedApplication": "b458cb65736029f5c7de55e49c9afd6bc8de702a",
+  "tag": "sprint-1.1",
+  "tagObject": "017da08d7b1c9d9b293d3798a64f389108c4d7a4",
+  "reportSourceCommit": "4aeb69ab56b6b04805d6ec688838d9e59ce78e03",
   "all113AcIdsPresent": true,
   "all183PlannedStsPresent": true,
   "actualNavigationRangesVerified": true,
-  "renderedPages": 284,
-  "visualQa": "All 284 pages rendered at 22dpi and all 10 contact sheets inspected. Selected affected cover, architecture, AC mapping, investigation/failure, correction, authentication and domain/history pages inspected at 100dpi. No observed clipping/overlap or missing glyphs. Original screenshot bitmaps retained. Dense source/evidence text is 9pt; links/long IDs wrap.",
-  "detailPagesRendered": [
-    1,
-    44,
-    95,
-    221,
-    229,
-    230,
-    234,
-    240,
-    245,
-    250,
-    255,
-    257,
-    258,
-    259,
-    260,
-    261,
-    262,
-    263,
-    264,
-    265,
-    266,
-    267,
-    270,
-    274,
-    279,
-    284
-  ],
+  "renderedPages": 279,
+  "visualQa": "All279pages rendered. All10contact sheets and selected100dpi affected pages inspected. After final editorial refinements, cover/affected PartF sheets and detailed changed paragraphs re-inspected. No observed layout defect; out-of-page glyph scan has zero findings.218body pages of completePartsA-E exactly match prior284-page report text after excluding versioned footers. Original source/photographs retained separately; all current application/authentication figures recaptured on corrected main.",
+  "partsAtoEBodyPagesUnchanged": 218,
   "outOfPageGlyphs": [],
   "basicSecretPatternsPassed": true,
-  "authFigurePages": {
-    "F-AUTH-01": [
-      266
-    ],
-    "F-AUTH-02": [
-      267
-    ],
-    "F-AUTH-03": [
-      268
-    ],
-    "F-AUTH-04": [
-      269
-    ]
+  "rawLogsCheckedAgainstConfiguredSecrets": true,
+  "actualMainSelectedResults": {
+    "passed": 219,
+    "failed": 0,
+    "skipped": 0,
+    "typecheckBuildOrmRestart": "passed"
   },
-  "assessedSourceHashesMatched": 82,
-  "countsKeptSeparate": {
-    "historicalMain": {
-      "passed": 214,
-      "failed": 0,
-      "skipped": 0
-    },
-    "additionalOriginalInvestigation": {
-      "passed": 3,
-      "failed": 2,
-      "skipped": 0
-    },
-    "separateCorrectionCandidate": {
-      "pr": 47,
-      "testedCommit": "609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e",
-      "passed": 53,
-      "full214Rerun": false,
-      "browserRerun": false,
-      "typecheckBuildRestart": "passed"
-    }
+  "historicalResultsPreserved": {
+    "originalRelease": "sprint-1/af2e103",
+    "originalPassed": 214,
+    "additionalOriginalPassed": 3,
+    "additionalOriginalFailed": 2,
+    "meaning": "Historicalonly, not current failures or summed counts"
   },
   "acAuditStatusCounts": {
     "PARTIAL": 96,
     "PASS": 11,
     "PROCESS / PARTIAL": 5,
-    "PARTIAL / KNOWN FAILING BRANCH": 1
+    "PARTIAL / ACCEPTED MINOR": 1
   },
-  "knownContentLimits": "Assessed af2e103 retains conditional PR46-DEF-01. PR47 is a verified candidate awaiting actual teammate review/integration; existing release approval does not accept the new defect. Whole-AC/STS/DoD certification is not claimed. Historical G04 evidence remains separately sourced. Human assistive-technology/deployed profile testing remains Not run/Partial.",
-  "submission": "Self-contained assessment report of original release with disclosed limits; no LEB2 submission or timely submission claimed. Actual team report acceptance remains pending.",
-  "previousPdfSha256": "f4db809113e75751a751eaf785bdcac85463da43ed926cdf8458e6bbd7725822",
-  "historicalQaRecord": "pdf-verification-history-2310e15.json",
+  "acceptedMinor": "AC-F05-08 score-label/order assertion gap explicitly accepted in actualPR46/48 reviews; no implementation bug claimed.",
+  "correction": "PR46-DEF-01 resolved in actualassessedmain;5focused cases PASS, with authorization precedence and persisted snapshot checks.",
+  "authFigurePages": {
+    "F-AUTH-01": [
+      262
+    ],
+    "F-AUTH-02": [
+      263
+    ],
+    "F-AUTH-03": [
+      264
+    ],
+    "F-AUTH-04": [
+      265
+    ]
+  },
+  "assessedSourceHashesMatched": 84,
+  "submission": "No LEB2 or original-deadline compliance claim. Final corrected-report publication is reviewed separately from the immutable application/tag.",
+  "previousPdfSha256": "03eca21d3a86f4089abbc44096ea616bcc807100c59f91a430f34d377f4ec1af",
+  "historicalQaRecord": "docs/deliverable-1/pdf-verification-history-sprint-1.json",
   "currentSourceHashes": {
-    "docs/deliverable-1/release-ac-results.json": "1f4d42beacf524da0fbe6d0205fcf2280a4ea5356f8d5744103164982fc0e073",
-    "docs/deliverable-1/release-ac-results.md": "d9fa90c392f18f5bd3a0849e09c412bdfdc77bc55b54f68912b08c9ef628fed8",
-    "docs/deliverable-1/ac-assertion-audit.json": "a3474f27357cd30c0233836240ea3964f089379ee0152d7f9b4dc62dd3e8d4c6",
-    "scripts/build-deliverable-report.py": "06180cba01fa8a476d5a5a5541dea1d0d6ca95e0c585d546c4ad6819278a8a8e",
-    "scripts/render-ac-results.py": "66dc12c1369e54c20bd2b08d782078d4cda39236e9dcb1e452421a7c71bb5cd5"
+    "scripts/build-deliverable-report.py": "bcd5b9a3416ed716dcc07f1d27500123581b6e7846a595b0974c35543aecb59a",
+    "docs/deliverable-1/release-ac-results.json": "9e9d95063b25607fb64633cbe4a6a160bdf2a3df9264c4a713fc194b42438c05",
+    "docs/deliverable-1/release-ac-results.md": "702b6a9b3400db19fefe616f1c79a835c0581b601045c1b8ebed02cd2c9f7bd7",
+    "docs/deliverable-1/ac-assertion-audit.json": "9587e1dd210204ddbd2e238652ebc0aee49e9ac759fd648c7f94da954ba9b8ef",
+    "docs/sprints/sprint-1/corrected-main-verification.json": "25e9e5d12d07e17bf9e96c6df44255bacf2044e654d33a4c83af3abcbcf1696b"
   }
 }
