@@ -253,6 +253,8 @@ export function setupFeedback(app: Express, pool: Pool) {
         query(req, []);
         const data = await transaction(pool, async (db) => {
             const row = await scope(db, req);
+            if (row.mode !== 'IDENTIFIED')
+                fail(409, 'MODE_NOT_SUPPORTED');
             const submitted = Boolean((await db.query('SELECT 1 FROM "Participation" WHERE "surveyId"=$1 AND "studentId"=$2', [row.id, req.actor!.userId])).rowCount);
             const bundles = (await db.query('SELECT id FROM "ResponseBundle" WHERE "surveyId"=$1 AND "identifiedStudentId"=$2', [row.id, req.actor!.userId])).rows;
             if (submitted !== (bundles.length === 1))

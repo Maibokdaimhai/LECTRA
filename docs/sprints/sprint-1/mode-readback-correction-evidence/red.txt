@@ -1,0 +1,97 @@
+
+ RUN  v5.1.0 /Users/meng/.codex/worktrees/review-pr38/LECTRA
+
+ ❯ apps/api/tests/post-release/ac-gaps.test.ts (5 tests | 2 failed) 1531ms
+   × PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback 113ms
+   × PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback 123ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+AssertionError: expected 200 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 200
+
+ ❯ apps/api/tests/post-release/ac-gaps.test.ts:128:34
+    126|   try {
+    127|     const response = await student.agent.get(`/api/surveys/${d.id}/my-…
+    128|     expect.soft(response.status).toBe(409);
+       |                                  ^
+    129|     expect.soft(response.body.error?.code).toBe('MODE_NOT_SUPPORTED');
+    130|     expect.soft(Object.keys(response.body)).toEqual(['error']);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+AssertionError: expected undefined to be 'MODE_NOT_SUPPORTED' // Object.is equality
+
+- Expected:
+"MODE_NOT_SUPPORTED"
+
++ Received:
+undefined
+
+ ❯ apps/api/tests/post-release/ac-gaps.test.ts:129:44
+    127|     const response = await student.agent.get(`/api/surveys/${d.id}/my-…
+    128|     expect.soft(response.status).toBe(409);
+    129|     expect.soft(response.body.error?.code).toBe('MODE_NOT_SUPPORTED');
+       |                                            ^
+    130|     expect.soft(Object.keys(response.body)).toEqual(['error']);
+    131|     expect.soft(JSON.stringify(response.body).includes(sentinel)).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+AssertionError: expected [ 'data' ] to deeply equal [ 'error' ]
+
+- Expected
++ Received
+
+  [
+-   "error",
++   "data",
+  ]
+
+ ❯ apps/api/tests/post-release/ac-gaps.test.ts:130:45
+    128|     expect.soft(response.status).toBe(409);
+    129|     expect.soft(response.body.error?.code).toBe('MODE_NOT_SUPPORTED');
+    130|     expect.soft(Object.keys(response.body)).toEqual(['error']);
+       |                                             ^
+    131|     expect.soft(JSON.stringify(response.body).includes(sentinel)).toBe…
+    132|     expect(await persisted(d.id)).toEqual(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-PUBLISHED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+ FAIL  apps/api/tests/post-release/ac-gaps.test.ts > PR46-I04-CLOSED / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ apps/api/tests/post-release/ac-gaps.test.ts:131:67
+    129|     expect.soft(response.body.error?.code).toBe('MODE_NOT_SUPPORTED');
+    130|     expect.soft(Object.keys(response.body)).toEqual(['error']);
+    131|     expect.soft(JSON.stringify(response.body).includes(sentinel)).toBe…
+       |                                                                   ^
+    132|     expect(await persisted(d.id)).toEqual(before);
+    133|   } finally { await mode(d.id, 'IDENTIFIED'); }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  11:07:52
+   Duration  1.83s (tests 87%, import 10%, transform 3%)
+
