@@ -1,0 +1,89 @@
+{
+  "recordedDateBangkok": "2026-11-12",
+  "source": "Actual read-only GitHub API metadata and review bodies",
+  "pullRequests": [
+    {
+      "number": 37,
+      "title": "test: verify integrated Sprint 1 API and database rules",
+      "author": "Maibokdaimhai",
+      "headBranch": "test/22-sprint1-api-integration",
+      "sourceSha": "b024596bd09daea7099acc3607d4be25cdc0dd84",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "4ff4562a8cf1a58fa5c6ae1d958b4ab8c0b2e18f",
+      "mergedAt": "2026-11-10T13:28:53Z",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "2726f9a595067ea09f21626894895f059782e3be",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/37#pullrequestreview-5832194353",
+          "submittedAt": "2026-11-09T20:24:45Z",
+          "body": "**Request Changes \u2014 One Minor Evidence Correction**\n\nNo actionable Blocker/Major implementation findings were identified.\n\nIndependent verification passed:\n- 32 feature/API/PostgreSQL tests\n- 37 unit tests\n- 2 API liveness tests\n\nCoverage inventory checks confirmed 113 unique AC records, 183 unique STS records, valid references and bidirectional mappings.\n\n### Minor \u2014 Unsupported Evidence Mapping\n\n**File:** `docs/sprints/sprint-1/issue-22-coverage.json`  \n**Location:** `TEST-F02-I10` (line 2384)\n\nThe cited INT22-03 scenario does not perform the membership changes or subsequent discovery checks required by this test case. INT22-02 verifies detail/submission eligibility, not discovery behavior.\n\nPlease remove the unsupported INT22-03 mapping and update AC-F02-08's selected evidence and the coverage summary totals.\n\nAlternatively, add explicit integration assertions that remove an eligible member, add an ineligible member, and verify the resulting discovery behavior.\n\nPlease retain the Partial disposition only when supported by actual test evidence.\n\nAll other reviewed implementation and verification findings are satisfactory.\n\n**Recommendation: Request changes for this Minor evidence correction only.**"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "b024596bd09daea7099acc3607d4be25cdc0dd84",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/37#pullrequestreview-5842618558",
+          "submittedAt": "2026-11-10T13:28:24Z",
+          "body": "**APPROVE** \u2014 The previous Minor evidence finding is fully resolved in `b024596`.\n\nVerified that:\n- The unsupported INT22-03 mapping was removed from TEST-F02-I10.\n- TEST-F02-I10 is explicitly marked Not demonstrated.\n- AC-F02-08 has no unsupported selected evidence and remains pending disposition.\n- Coverage totals are consistent: 113 AC / 183 STS, with 104 Partial and 46 Not demonstrated.\n- All IDs and bidirectional references remain valid.\n\nThe correction is documentation-only. Application, test and configuration files remain unchanged from the independently tested source commit `40d8ea1`.\n\nNo new actionable findings identified.\n\n**Ready for approval and merge.**"
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "title": "test(e2e): add Sprint 1 browser journeys and fix closed survey recovery",
+      "author": "R1NNE0",
+      "headBranch": "test/23-sprint1-browser-journeys",
+      "sourceSha": "4527ba5b26973fd14d42e3d1415c07632510315f",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "60736fb0f4f3e900a68179ed71d11668861445f9",
+      "mergedAt": "2026-11-10T06:07:57Z",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "4527ba5b26973fd14d42e3d1415c07632510315f",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/38#pullrequestreview-5836366253",
+          "submittedAt": "2026-11-10T03:33:56Z",
+          "body": "**Recommendation: Approve \u2014 PR #38**\n\nAI-assisted review of commit `4527ba5b26973fd14d42e3d1415c07632510315f`.\n\nNo actionable findings were identified within the reviewed scope.\n\nThe DEF-B23-01 fix correctly refreshes authoritative Survey state for `409 INVALID_STATE`, reconciles submission status, preserves uncertainty when recovery fails, and removes submission controls after closure without automatically replaying the POST. Other 409 responses retain their existing recovery behavior.\n\nIndependently verified on the exact PR head:\n\n- Typecheck and production build: passed.\n- Unit tests: 37 passed.\n- API liveness: 2 passed.\n- Real browser/API/PostgreSQL journeys: 14 passed.\n- Isolated mocked-browser recovery: 38 passed.\n- Workspace smoke: 4 passed.\n\n**95 tests passed**, with no failures or skips. The real-browser tests used a new isolated PostgreSQL database.\n\nAlso checked scenario/AC/STS references, screenshot hashes, and source hashes accounting for Windows LF/CRLF differences. The evidence appropriately distinguishes real integration tests, mocked recovery, historical failures and partial STS coverage.\n\nThis review does not certify complete Product DoD, release readiness or the final PDF. Those remain separate acceptance gates."
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "title": "release: LECTRA Sprint 1 identified-feedback MVP",
+      "author": "Maibokdaimhai",
+      "headBranch": "staging",
+      "sourceSha": "5848d958885603143b000bea81950d8c9737716d",
+      "base": "main",
+      "merged": true,
+      "mergeSha": "af2e1030984bcc816081b25b29c9de52a80efe30",
+      "mergedAt": "2026-11-12T14:38:45Z",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "5848d958885603143b000bea81950d8c9737716d",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/40#pullrequestreview-5876302498",
+          "submittedAt": "2026-11-12T14:38:33Z",
+          "body": "**Sprint 1 Final Release Review \u2014 Approved**\n\nReviewed the Sprint 1 release integration, including the completed corrections from PRs #42\u2013#45.\n\nThe identified Blocker/Major findings have been addressed, with regression tests and source-bound verification evidence.\n\nThe final staging candidate includes the reviewed corrections. I accept the documented G-04 dispositions and remaining limitations for the bounded Sprint 1 MVP scope.\n\nNo further actionable findings from my review.\n\n**Approved for merging into main**, subject to required checks passing.\n\nPost-main verification and immutable release tagging remain required under Issue #25."
+        }
+      ]
+    },
+    {
+      "number": 45,
+      "title": "fix(auth): finalize MVP logout and session lifetime guarantees",
+      "author": "Maibokdaimhai",
+      "headBranch": "fix/25-final-session-boundaries",
+      "sourceSha": "c125a6078b2337f29f0a1c3fcbcecfc519cd02f4",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "5848d958885603143b000bea81950d8c9737716d",
+      "mergedAt": "2026-11-12T14:35:36Z",
+      "reviews": []
+    }
+  ]
+}

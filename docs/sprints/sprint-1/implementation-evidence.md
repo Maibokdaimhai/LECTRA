@@ -1,5 +1,7 @@
 # Sprint 1 working increment and evidence
 
+**Accepted main release (2026-11-12):** [sprint-1 / main af2e103 with 214 actual post-main passing tests](main-release.md) supersedes earlier pending release observations. [Exact commands/SHA/hash evidence](main-release-verification.json) and [actual human release approval](main-release-review-history.json) retain the assessed application separately from this report revision. Earlier dated sections below are historical, not current open blockers.
+
 **Final MVP correction (2026-11-12):** [Session/logout and exact-lifetime correction](final-session-correction.md) records the three deep-review findings, production fixes, permanent regressions and [208 passing selected tests on the final code commit](final-session-verification.json), plus build/typecheck/ORM/restart. Actual correction integration, teammate release approval and post-main/tag steps remain required; earlier records below retain their original sources.
 
 **Release-review correction (2026-11-12):** R40-01 was independently reproduced after a teammate review was relayed by the owner. [Atomic authentication persistence correction and G-04 register](pr40-auth-save-fix.md) records actual RED/fix sources and 144 selected passing regression tests. The old 138-test record/hashes below remain historical; they do not cover this defect. Correction review/integration and G-04 acceptance remain required before main merge.
