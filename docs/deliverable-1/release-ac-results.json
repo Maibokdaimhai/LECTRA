@@ -639,7 +639,7 @@
             41
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real expiry clearsprivateunsavedstate, heldolderread ignored; logout survivesreload",
+          "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -651,7 +651,7 @@
             191
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercisedconsole outputs",
+          "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercised console outputs",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -665,7 +665,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Exact safe projections and exercisedlogs/private UI loss only; full cache/analytics/logtransport audit not run.",
+      "limitation": "Exact safe projections and exercised logs/private UI loss only; full cache/analytics/log transport audit not run.",
       "status": "PARTIAL"
     },
     {
@@ -723,7 +723,7 @@
             41
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real expiry clearsprivateunsavedstate, heldolderread ignored; logout survivesreload",
+          "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -796,7 +796,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Reviewed setup/migrations and persistedrestart demonstrated; independent fresh teammate execution not asserted.",
+      "limitation": "Reviewed setup/migrations and persisted restart demonstrated; independent fresh teammate execution not asserted.",
       "status": "PARTIAL"
     },
     {
@@ -820,7 +820,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Tenth/eleventh boundary demonstrated; limiter reset/timeadvance not established by this scenario; perprocess limit disclosed.",
+      "limitation": "Tenth/eleventh boundary demonstrated; limiter reset/time advance not established by this scenario; per-process limit disclosed.",
       "status": "PARTIAL"
     },
     {
@@ -934,7 +934,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Foundation fixtures/constraints and canonicalowners verified; not every uniqueness invariant inferred from seed alone.",
+      "limitation": "Foundation fixtures/constraints and canonical owners verified; not every uniqueness invariant inferred from seed alone.",
       "status": "PARTIAL"
     },
     {
@@ -1067,7 +1067,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Foreign Sectiondenial and authorized lecture filter established; empty Section/exact existing-survey reference list projection not directly asserted. Partial.",
+      "limitation": "Foreign Section denial and authorized lecture filter established; empty Section/exact existing-survey reference list projection not directly asserted. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1097,13 +1097,13 @@
             802
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "two page sequences descending Lecturesequence, total consistency, no duplicate IDs, beyondlastempty, foreigncount isolation and malformed query422",
+          "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Exact lecture filter and many Draft survey paging; all three states/Sectionfilter isolation not fully asserted. Partial.",
+      "limitation": "Exact lecture filter and many Draft survey paging; all three states/Section filter isolation not fully asserted. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1176,7 +1176,7 @@
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
-      "limitation": "Direct previous/added member list assertions after membershipchange at INT22-02; prior empty mapping corrected.",
+      "limitation": "Direct previous/added member list assertions after membership change at INT22-02; prior empty mapping corrected.",
       "status": "PASS"
     },
     {
@@ -1201,7 +1201,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Two eligibleusers false/false then true/false directly asserted; unrelated access test removed.",
+      "limitation": "Two eligible users false/false then true/false directly asserted; unrelated access test removed.",
       "status": "PARTIAL"
     },
     {
@@ -1257,7 +1257,7 @@
             802
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "two page sequences descending Lecturesequence, total consistency, no duplicate IDs, beyondlastempty, foreigncount isolation and malformed query422",
+          "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -1275,7 +1275,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Exact selected query/UUID/unknown/duplicate/method failure; GETbody and all deferredfilters not fully tested.",
+      "limitation": "Exact selected query/UUID/unknown/duplicate/method failure; GETbody and all deferred filters not fully tested.",
       "status": "PARTIAL"
     },
     {
@@ -1295,7 +1295,7 @@
             802
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "two page sequences descending Lecturesequence, total consistency, no duplicate IDs, beyondlastempty, foreigncount isolation and malformed query422",
+          "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
@@ -1319,7 +1319,7 @@
             802
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "two page sequences descending Lecturesequence, total consistency, no duplicate IDs, beyondlastempty, foreigncount isolation and malformed query422",
+          "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -1349,7 +1349,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Lecturesequence order and calendardate proven; unchanged-page repetition/full tiebreaker fixtures not established.",
+      "limitation": "Lecture sequence order and calendar date proven; unchanged-page repetition/full tie-breaker fixtures not established.",
       "status": "PARTIAL"
     },
     {
@@ -1369,13 +1369,13 @@
             118
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real empty context/zeroresults, heldloading versus deliveryerror and explicit successful retry",
+          "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real empty/loading/deliveryerror/retry; full cascadingparent/pageactions not all covered.",
+      "limitation": "Real empty/loading/delivery error/retry; full cascading parent/page actions not all covered.",
       "status": "PARTIAL"
     },
     {
@@ -1394,7 +1394,7 @@
             41
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real expiry clearsprivateunsavedstate, heldolderread ignored; logout survivesreload",
+          "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -1406,13 +1406,13 @@
             118
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real empty context/zeroresults, heldloading versus deliveryerror and explicit successful retry",
+          "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real sessionloss/stale held read and retry; complete every context supersession matrix not established.",
+      "limitation": "Real session loss/stale held read and retry; complete every context supersession matrix not established.",
       "status": "PARTIAL"
     },
     {
@@ -1444,7 +1444,7 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -1462,7 +1462,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real keyboard login/list open/Back and layout; entire two listjourneys/visiblefocus at exact360/1280 not fully inspected. Partial.",
+      "limitation": "Real keyboard login/list open/Back and layout; entire two list journeys/visible focus at exact360/1280 not fully inspected. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1502,13 +1502,13 @@
             118
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real empty context/zeroresults, heldloading versus deliveryerror and explicit successful retry",
+          "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Browser delivery failure/retry only; actual domainread DBoutage for each discovery endpoint not established. Partial.",
+      "limitation": "Browser delivery failure/retry only; actual domain read DBoutage for each discovery endpoint not established. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1559,7 +1559,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Discovery submitted flag, revalidation duplicate/Closed/ineligible routes; full actionstate matrix incomplete.",
+      "limitation": "Discovery submitted flag, revalidation duplicate/Closed/ineligible routes; full action state matrix incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -1579,7 +1579,7 @@
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
-      "limitation": "Process/history inspection; no automated APItest substituted for humanreview.",
+      "limitation": "Process/history inspection; no automated APItest substituted for human review.",
       "status": "PROCESS / PARTIAL"
     },
     {
@@ -1615,7 +1615,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "201 and persisted Draft revision1 demonstrated; exact complete emptyinitial GET/canonicalowner envelope not asserted. Partial.",
+      "limitation": "201 and persisted Draft revision1 demonstrated; exact complete empty initial GET/canonical owner envelope not asserted. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1652,7 +1652,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Selected six-route scoping and real roles; guest/shape precedence exhaustivematrix incomplete.",
+      "limitation": "Selected six-route scoping and real roles; guest/shape precedence exhaustive matrix incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -1723,7 +1723,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Frozen eligible detail, safe respondent revision omission and historical coherent parent/questionsread; all forbidden safe keys incomplete.",
+      "limitation": "Frozen eligible detail, safe respondent revision omission and historical coherent parent/questions read; all forbidden safe keys incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -1756,7 +1756,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Realreorder IDs and historical add/remove/contiguouspositions; malformedforeign/duplicate question IDs not fully established.",
+      "limitation": "Real reorder IDs and historical add/remove/contiguous positions; malformed/foreign/duplicate question IDs not fully established.",
       "status": "PARTIAL"
     },
     {
@@ -1775,7 +1775,7 @@
             14
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "blank Draft normalized; publication rejected; revision0 and121-codepointtitle rejected; not all exact bounds",
+          "demonstrated": "blank Draft normalized; publication rejected; revision0 and121-code-point title rejected; not all exact bounds",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -1818,7 +1818,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Valid RATING/TEXT definitions accepted; malformed scales/booleancoercion/unsupported type matrix not directly established. Partial.",
+      "limitation": "Valid RATING/TEXT definitions accepted; malformed scales/boolean coercion/unsupported type matrix not directly established. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1837,7 +1837,7 @@
             14
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "blank Draft normalized; publication rejected; revision0 and121-codepointtitle rejected; not all exact bounds",
+          "demonstrated": "blank Draft normalized; publication rejected; revision0 and121-code-point title rejected; not all exact bounds",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -1849,13 +1849,13 @@
             530
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "invalid/empty membership rejects422, remains Draft/published Atnull/zeroeligibility",
+          "demonstrated": "invalid/empty membership rejects422, remains Draft/published Atnull/zero eligibility",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Empty definition invalid publication and successful real ratingpublication; 0/1/10/11 questions/text-only boundary matrix not directly established. Partial.",
+      "limitation": "Empty definition invalid publication and successful real rating publication; 0/1/10/11 questions/text-only boundary matrix not directly established. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1904,7 +1904,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real change/no-op/stale and both edit/publish orders; concurrent two real saves at samerevision not directly established. Partial.",
+      "limitation": "Real change/no-op/stale and both edit/publish orders; concurrent two real saves at same revision not directly established. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -1924,7 +1924,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Historical real faileddeletionrollback, validcascade and same-Lecture recreation; stale/Published/Closed delete full matrix incomplete.",
+      "limitation": "Historical real failed deletion rollback, valid cascade and same-Lecture recreation; stale/Published/Closed delete full matrix incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -1974,7 +1974,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Publishededit/delete409 and legalpublish/close demonstrated; everyreopen/mode/Closed mutation denied permutation not established.",
+      "limitation": "Published edit/delete409 and legal publish/close demonstrated; every reopen/mode/Closed mutation denied permutation not established.",
       "status": "PARTIAL"
     },
     {
@@ -2023,7 +2023,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Committed eligibility count/snapshot and editpublish atomicoutcomes; full publication fault stage coverage incomplete.",
+      "limitation": "Committed eligibility count/snapshot and edit/publish atomic outcomes; full publication fault stage coverage incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -2042,13 +2042,13 @@
             530
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "invalid/empty membership rejects422, remains Draft/published Atnull/zeroeligibility",
+          "demonstrated": "invalid/empty membership rejects422, remains Draft/published Atnull/zero eligibility",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
-      "limitation": "Real invalid/emptymemberfixtures produce422/unchanged Draft/zeroeligibility.",
+      "limitation": "Real invalid/empty member fixtures produce422/unchanged Draft/zero eligibility.",
       "status": "PASS"
     },
     {
@@ -2087,7 +2087,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Frozen eligibility/access, interpretation and title retained; everyquestionfield throughallconsumers not completely compared.",
+      "limitation": "Frozen eligibility/access, interpretation and title retained; every question field through all consumers not completely compared.",
       "status": "PARTIAL"
     },
     {
@@ -2135,7 +2135,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actual one-statement snapshot with concurrentmemberwrite; supplementary permutations not all rerun.",
+      "limitation": "Actual one-statement snapshot with concurrent member write; supplementary permutations not all rerun.",
       "status": "PARTIAL"
     },
     {
@@ -2160,7 +2160,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Close200 and later Closedresults/rejection establishtransition; all before/after timestamps/revision/eligibility bytecomparisons not directly established. Partial.",
+      "limitation": "Close200 and later Closed results/rejection establish transition; all before/after timestamps/revision/eligibility byte comparisons not directly established. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -2185,7 +2185,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Sequentialclose and later reject shown; concurrentduplicatepublish/close and both Draftpublish/closeorders not directly established. Partial.",
+      "limitation": "Sequential close and later reject shown; concurrent duplicate publish/close and both Draft publish/close orders not directly established. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -2210,7 +2210,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actual API locks prove both Close/Submit commitorders and expectedrows.",
+      "limitation": "Actual API locks prove both Close/Submit commit orders and expected rows.",
       "status": "PARTIAL"
     },
     {
@@ -2228,7 +2228,7 @@
             104
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "AFTER Survey INSERT fault safe 500 and rollback; same Lecturecreate later201",
+          "demonstrated": "AFTER Survey INSERT fault safe 500 and rollback; same Lecture create later201",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -2270,7 +2270,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actualcreate/precommit fault/postcommitackloss and historicalreplacement/publication/deletionfaults; every SQL failure stage not covered.",
+      "limitation": "Actual create/precommit fault/post-commit acknowledgement loss and historical replacement/publication/deletion faults; every SQL failure stage not covered.",
       "status": "PARTIAL"
     },
     {
@@ -2307,7 +2307,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Role/actor/method/CSRF selectedcases only; bodyceilings/strict Unicode/errorprecedence for every management route not fully established. Partial.",
+      "limitation": "Role/actor/method/CSRF selected cases only; body ceilings/strict Unicode/error precedence for every management route not fully established. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -2326,7 +2326,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -2344,7 +2344,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Realownerjourney and persisted revision; all Closed read-only control permutations not separately asserted.",
+      "limitation": "Real owner journey and persisted revision; all Closed read-only control permutations not separately asserted.",
       "status": "PARTIAL"
     },
     {
@@ -2369,7 +2369,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Realvalidationretention/focus. Broaderrevision/networkreconciliation uses separately labelled mocked HTTP browser scenarios; not inferredasreal API evidence.",
+      "limitation": "Real validation retention/focus. Broader revision/network reconciliation uses separately labelled mocked HTTP browser scenarios; not inferred as real API evidence.",
       "status": "PARTIAL"
     },
     {
@@ -2400,7 +2400,7 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -2412,13 +2412,13 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real keyboard/reorder/errors/close and narrow/zoomlayout; assistivetechnology and entire workflow focus not certified.",
+      "limitation": "Real keyboard/reorder/errors/close and narrow/zoom layout; assistive technology and entire workflow focus not certified.",
       "status": "PARTIAL"
     },
     {
@@ -2438,7 +2438,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actualsame DBbuiltprocessrestart on selected persistedsurvey; not all three lifecyclefixtures exhaustively compared.",
+      "limitation": "Actual same DB built-process restart on selected persisted survey; not all three lifecycle fixtures exhaustively compared.",
       "status": "PARTIAL"
     },
     {
@@ -2461,7 +2461,7 @@
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
-      "limitation": "Actual history/version/review/REDGREEN; missingverification and newdefect remain disclosed, not full Done.",
+      "limitation": "Actual history/version/review/REDGREEN; missing verification and newdefect remain disclosed, not full Done.",
       "status": "PROCESS / PARTIAL"
     },
     {
@@ -2492,13 +2492,13 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Realeligible Published identifieddisclosure/frozen definition and own readback; fullmetadataallowlist not asserted.",
+      "limitation": "Real eligible Published identified disclosure/frozen definition and own readback; full metadata allowlist not asserted.",
       "status": "PARTIAL"
     },
     {
@@ -2531,13 +2531,13 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Selected required/type/integerfailures and no default UI selection; full score/coercion/optional boundary matrix not all asserted.",
+      "limitation": "Selected required/type/integer failures and no default UI selection; full score/coercion/optional boundary matrix not all asserted.",
       "status": "PARTIAL"
     },
     {
@@ -2569,13 +2569,13 @@
             673
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "UTF8/escaped malformed or overlimittext rejected; exact2000-codepoint text including leading spaces/newline preserved in own readback",
+          "demonstrated": "UTF8/escaped malformed or over-limit text rejected; exact2000-codepoint text including leading spaces/newline preserved in own readback",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real API UTF8/escaped exact2000boundaries, malformed Unicode and literal newline retention; optionalblankomission in INT22-03.",
+      "limitation": "Real API UTF8/escaped exact2000boundaries, malformed Unicode and literal newline retention; optional blank omission in INT22-03.",
       "status": "PARTIAL"
     },
     {
@@ -2602,7 +2602,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Selected invalidassociation/type arrays reject with zero Participation; complete every unknown/duplicate fixture matrix not presumed.",
+      "limitation": "Selected invalid association/type arrays reject with zero Participation; complete every unknown/duplicate fixture matrix not presumed.",
       "status": "PARTIAL"
     },
     {
@@ -2620,13 +2620,13 @@
             729
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "actual chunked body exactlylimit accepted; oversized/compressed/malformed bodies rejected with no response writes",
+          "demonstrated": "actual chunked body exactly at the limit accepted; oversized/compressed/malformed bodies rejected with no response writes",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real exact transport/oversize/compression/parser cases; exhaustiveall questionmaxpayload shapes not covered.",
+      "limitation": "Real exact transport/oversize/compression/parser cases; exhaustive all question maximum payload shapes not covered.",
       "status": "PARTIAL"
     },
     {
@@ -2663,7 +2663,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Trustedactor, wrong role andprivateownroutes proven; everyspoofsyntax permutation not enumerated.",
+      "limitation": "Trusted actor, wrong role and private own routes proven; every spoof syntax permutation not enumerated.",
       "status": "PARTIAL"
     },
     {
@@ -2699,7 +2699,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Frozen previousmember submit201/newmember404, Draft hidden; every endpoint permutation not exhaustive.",
+      "limitation": "Frozen previous member submit201/newmember404, Draft hidden; every endpoint permutation not exhaustive.",
       "status": "PARTIAL"
     },
     {
@@ -2736,7 +2736,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Published-only/Closed409 and stale duplicate real browser; explicitallerrorprecedence permutations remain Partial.",
+      "limitation": "Published-only/Closed409 and stale duplicate real browser; explicit all-error precedence permutations remain Partial.",
       "status": "PARTIAL"
     },
     {
@@ -2767,13 +2767,13 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Persistedorderedanswers, all row counts, one201; everytypedrowcolumn compared by separateconstraintstests only.",
+      "limitation": "Persisted ordered answers, all row counts, one201; every typed-row column compared by separate constraints tests only.",
       "status": "PARTIAL"
     },
     {
@@ -2833,7 +2833,7 @@
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
-      "limitation": "Concurrenttwo POST statuses201/409 and exact one own persisted response.",
+      "limitation": "Concurrent two POST statuses201/409 and exact one own persisted response.",
       "status": "PASS"
     },
     {
@@ -2858,7 +2858,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Three actual write-stage faults roll back all response rows; every SQL statement/commitoutcome remainsseparate.",
+      "limitation": "Three actual write-stage faults roll back all response rows; every SQL statement/commit outcome remains separate.",
       "status": "PARTIAL"
     },
     {
@@ -2884,7 +2884,7 @@
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
-      "limitation": "Actual Surveylockorders and persisted Participation counts.",
+      "limitation": "Actual Survey lock orders and persisted Participation counts.",
       "status": "PASS"
     },
     {
@@ -2909,7 +2909,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Published definition edit/delete rejected; response routesconsumeunchangeddefinition. Full before/after definition snapshot and all unknownmutationmethods not directly tested.",
+      "limitation": "Published definition edit/delete rejected; response routes consume unchanged definitions. Full before/after definition snapshot and all unknown mutation methods not directly tested.",
       "status": "PARTIAL"
     },
     {
@@ -2948,7 +2948,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -2966,7 +2966,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real own readback/reload/relogin/closure/restart andinconsistentdatafailclosed; allconcurrentreadpermutations incomplete.",
+      "limitation": "Real own readback/reload/relogin/closure/restart and inconsistent-data fail-closed behavior; all concurrent-read permutations incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -3003,7 +3003,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Crossactor query/schema/wrong role/foreign ownership tested; fullidentifierenumeration matrix incomplete.",
+      "limitation": "Cross-actor query/schema/wrong role/foreign ownership tested; full identifier enumeration matrix incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -3022,7 +3022,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3046,7 +3046,7 @@
             78
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real committed POST response delivery lost; UI blocksresend until real persisted ownstatus; one response",
+          "demonstrated": "real committed POST response delivery lost; UI blocks resend until real persisted ownstatus; one response",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3058,13 +3058,13 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real API validation/confirmation, duplicate/Closed and lostdelivery reconciliation; allpendingdoubleclick timing permutations not certified.",
+      "limitation": "Real API validation/confirmation, duplicate/Closed and lost delivery reconciliation; all pending double-click timing permutations not certified.",
       "status": "PARTIAL"
     },
     {
@@ -3083,7 +3083,7 @@
             78
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real committed POST response delivery lost; UI blocksresend until real persisted ownstatus; one response",
+          "demonstrated": "real committed POST response delivery lost; UI blocks resend until real persisted ownstatus; one response",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3113,7 +3113,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actualpost COMMITlostresponse and realownstatus; heldlocktimeout safe rollback; deliberatelyretriedonly. No fabricatedunconditionalrollbackclaim.",
+      "limitation": "Actual post COMMIT lost response and real own status; held-lock timeout safe rollback; deliberately retried only. No fabricated unconditional rollback claim.",
       "status": "PARTIAL"
     },
     {
@@ -3164,7 +3164,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Exact selected role/CSRF/schema/timeout/methoderrors; every Origin/stateprecedence permutation incomplete.",
+      "limitation": "Exact selected role/CSRF/schema/timeout/method errors; every Origin/state precedence permutation incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -3183,7 +3183,7 @@
             41
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real expiry clearsprivateunsavedstate, heldolderread ignored; logout survivesreload",
+          "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3195,7 +3195,7 @@
             191
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercisedconsole outputs",
+          "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercised console outputs",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3209,7 +3209,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real private state clearing and exercisedlogging; full cache/storage/analytics boundary matrix not run.",
+      "limitation": "Real private state clearing and exercised logging; full cache/storage/analytics boundary matrix not run.",
       "status": "PARTIAL"
     },
     {
@@ -3241,7 +3241,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Reviewedreal FK/unique/CHECK and transaction tests; APIcross-table association coveredselectedcases; not every constraint inferredfrom schema.",
+      "limitation": "Reviewed real FK/unique/CHECK and transaction tests; APIcross-table association covered selected cases; not every constraint inferred from schema.",
       "status": "PARTIAL"
     },
     {
@@ -3277,7 +3277,7 @@
         }
       ],
       "result": "Partial / known failing branch on assessed release; PR47 candidate correction separate.",
-      "limitation": "Originalrelease POST mode guard PASS; own readback FAIL in bothstates. Correction candidate PR47 separately53 PASS, not integrated or releasefixed.",
+      "limitation": "Original release POST mode guard PASS; own readback FAIL in both states. Correction candidate PR47 separately53 PASS, not integrated or release fixed.",
       "status": "PARTIAL / KNOWN FAILING BRANCH"
     },
     {
@@ -3308,13 +3308,13 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Exact per student flag/count/per question denominator/comment projection verified from realcommittedrows.",
+      "limitation": "Exact per student flag/count/per question denominator/comment projection verified from real committed rows.",
       "status": "PARTIAL"
     },
     {
@@ -3334,7 +3334,7 @@
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
-      "limitation": "Actualversionedcontract, sampled REDGREEN/review/integration; no inventedhumanapproval for newlyfounddefect.",
+      "limitation": "Actual versioned contract, sampled REDGREEN/review/integration; no invented human approval for newly found defect.",
       "status": "PROCESS / PARTIAL"
     },
     {
@@ -3355,7 +3355,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3367,13 +3367,13 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Realidentifiednotice/keyboardrating/error focus/narrowzoom/readback; full screenreader/manual WCAG not run.",
+      "limitation": "Real identified notice/keyboard rating/error focus/narrow/zoom/readback; full screen reader/manual WCAG not run.",
       "status": "PARTIAL"
     },
     {
@@ -3393,13 +3393,13 @@
             102
           ],
           "kind": "Additional post-release verification: PASS",
-          "demonstrated": "PASS: Draftresults409/erroronly, modeprecedence and no writes",
+          "demonstrated": "PASS: Draftresults409/erroronly, mode precedence and no writes",
           "execution": "docs/deliverable-1/post-release-ac-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30 production / 2310e157 test publication"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Additionalpostrelease API Draft409/state before mode proven; UIunavailability not newlyverified. Partial.",
+      "limitation": "Additional post-release API Draft409/state before mode proven; UI unavailability not newly verified. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -3444,7 +3444,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3458,7 +3458,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Live count-only exact keys/no UItable andhistoricalconcurrentsecondsubmit snapshot; no SQL-answer-query spy in this mapping.",
+      "limitation": "Live count-only exact keys/no UItable and historical concurrent second submit snapshot; no SQL-answer-query spy in this mapping.",
       "status": "PARTIAL"
     },
     {
@@ -3503,13 +3503,13 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real Closedperquestionmeans/bins/comments andcount; all frozen fields/commentordering/readsideeffect comparisons incomplete.",
+      "limitation": "Real Closed per-question means/bins/comments andcount; all frozen fields/comment ordering/read side-effect comparisons incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -3548,7 +3548,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actualroles/foreign ownership; guestprotected access covered context suite, not everyresults UUIDbranch.",
+      "limitation": "Actual roles/foreign ownership; guest protected access covered context suite, not every results UUID branch.",
       "status": "PARTIAL"
     },
     {
@@ -3586,7 +3586,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Directresultsactorquery422 andselectedaccess errors; UUID/body/method/Origin/errorprecedence resultsmatrix incomplete. Partial.",
+      "limitation": "Directresultsactorquery422 and selected access errors; UUID/body/method/Origin/error precedence results matrix incomplete. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -3613,7 +3613,7 @@
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
-      "limitation": "Two Participation/twobundles/fouranswers yieldsresponse Count2; not multipliedbyjoin. Optionalomission separately asserted.",
+      "limitation": "Two Participation/two bundles/four answers yields response Count2; not multiplied by joins. Optional omission separately asserted.",
       "status": "PASS"
     },
     {
@@ -3665,7 +3665,7 @@
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
-      "limitation": "Fiveordered bins exact arrays includingzero andsum-compatiblecounts for testedfixtures.",
+      "limitation": "Five ordered bins exact arrays including zero andsum-compatible counts for tested fixtures.",
       "status": "PASS"
     },
     {
@@ -3703,7 +3703,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Directhalf-uptie1.125->1.13 plus3.33/3.67; real3.00/5.00; all plannedendpoint/tie/below/abovefixtures not executed.",
+      "limitation": "Direct half-uptie1.125->1.13 plus3.33/3.67; real3.00/5.00; all planned endpoint/tie/below/above fixtures not executed.",
       "status": "PARTIAL"
     },
     {
@@ -3748,13 +3748,13 @@
             118
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real empty context/zeroresults, heldloading versus deliveryerror and explicit successful retry",
+          "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "R0/N0null/fivezeros and R2N0null; realzeroresults UI; allspecifiedmessagebranches not separatelyasserted.",
+      "limitation": "R0/N0null/fivezeros and R2N0null; real zero results UI; all specified message branches not separately asserted.",
       "status": "PARTIAL"
     },
     {
@@ -3792,7 +3792,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Correct INT22-02immutabledefinition/frozen eligibility and INT22-03originalscaleanchors. Full frozen IDs/prompts/order/types/allflags results snapshotcomparison not proven. Partial.",
+      "limitation": "Correct INT22-02immutabledefinition/frozen eligibility and INT22-03originalscaleanchors. Full frozen IDs/prompts/order/types/allflags results snapshot comparison not proven. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -3824,7 +3824,7 @@
             673
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "UTF8/escaped malformed or overlimittext rejected; exact2000-codepoint text including leading spaces/newline preserved in own readback",
+          "demonstrated": "UTF8/escaped malformed or over-limit text rejected; exact2000-codepoint text including leading spaces/newline preserved in own readback",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3836,13 +3836,13 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Exact comment in Closedresults plusliteral newline in own readback; not direct Closed newline/duplicate comment/deterministicperquestionorder proof. Partial.",
+      "limitation": "Exact comment in Closed results plus literal newline in own readback; not direct Closed newline/duplicate comment/deterministic per-question order proof. Partial.",
       "status": "PARTIAL"
     },
     {
@@ -3861,7 +3861,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3873,13 +3873,13 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actualscriptstrings renderliteral, no executionflag/no script DOM; everyeventhandler/metadata vector not tested.",
+      "limitation": "Actual script strings render literally, no execution flag/no script DOM; every event-handler/metadata vector not tested.",
       "status": "PARTIAL"
     },
     {
@@ -3913,7 +3913,7 @@
             191
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercisedconsole outputs",
+          "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercised console outputs",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -3933,13 +3933,13 @@
             41
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real expiry clearsprivateunsavedstate, heldolderread ignored; logout survivesreload",
+          "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Directforbidden JSONkeys, positivepoollogredaction andhistoricallogsilence; full DOM/cache/storage/analytics not audited. Identifiednotice real browser.",
+      "limitation": "Direct forbidden JSONkeys, positive pool-log redaction and historical log silence; full DOM/cache/storage/analytics not audited. Identified notice real browser.",
       "status": "PARTIAL"
     },
     {
@@ -3969,7 +3969,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Correcthistoricalrealreadbarriers across Submit and Close, separatefromsequential INT22-03. Historicalsource scope; notall Closed definition/answer permutations rerun.",
+      "limitation": "Correct historical real read barriers across Submit and Close, separate from sequential INT22-03. Historical source scope; notall Closed definition/answer permutations rerun.",
       "status": "PARTIAL"
     },
     {
@@ -4003,7 +4003,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Currentmaincorruptresults500 andhistoricalactual SQLread57P03->503/retry; not stoppedserver/networkatallstages.",
+      "limitation": "Currentmaincorruptresults500 and historical actual SQLread57P03->503/retry; not stopped server/network at all stages.",
       "status": "PARTIAL"
     },
     {
@@ -4036,7 +4036,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Selectedbuiltprocessrestart equality andsequentialpersistedresults; repeatedallcommentorder/readonlytablehashmatrix not fully established.",
+      "limitation": "Selected built-process restart equality and sequential persisted results; repeated all-comment order/read-only table-hash matrix not fully established.",
       "status": "PARTIAL"
     },
     {
@@ -4057,7 +4057,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -4069,7 +4069,7 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -4087,7 +4087,7 @@
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Actual Published/Closed count/mean/bins/comment/frozenmeaning/identifiednotice; everyoptionalmessage combination incomplete.",
+      "limitation": "Actual Published/Closed count/mean/bins/comment/frozen meaning/identified notice; every optional message combination incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -4106,7 +4106,7 @@
             41
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real expiry clearsprivateunsavedstate, heldolderread ignored; logout survivesreload",
+          "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -4118,13 +4118,13 @@
             118
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real empty context/zeroresults, heldloading versus deliveryerror and explicit successful retry",
+          "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real empty/loading/deliveryfailure/retry andsessionloss; wrong role API separate; entire UIerrorstatecombination incomplete.",
+      "limitation": "Real empty/loading/delivery failure/retry and session loss; wrong role API separate; entire UI error-state combination incomplete.",
       "status": "PARTIAL"
     },
     {
@@ -4143,7 +4143,7 @@
             92
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "keyboard requiredrating422/no DBwrites/retainedtext, linkedfocus, one201/successfocus, Closed mean2.00/literal comment and Backfocus",
+          "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -4155,7 +4155,7 @@
             64
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real UI ownercreate/publish; student required rejection and keyboardrating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
+          "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         },
@@ -4167,13 +4167,13 @@
             118
           ],
           "kind": "Automated: historical 214-main run",
-          "demonstrated": "real empty context/zeroresults, heldloading versus deliveryerror and explicit successful retry",
+          "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
           "execution": "docs/sprints/sprint-1/main-release-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Real keyboard Backfromresults, labelledtables/layout and explicit retry; no full keyboard results/Retrypathand all exact viewport conditions certification.",
+      "limitation": "Real keyboard Back from results, labelled tables/layout and explicit retry; no full keyboard results/Retry path and all exact viewport conditions certification.",
       "status": "PARTIAL"
     },
     {
@@ -4192,13 +4192,13 @@
             119
           ],
           "kind": "Additional post-release verification: PASS",
-          "demonstrated": "PASS: Published/Closedresults unsupported mode409/no count/text",
+          "demonstrated": "PASS: Published/Closed results unsupported mode409/no count/text",
           "execution": "docs/deliverable-1/post-release-ac-verification.json",
           "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30 production / 2310e157 test publication"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
-      "limitation": "Additionalreal API unsupported mode Published/Closedresults409/noanswers/countfallback; currentproductionenum IDENTIFIEDonly; not S2anonymousacceptance.",
+      "limitation": "Additional real API unsupported mode Published/Closedresults409/noanswers/count fallback; current production enum IDENTIFIED only; not S2anonymousacceptance.",
       "status": "PARTIAL"
     },
     {
@@ -4220,7 +4220,7 @@
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
-      "limitation": "Correctprocess/historyevidence, no unrelated INT22-03/06 as proofofprecodecontracts/roundingreview. Fullhumanreportacceptance pending.",
+      "limitation": "Correct process/history evidence, no unrelated INT22-03/06 as proof of pre-code contracts/rounding review. Full human report acceptance pending.",
       "status": "PROCESS / PARTIAL"
     }
   ],
