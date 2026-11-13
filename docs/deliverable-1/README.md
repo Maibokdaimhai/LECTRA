@@ -37,3 +37,7 @@ Historical release: 214 Passed / 0 Failed / 0 Skipped. Additional verification: 
 The 13 November audit inspects all 113 AC and retains all 183 original planned STS cases. The canonical JSON records exact named callback ranges, demonstrated assertions, provenance, status and remaining conditions. `python3 scripts/render-ac-results.py` validates unchanged planned mappings and source references before rendering. Process AC cite actual version/review/history, not unrelated integration tests. See `ac-assertion-audit.json`. No percentages are presented as exhaustive certification.
 
 The report is self-contained for assessment of the immutable original release, including its disclosed failure; a PDF can report incomplete work honestly. It is not a claim that all Product DoD/AC are satisfied. To assess a corrected release instead: independently review/integrate PR #47, run required checks on the resulting main commit, record a new tag without moving sprint-1, and rebuild the cover/results/evidence against that actual commit. Actual teammate report review and course submission are still human actions.
+
+## Canonical regression source after R47-01
+
+The executable post-release suite is synchronized byte-for-byte with PR #47's enhanced version. [Integration record](r47-01-integration.md) identifies canonical ownership and the archived original investigation source. Historical 3-PASS/2-FAIL results, RED evidence, 214-PASS release results and the PDF source revision remain unchanged; no enhanced-test execution is retroactively attributed to the original run.

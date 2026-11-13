@@ -119,7 +119,7 @@ it('PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed resu
 });
 
 it.each(['PUBLISHED', 'CLOSED'] as const)('PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback', async state => {
-  const owner = await login(), student = await login('respondent.11@example.test'), d = await published(owner);
+  const owner = await login(), student = await login('respondent.11@example.test'), other = await login('respondent.12@example.test'), ineligible = await login('respondent.13@example.test'), d = await published(owner);
   await mutate(student, `/api/surveys/${d.id}/responses`, payload(d)).expect(201);
   if (state === 'CLOSED') await mutate(owner, `/api/surveys/${d.id}/close`, {}).expect(200);
   const before = await persisted(d.id); await mode(d.id, 'ANONYMOUS');
@@ -129,6 +129,9 @@ it.each(['PUBLISHED', 'CLOSED'] as const)('PR46-I04-%s / AC-F04-22 / TEST-F04-I1
     expect.soft(response.body.error?.code).toBe('MODE_NOT_SUPPORTED');
     expect.soft(Object.keys(response.body)).toEqual(['error']);
     expect.soft(JSON.stringify(response.body).includes(sentinel)).toBe(false);
+    denial(await other.agent.get(`/api/surveys/${d.id}/my-submission`), 'MODE_NOT_SUPPORTED');
+    denial(await ineligible.agent.get(`/api/surveys/${d.id}/my-submission`), 'NOT_FOUND', 404);
+    denial(await owner.agent.get(`/api/surveys/${d.id}/my-submission`), 'FORBIDDEN_ROLE', 403);
     expect(await persisted(d.id)).toEqual(before);
   } finally { await mode(d.id, 'IDENTIFIED'); }
 });
