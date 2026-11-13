@@ -1,15 +1,12 @@
 # Complete Sprint 1 assertion-audited AC results
 
-Assessed immutable release: sprint-1 / af2e1030984bcc816081b25b29c9de52a80efe30. Audit: 13 November 2026. All 113 AC and their original planned STS mappings are retained.
+Assessed release:sprint-1.1/b458cb65736029f5c7de55e49c9afd6bc8de702a. All 113 AC and 183 original planned STS cases are retained. Current 219 post-main selected executions passed with 0 failed / 0 skipped. A passing scenario is not exhaustive proof of every wider planned condition.
 
-All 113 rows individually audited against actual callback assertions/process records. Planned STS IDs retained; none used to infer execution. A mapping proves only its stated demonstrated scope. Historical supplementary, main 214, additional 3PASS/2FAIL, and PR47 53PASS remain distinct. No missing assertion is silently Passed.
+## Evidence provenance
+MAIN=current post-main execution, corrected-main-verification.json. HISTORICAL G04=the 12 recovered real-PostgreSQL checks on 2961014, with original source and limitations retained; not 12 extra current executions. PROCESS=actual commits/reviews/ancestry, not automated application tests. Original 214 PASS and original additional 3 PASS / 2 FAIL are historical only.
 
-## Current audit dispositions
-11 AC have direct PASS for the stated behavior in the cited execution; 96 remain Partial for listed unproved conditions; 5 process/history criteria retain Partial acceptance boundaries; AC-F04-22 has a confirmed failing branch on the assessed release. Total 113. These are AC dispositions, not 113 test executions. The earlier 95/18 nonempty-array count measured mapping presence only and is superseded; filling a reference does not prove an entire AC.
-
-## Evidence provenance and interpretation
-MAIN = actual 214-test matrix on af2e103, recorded in main-release-verification.json. HISTORICAL G04 = 12 recovered real-PostgreSQL checks on 2961014, recorded in g04-supplementary-verification.json, with its own unchanged-source boundaries; not 12 additional main executions. POST = five direct additional checks using unchanged assessed production source: 3 PASS / 2 FAIL, recorded in post-release-ac-verification.json. PROCESS = actual commits/reviews/ancestry, not automated application tests. CORRECTION = PR47 source 609bbcd, 53 selected PASS plus build/typecheck/restart, pending integration; not added to MAIN/POST counts.
-A passing test demonstrates only its listed assertions. Partial does not mean the complete behavior failed: it identifies remaining planned subconditions without direct evidence. Conversely, a source/name reference never converts an untested subcondition into Pass. Each callback range below was inspected; the machine-readable audit retains full source/version/execution details.
+## Current AC dispositions
+{"PARTIAL": 96, "PASS": 11, "PROCESS / PARTIAL": 5, "PARTIAL / ACCEPTED MINOR": 1}. AC-F04-22 is now supported by the corrected-main regression, including both lifecycle states and authorization precedence. AC-F05-08 retains the explicitly accepted Minor label/order assertion gap. Other Partial entries identify unproved wider conditions; actual human release review accepted the bounded increment without further actionable findings. No missing assertions are fabricated or changed to Pass.
 
 ## AC-F01-01
 Bootstrap returns a persisted session-bound token, correct guest/auth projection and no-store; repeated live bootstrap does not renew token/deadline.
@@ -986,12 +983,12 @@ Reviewed real schema enforces relevant FK/unique/range/typed-column invariants w
 Unsupported mode never stores or reveals an identified/anonymous fallback; no extra student-linked anonymous retrieval.
 
 **Planned STS:** TEST-F04-I10
-**POST source/case:** apps/api/tests/post-release/ac-gaps.test.ts:74-87 - PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes
-**Demonstrated:** PASS: unsupported-mode POST before duplicate, persisted rows unchanged
-**POST source/case:** apps/api/tests/post-release/ac-gaps.test.ts:121-134 - PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
-**Demonstrated:** FAIL: both Published/Closed own readback returned200+answers instead of409
-**Disposition:** Partial / known failing branch on assessed release; PR47 candidate correction separate.
-**Remaining limit:** Original release POST mode guard PASS; own readback FAIL in both states. Correction candidate PR47 separately53 PASS, not integrated or release fixed.
+**MAIN source/case:** apps/api/tests/post-release/ac-gaps.test.ts:74-87 - PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes
+**Demonstrated:** Current main PASS: unsupported-mode POST before duplicate, persisted rows unchanged
+**MAIN source/case:** apps/api/tests/post-release/ac-gaps.test.ts:121-137 - PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback
+**Demonstrated:** PASS: Published and Closed unsupported-mode own readback409 MODE_NOT_SUPPORTED for eligible submitted and unsubmitted respondents; ineligible404 and owner403 precedence; no answer fallback or persisted-row changes.
+**Disposition:** PASS for the supported-mode defensive boundary in the cited corrected-main PostgreSQL executions.
+**Remaining limit:** Anonymous Mode itself remains Sprint 2 scope. Synthetic enum extension exists only in the disposable regression database; no production enum/schema change. Original failing observations remain historical and corrected in the current assessed release.
 
 ## AC-F04-23
 F-02 participation flag and F-05 count/denominator/text projections match actual committed normalized rows.
@@ -1028,8 +1025,8 @@ Core form/readback/errors support labelled keyboard/focus and narrow/wide layout
 Own Draft results GET is 409 RESULTS_NOT_AVAILABLE with no statistics; UI shows unavailable, never invented zeros.
 
 **Planned STS:** TEST-F05-U04, TEST-F05-I02, TEST-F05-E02
-**POST source/case:** apps/api/tests/post-release/ac-gaps.test.ts:89-102 - PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation
-**Demonstrated:** PASS: Draftresults409/erroronly, mode precedence and no writes
+**MAIN source/case:** apps/api/tests/post-release/ac-gaps.test.ts:89-102 - PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation
+**Demonstrated:** Current main PASS: Draftresults409/erroronly, mode precedence and no writes
 **Disposition:** Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.
 **Remaining limit:** Additional post-release API Draft409/state before mode proven; UI unavailability not newly verified. Partial.
 
@@ -1107,8 +1104,8 @@ Each rating has five ordered integer bins for scores 1–5, zeros included, summ
 **Planned STS:** TEST-F05-U01, TEST-F05-I03, TEST-F05-I14
 **MAIN source/case:** apps/api/tests/features/workflows.test.ts:603-633 - INT22-03: optional omissions produce real answered denominators, zero bins and null means without leaking identities
 **Demonstrated:** per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent
-**Disposition:** PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.
-**Remaining limit:** Five ordered bins exact arrays including zero andsum-compatible counts for tested fixtures.
+**Disposition:** Distribution counts PASS; explicit score-label/order assertion is a reviewer-accepted Minor evidence limitation.
+**Remaining limit:** Existing tests assert five distribution counts but do not explicitly assert score labels/order [1,2,3,4,5]. R1NNE0 accepted this evidence gap in PR #46 and release PR #48; no implementation defect or fabricated complete assertion is claimed.
 
 ## AC-F05-09
 Exact S/N is rounded once with proposed decimal half-up; §5's endpoint/tie/below/above fixtures and two-decimal strings match, without binary-float ambiguity.
@@ -1258,8 +1255,8 @@ Results navigation/Retry and equivalent numerical table work by keyboard with la
 Own unsupported/anonymous mode is safely rejected with no text/count fallback; no S2 thresholds, export, history or overall instructor score are added.
 
 **Planned STS:** TEST-F05-U04, TEST-F05-I02
-**POST source/case:** apps/api/tests/post-release/ac-gaps.test.ts:104-119 - PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback
-**Demonstrated:** PASS: Published/Closed results unsupported mode409/no count/text
+**MAIN source/case:** apps/api/tests/post-release/ac-gaps.test.ts:104-119 - PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback
+**Demonstrated:** Current main PASS: Published/Closed results unsupported mode409/no count/text
 **Disposition:** Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.
 **Remaining limit:** Additional real API unsupported mode Published/Closedresults409/noanswers/count fallback; current production enum IDENTIFIED only; not S2anonymousacceptance.
 

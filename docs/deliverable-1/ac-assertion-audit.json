@@ -5,12 +5,12 @@
   "sourceFiles": {
     "apps/api/tests/features/workflows.test.ts": "16afd0d7bb7c34d3944059ba1ece70aeeaf092dbc502bc6349393b1f5876693c",
     "apps/api/tests/foundation/database.test.ts": "c2efa025bbf74f67cf1ee65f09d21e092ddd184c633e72b657496822cd7692f4",
-    "apps/api/tests/post-release/ac-gaps.test.ts": "9e35ddf36128d2d86807eca58c37d4c655ba8fbc6abe1cd5a799c9af209243bc",
+    "apps/api/tests/post-release/ac-gaps.test.ts": "0c826ca5b829096b5c426af68d4e07268fb38255dee9a9f8246eab8404e1f57a",
     "apps/api/tests/release/g04.test.ts": "274faca16b50b610077ca0fa99af41aa78d1b94554d338bf01900cfd63e035e5",
     "apps/api/tests/unit/argon2-compatibility.test.ts": "d1fd266139b50f418593be1a8c01c52b9f0e8b5ac219bfbb3a9d3acd512f7e2e",
     "apps/api/tests/unit/config.test.ts": "5e9cdfda6b0c2d15f28564f282f468378ef1d4f8a95d026a2e75961d70dcc0f3",
     "apps/api/tests/unit/feedback-rules.test.ts": "749d786a223753b347676313880d23167fc6f10e178e6f0c5ad60795610bc82b",
-    "docs/deliverable-1/release-process-and-contributions.md": "b4e2adb054cdce9912de4da41903bb2d0867d6db809a20244d69178f820d4929",
+    "docs/deliverable-1/release-process-and-contributions.md": "598944f19d58252f0a292fc3ee821014fe905e1dd7f416fcb721c6cb90693373",
     "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs": "d0444643798bec40b1c581aed22198c71086980ce7a42e081c8b5a4ac6069e5a",
     "scripts/verify-restart.ts": "6c441b9932fbb9b1dba34be37b400b2eaab58d348fbd7a6442ee65b391489418",
     "tests/browser/feedback.spec.ts": "bf3d6c0948daaab356b69884921b1c1e5e07ec452b0299f48eea153e7e8c7732",
@@ -45,12 +45,6 @@
       "end": 75
     },
     {
-      "file": "tests/browser/logout-csrf-rotation.spec.ts",
-      "name": "PR45-CSRF real expiry, native guest-cookie headers, failed logout and deliberate current-token retry",
-      "start": 98,
-      "end": 153
-    },
-    {
       "file": "tests/browser/sprint1-recovery-states.spec.ts",
       "name": "B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload",
       "start": 3,
@@ -79,6 +73,12 @@
       "name": "B23-02 real invalid then keyboard login and one StrictMode bootstrap",
       "start": 66,
       "end": 84
+    },
+    {
+      "file": "tests/browser/logout-csrf-rotation.spec.ts",
+      "name": "PR45-CSRF real expiry, native guest-cookie headers, failed logout and deliberate current-token retry",
+      "start": 98,
+      "end": 153
     },
     {
       "file": "apps/api/tests/foundation/database.test.ts",
@@ -133,6 +133,84 @@
       "name": "never overwrites submitted associations during a repeat seed",
       "start": 129,
       "end": 134
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "accepts the explicit local profile",
+      "start": 5,
+      "end": 5
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "rejects unsafe/non-origin APP_ORIGIN %s",
+      "start": 6,
+      "end": 8
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "requires HTTPS in production",
+      "start": 9,
+      "end": 9
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "does not echo secret/connection-string input in configuration errors",
+      "start": 10,
+      "end": 14
+    },
+    {
+      "file": "apps/api/tests/unit/config.test.ts",
+      "name": "rejects invalid PORT %s",
+      "start": 15,
+      "end": 15
+    },
+    {
+      "file": "apps/api/tests/unit/feedback-rules.test.ts",
+      "name": "F-04: accepts 2000 Unicode code points, preserves nonblank text, rejects 2001 and malformed Unicode",
+      "start": 4,
+      "end": 8
+    },
+    {
+      "file": "apps/api/tests/unit/feedback-rules.test.ts",
+      "name": "F-03: Draft permits empty definitions while publication requires meaningful rating scales",
+      "start": 9,
+      "end": 14
+    },
+    {
+      "file": "apps/api/tests/unit/feedback-rules.test.ts",
+      "name": "F-05: exact half-up two-decimal means use only actually answered ratings",
+      "start": 15,
+      "end": 18
+    },
+    {
+      "file": "apps/api/tests/unit/argon2-compatibility.test.ts",
+      "name": "loads the native Argon2id package and verifies a synthetic round trip (setup only)",
+      "start": 3,
+      "end": 8
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes",
+      "start": 74,
+      "end": 87
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation",
+      "start": 89,
+      "end": 102
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback",
+      "start": 104,
+      "end": 119
+    },
+    {
+      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
+      "name": "PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
+      "start": 121,
+      "end": 137
     },
     {
       "file": "apps/api/tests/features/workflows.test.ts",
@@ -369,84 +447,6 @@
       "end": 802
     },
     {
-      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
-      "name": "PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes",
-      "start": 74,
-      "end": 87
-    },
-    {
-      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
-      "name": "PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before mode without statistics or mutation",
-      "start": 89,
-      "end": 102
-    },
-    {
-      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
-      "name": "PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback",
-      "start": 104,
-      "end": 119
-    },
-    {
-      "file": "apps/api/tests/post-release/ac-gaps.test.ts",
-      "name": "PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
-      "start": 121,
-      "end": 134
-    },
-    {
-      "file": "apps/api/tests/unit/config.test.ts",
-      "name": "accepts the explicit local profile",
-      "start": 5,
-      "end": 5
-    },
-    {
-      "file": "apps/api/tests/unit/config.test.ts",
-      "name": "rejects unsafe/non-origin APP_ORIGIN %s",
-      "start": 6,
-      "end": 8
-    },
-    {
-      "file": "apps/api/tests/unit/config.test.ts",
-      "name": "requires HTTPS in production",
-      "start": 9,
-      "end": 9
-    },
-    {
-      "file": "apps/api/tests/unit/config.test.ts",
-      "name": "does not echo secret/connection-string input in configuration errors",
-      "start": 10,
-      "end": 14
-    },
-    {
-      "file": "apps/api/tests/unit/config.test.ts",
-      "name": "rejects invalid PORT %s",
-      "start": 15,
-      "end": 15
-    },
-    {
-      "file": "apps/api/tests/unit/feedback-rules.test.ts",
-      "name": "F-04: accepts 2000 Unicode code points, preserves nonblank text, rejects 2001 and malformed Unicode",
-      "start": 4,
-      "end": 8
-    },
-    {
-      "file": "apps/api/tests/unit/feedback-rules.test.ts",
-      "name": "F-03: Draft permits empty definitions while publication requires meaningful rating scales",
-      "start": 9,
-      "end": 14
-    },
-    {
-      "file": "apps/api/tests/unit/feedback-rules.test.ts",
-      "name": "F-05: exact half-up two-decimal means use only actually answered ratings",
-      "start": 15,
-      "end": 18
-    },
-    {
-      "file": "apps/api/tests/unit/argon2-compatibility.test.ts",
-      "name": "loads the native Argon2id package and verifies a synthetic round trip (setup only)",
-      "start": 3,
-      "end": 8
-    },
-    {
       "file": "apps/api/tests/release/g04.test.ts",
       "name": "G04-F01: physical loss of authenticated UPSERT acknowledgement suppresses cookie and automatic resave",
       "start": 75,
@@ -495,14 +495,14 @@
     "PARTIAL": 96,
     "PASS": 11,
     "PROCESS / PARTIAL": 5,
-    "PARTIAL / KNOWN FAILING BRANCH": 1
+    "PARTIAL / ACCEPTED MINOR": 1
   },
-  "assessedSourceHashesMatched": 82,
+  "assessedSourceHashesMatched": 84,
   "originalAssessedSourceHashDifferences": [],
-  "correctionCandidate": {
-    "pr": 47,
-    "testedCommit": "609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e",
-    "selectedPassed": 53,
-    "notMergedOrHumanApprovedAtRecord": true
-  }
+  "assessedRelease": "sprint-1.1",
+  "assessedCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a",
+  "currentPostMainSelectedPasses": 219,
+  "correctionStatus": "Actual PR47/46 approved and integrated through approved PR48; main verified and tagged.",
+  "originalAudit": "historical-evidence/ac-assertion-audit-af2e103.json",
+  "acceptedMinor": "AC-F05-08 label/order assertion gap explicitly accepted in actual PR46/48 reviews."
 }

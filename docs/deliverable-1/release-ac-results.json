@@ -1,7 +1,7 @@
 {
-  "release": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "release": "b458cb65736029f5c7de55e49c9afd6bc8de702a",
   "date": "2026-11-13",
-  "policy": "All 113 rows individually audited against actual callback assertions/process records. Planned STS IDs retained; none used to infer execution. A mapping proves only its stated demonstrated scope. Historical supplementary, main 214, additional 3PASS/2FAIL, and PR47 53PASS remain distinct. No missing assertion is silently Passed.",
+  "policy": "Current MAIN means the actual 219-test post-main run on b458cb6 / sprint-1.1. Original 214 PASS, additional 3 PASS / 2 FAIL and candidate 53 PASS are historical and retained separately. All 113 AC retain original planned STS IDs. Historical G04 checks retain their actual source; process inspection remains distinct from automated tests.",
   "acceptanceCriteria": [
     {
       "id": "AC-F01-01",
@@ -18,10 +18,10 @@
             74,
             86
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "SID/token rotation, safe user keys, persisted session, repeated bootstrap same token/deadline/no new cookie",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -30,10 +30,10 @@
             417,
             428
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "stored expiry exactly absolute deadline before/after real me read",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -56,10 +56,10 @@
             87,
             99
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "wrong/unknown credentials identical 401; extra role 422; missing Origin/CSRF 403; media 415 and 8193-byte body 413",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -82,10 +82,10 @@
             74,
             86
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "SID/token rotation, safe user keys, persisted session, repeated bootstrap same token/deadline/no new cookie",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -94,10 +94,10 @@
             66,
             84
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real invalid credentials, error focus/cleared password; Enter login trusted OWNER and one bootstrap",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -119,10 +119,10 @@
             87,
             99
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "wrong/unknown credentials identical 401; extra role 422; missing Origin/CSRF 403; media 415 and 8193-byte body 413",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -131,10 +131,10 @@
             220,
             230
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "authenticated login cannot switch account; changed stored role is resolved on later me",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -157,10 +157,10 @@
             3,
             8
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "native synthetic Argon2id roundtrip and incorrect-password false; setup compatibility only",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/foundation/database.test.ts",
@@ -169,10 +169,10 @@
             40,
             52
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "idempotent seed seven users preserves hashes/IDs/session; stored Argon2id and successful verify",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -202,10 +202,10 @@
             74,
             86
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "SID/token rotation, safe user keys, persisted session, repeated bootstrap same token/deadline/no new cookie",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -214,10 +214,10 @@
             100,
             139
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry-persistence fault: 503, cleared/no usable cookie, unchanged authenticated session rows, subsequent me denied; recovery",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/release/g04.test.ts",
@@ -226,10 +226,10 @@
             75,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real authenticated UPSERT acknowledgement loss:503, cookie suppression, no recovered cookie authenticates",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -253,10 +253,10 @@
             417,
             428
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "stored expiry exactly absolute deadline before/after real me read",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -265,18 +265,18 @@
             208,
             219
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "logout revokes replayed cookie, repeated revoked-cookie logout 204; manipulated absolute expiry yields SESSION_EXPIRED",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "scripts/verify-restart.ts",
           "case": "Actual built API stop/start against same database and session secret",
-          "kind": "Automated process integration: historical main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "compares session deadline/current identity, persisted surveyed definition, own answers and results; not every lifecycle fixture",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -298,10 +298,10 @@
             220,
             230
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "authenticated login cannot switch account; changed stored role is resolved on later me",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -310,10 +310,10 @@
             87,
             99
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "wrong/unknown credentials identical 401; extra role 422; missing Origin/CSRF 403; media 415 and 8193-byte body 413",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -336,10 +336,10 @@
             208,
             219
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "logout revokes replayed cookie, repeated revoked-cookie logout 204; manipulated absolute expiry yields SESSION_EXPIRED",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/logout-csrf-rotation.spec.ts",
@@ -348,10 +348,10 @@
             98,
             153
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real native guest-cookie rotation, failed logout and explicit fresh-token retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -376,10 +376,10 @@
             87,
             99
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "wrong/unknown credentials identical 401; extra role 422; missing Origin/CSRF 403; media 415 and 8193-byte body 413",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -388,10 +388,10 @@
             231,
             240
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "old token denied; ten valid-shape bad credentials 401, eleventh 429 and Retry-After",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -400,10 +400,10 @@
             438,
             447
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "logout GET405; null Origin/cross-site403; forgedcookie401; courses HEAD405/Allow GET; results actorquery422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -426,10 +426,10 @@
             9,
             9
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "production HTTP configuration is rejected; does not execute HTTPS cookie/proxy deployment",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -438,10 +438,10 @@
             74,
             86
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "SID/token rotation, safe user keys, persisted session, repeated bootstrap same token/deadline/no new cookie",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -469,10 +469,10 @@
             245,
             260
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two authorized Courses, only owned shared-Course Section, foreign Section 404, malformed pagination 422, respondent 403 and guest 401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -481,10 +481,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -493,10 +493,10 @@
             49,
             75
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real browser guest/wrong role/foreign owner denied; no client role-selector authority",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -519,10 +519,10 @@
             100,
             139
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry-persistence fault: 503, cleared/no usable cookie, unchanged authenticated session rows, subsequent me denied; recovery",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -531,10 +531,10 @@
             140,
             159
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "failed guest save: 503, cleared cookie, no additional row and me 401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -543,10 +543,10 @@
             391,
             403
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "renamed real auth_session table produces safe 503 without internal table name; recovery me200",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/release/g04.test.ts",
@@ -555,10 +555,10 @@
             75,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real authenticated UPSERT acknowledgement loss:503, cookie suppression, no recovered cookie authenticates",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/logout-csrf-rotation.spec.ts",
@@ -567,10 +567,10 @@
             98,
             153
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real native guest-cookie rotation, failed logout and explicit fresh-token retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -602,10 +602,10 @@
             74,
             86
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "SID/token rotation, safe user keys, persisted session, repeated bootstrap same token/deadline/no new cookie",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -614,10 +614,10 @@
             87,
             99
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "wrong/unknown credentials identical 401; extra role 422; missing Origin/CSRF 403; media 415 and 8193-byte body 413",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/unit/config.test.ts",
@@ -626,10 +626,10 @@
             10,
             14
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "malformed config error excludes injected private marker",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-recovery-states.spec.ts",
@@ -638,10 +638,10 @@
             3,
             41
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/release/g04.test.ts",
@@ -650,10 +650,10 @@
             180,
             191
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercised console outputs",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -684,10 +684,10 @@
             66,
             84
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real invalid credentials, error focus/cleared password; Enter login trusted OWNER and one bootstrap",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -696,10 +696,10 @@
             22,
             50
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard Draft422 retains121chartitle/error focus; reorder persists question IDs; removal focus; narrow/zoom layout",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -722,10 +722,10 @@
             3,
             41
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/logout-csrf-rotation.spec.ts",
@@ -734,10 +734,10 @@
             98,
             153
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real native guest-cookie rotation, failed logout and explicit fresh-token retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -761,10 +761,10 @@
             31,
             38
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "three migrations on empty Postgre SQL; second deploy identical checksums",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/foundation/database.test.ts",
@@ -773,26 +773,26 @@
             40,
             52
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "idempotent seed seven users preserves hashes/IDs/session; stored Argon2id and successful verify",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "scripts/verify-restart.ts",
           "case": "Actual built API stop/start against same database and session secret",
-          "kind": "Automated process integration: historical main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "compares session deadline/current identity, persisted surveyed definition, own answers and results; not every lifecycle fixture",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/deliverable-1/release-process-and-contributions.md",
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -813,10 +813,10 @@
             231,
             240
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "old token denied; ten valid-shape bad credentials 401, eleventh 429 and Retry-After",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -838,10 +838,10 @@
             429,
             437
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "overlapping me/logout cannot authorize replay afterward; second independent session remains valid",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -860,8 +860,8 @@
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
@@ -883,10 +883,10 @@
             31,
             38
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "three migrations on empty Postgre SQL; second deploy identical checksums",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/foundation/database.test.ts",
@@ -895,10 +895,10 @@
             40,
             52
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "idempotent seed seven users preserves hashes/IDs/session; stored Argon2id and successful verify",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/foundation/database.test.ts",
@@ -907,10 +907,10 @@
             62,
             67
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "executes tests/database/constraints.sql transaction and rollback against real Postgre SQL; relevant constraints only",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/foundation/database.test.ts",
@@ -919,18 +919,18 @@
             69,
             77
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "typed query retains lecture calendar date and canonical Section owner relationships",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/deliverable-1/release-process-and-contributions.md",
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -952,10 +952,10 @@
             245,
             260
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two authorized Courses, only owned shared-Course Section, foreign Section 404, malformed pagination 422, respondent 403 and guest 401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -964,10 +964,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -976,10 +976,10 @@
             49,
             75
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real browser guest/wrong role/foreign owner denied; no client role-selector authority",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1000,10 +1000,10 @@
             245,
             260
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two authorized Courses, only owned shared-Course Section, foreign Section 404, malformed pagination 422, respondent 403 and guest 401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1024,10 +1024,10 @@
             245,
             260
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two authorized Courses, only owned shared-Course Section, foreign Section 404, malformed pagination 422, respondent 403 and guest 401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1048,10 +1048,10 @@
             245,
             260
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two authorized Courses, only owned shared-Course Section, foreign Section 404, malformed pagination 422, respondent 403 and guest 401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1060,10 +1060,10 @@
             531,
             540
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "empty/space/malformed/duplicate lecture filters422; valid lecture returns exact survey401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1084,10 +1084,10 @@
             531,
             540
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "empty/space/malformed/duplicate lecture filters422; valid lecture returns exact survey401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1096,10 +1096,10 @@
             782,
             802
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1121,10 +1121,10 @@
             245,
             260
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two authorized Courses, only owned shared-Course Section, foreign Section 404, malformed pagination 422, respondent 403 and guest 401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1133,10 +1133,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -1145,10 +1145,10 @@
             49,
             75
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real browser guest/wrong role/foreign owner denied; no client role-selector authority",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1169,10 +1169,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -1194,10 +1194,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1219,10 +1219,10 @@
             541,
             552
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owner/respondent list contains course/section/calendar-date/mode and answers is undefined; not an exhaustive forbidden-key assertion",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1244,10 +1244,10 @@
             531,
             540
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "empty/space/malformed/duplicate lecture filters422; valid lecture returns exact survey401",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1256,10 +1256,10 @@
             782,
             802
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1268,10 +1268,10 @@
             438,
             447
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "logout GET405; null Origin/cross-site403; forgedcookie401; courses HEAD405/Allow GET; results actorquery422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1294,10 +1294,10 @@
             782,
             802
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1318,10 +1318,10 @@
             782,
             802
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "two page sequences descending Lecture sequence, total consistency, no duplicate IDs, beyond-last empty, foreign count isolation and malformed query422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/foundation/database.test.ts",
@@ -1330,10 +1330,10 @@
             69,
             77
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "typed query retains lecture calendar date and canonical Section owner relationships",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1342,10 +1342,10 @@
             541,
             552
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owner/respondent list contains course/section/calendar-date/mode and answers is undefined; not an exhaustive forbidden-key assertion",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1368,10 +1368,10 @@
             80,
             118
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1393,10 +1393,10 @@
             3,
             41
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-recovery-states.spec.ts",
@@ -1405,10 +1405,10 @@
             80,
             118
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1431,10 +1431,10 @@
             22,
             50
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard Draft422 retains121chartitle/error focus; reorder persists question IDs; removal focus; narrow/zoom layout",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -1443,10 +1443,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -1455,10 +1455,10 @@
             66,
             84
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real invalid credentials, error focus/cleared password; Enter login trusted OWNER and one bootstrap",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1501,10 +1501,10 @@
             80,
             118
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1528,10 +1528,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1540,10 +1540,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -1552,10 +1552,10 @@
             3,
             47
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real stale browser duplicate/Closed rejection and unchanged persisted counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1574,8 +1574,8 @@
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
@@ -1596,10 +1596,10 @@
             568,
             575
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "competing create201/409, one persisted Draft revision1",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1608,10 +1608,10 @@
             261,
             288
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owned create 201, duplicate 409, foreign Lecture 404; save revision2, stale409/no-op unchanged; publish frozen eligibility2, later edit409, safe respondent detail",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1633,10 +1633,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -1645,10 +1645,10 @@
             49,
             75
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real browser guest/wrong role/foreign owner denied; no client role-selector authority",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1669,10 +1669,10 @@
             568,
             575
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "competing create201/409, one persisted Draft revision1",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -1696,10 +1696,10 @@
             261,
             288
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owned create 201, duplicate 409, foreign Lecture 404; save revision2, stale409/no-op unchanged; publish frozen eligibility2, later edit409, safe respondent detail",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1708,10 +1708,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -1741,10 +1741,10 @@
             22,
             50
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard Draft422 retains121chartitle/error focus; reorder persists question IDs; removal focus; narrow/zoom layout",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -1774,10 +1774,10 @@
             9,
             14
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "blank Draft normalized; publication rejected; revision0 and121-code-point title rejected; not all exact bounds",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -1786,10 +1786,10 @@
             22,
             50
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard Draft422 retains121chartitle/error focus; reorder persists question IDs; removal focus; narrow/zoom layout",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1811,10 +1811,10 @@
             261,
             288
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owned create 201, duplicate 409, foreign Lecture 404; save revision2, stale409/no-op unchanged; publish frozen eligibility2, later edit409, safe respondent detail",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1836,10 +1836,10 @@
             9,
             14
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "blank Draft normalized; publication rejected; revision0 and121-code-point title rejected; not all exact bounds",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1848,10 +1848,10 @@
             514,
             530
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "invalid/empty membership rejects422, remains Draft/published Atnull/zero eligibility",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1873,10 +1873,10 @@
             261,
             288
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owned create 201, duplicate 409, foreign Lecture 404; save revision2, stale409/no-op unchanged; publish frozen eligibility2, later edit409, safe respondent detail",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1885,10 +1885,10 @@
             448,
             468
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "edit/publish concurrent one200/one409 and only complete Draft or Published definition",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1897,10 +1897,10 @@
             761,
             781
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "held-row barriers explicitly exercise both edit/publish orders, exact conflict code, complete revision and eligibility count",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1943,10 +1943,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1955,10 +1955,10 @@
             761,
             781
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "held-row barriers explicitly exercise both edit/publish orders, exact conflict code, complete revision and eligibility count",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -1967,10 +1967,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -1992,10 +1992,10 @@
             261,
             288
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owned create 201, duplicate 409, foreign Lecture 404; save revision2, stale409/no-op unchanged; publish frozen eligibility2, later edit409, safe respondent detail",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -2004,10 +2004,10 @@
             476,
             513
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real lock barrier proves publication uses committed membership snapshot; later membership changes excluded",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -2016,10 +2016,10 @@
             761,
             781
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "held-row barriers explicitly exercise both edit/publish orders, exact conflict code, complete revision and eligibility count",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2041,10 +2041,10 @@
             514,
             530
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "invalid/empty membership rejects422, remains Draft/published Atnull/zero eligibility",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -2068,10 +2068,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -2080,10 +2080,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2104,10 +2104,10 @@
             761,
             781
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "held-row barriers explicitly exercise both edit/publish orders, exact conflict code, complete revision and eligibility count",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -2128,10 +2128,10 @@
             476,
             513
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real lock barrier proves publication uses committed membership snapshot; later membership changes excluded",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2153,10 +2153,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2178,10 +2178,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2203,10 +2203,10 @@
             366,
             390
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "held real Survey row establishes both Close/Submit lock orders and expected committed Participation count",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2227,10 +2227,10 @@
             94,
             104
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "AFTER Survey INSERT fault safe 500 and rollback; same Lecture create later201",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/release/g04.test.ts",
@@ -2239,10 +2239,10 @@
             106,
             116
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real network loss after Draft COMMIT: failure with committed complete revision, persisted-read reconciliation, no replay",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -2288,10 +2288,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -2300,10 +2300,10 @@
             438,
             447
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "logout GET405; null Origin/cross-site403; forgedcookie401; courses HEAD405/Allow GET; results actorquery422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2325,10 +2325,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -2337,10 +2337,10 @@
             22,
             50
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard Draft422 retains121chartitle/error focus; reorder persists question IDs; removal focus; narrow/zoom layout",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2362,10 +2362,10 @@
             22,
             50
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard Draft422 retains121chartitle/error focus; reorder persists question IDs; removal focus; narrow/zoom layout",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2387,10 +2387,10 @@
             22,
             50
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard Draft422 retains121chartitle/error focus; reorder persists question IDs; removal focus; narrow/zoom layout",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -2399,10 +2399,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -2411,10 +2411,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2431,10 +2431,10 @@
         {
           "file": "scripts/verify-restart.ts",
           "case": "Actual built API stop/start against same database and session secret",
-          "kind": "Automated process integration: historical main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "compares session deadline/current identity, persisted surveyed definition, own answers and results; not every lifecycle fixture",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2456,8 +2456,8 @@
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
@@ -2479,10 +2479,10 @@
             261,
             288
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "owned create 201, duplicate 409, foreign Lecture 404; save revision2, stale409/no-op unchanged; publish frozen eligibility2, later edit409, safe respondent detail",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -2491,10 +2491,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2518,10 +2518,10 @@
             289,
             299
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "invalid required/type/association inputs 422 and zero Participation; ineligible404 and Draft hidden",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -2530,10 +2530,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2556,10 +2556,10 @@
             4,
             8
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "parse Answers exact2000/2001codepoints, blank/NUL/surrogate and literal spaces",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -2568,10 +2568,10 @@
             653,
             673
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "UTF8/escaped malformed or over-limit text rejected; exact2000-codepoint text including leading spaces/newline preserved in own readback",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2595,10 +2595,10 @@
             289,
             299
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "invalid required/type/association inputs 422 and zero Participation; ineligible404 and Draft hidden",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2619,10 +2619,10 @@
             699,
             729
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "actual chunked body exactly at the limit accepted; oversized/compressed/malformed bodies rejected with no response writes",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2644,10 +2644,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -2656,10 +2656,10 @@
             49,
             75
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real browser guest/wrong role/foreign owner denied; no client role-selector authority",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2680,10 +2680,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -2692,10 +2692,10 @@
             289,
             299
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "invalid required/type/association inputs 422 and zero Participation; ineligible404 and Draft hidden",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2717,10 +2717,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -2729,10 +2729,10 @@
             3,
             47
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real stale browser duplicate/Closed rejection and unchanged persisted counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2754,10 +2754,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -2766,10 +2766,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2790,10 +2790,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -2802,10 +2802,10 @@
             3,
             47
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real stale browser duplicate/Closed rejection and unchanged persisted counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -2826,10 +2826,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -2851,10 +2851,10 @@
             634,
             652
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "AFTER INSERT faults independently at Participation/Bundle/Answer rollback all rows, safe 500, one deliberate retry succeeds",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2877,10 +2877,10 @@
             366,
             390
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "held real Survey row establishes both Close/Submit lock orders and expected committed Participation count",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -2902,10 +2902,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2927,18 +2927,18 @@
             745,
             760
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "inconsistent participation/bundle safe 500/no identity; zero-response Closed mean null and fivezero bins",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "scripts/verify-restart.ts",
           "case": "Actual built API stop/start against same database and session secret",
-          "kind": "Automated process integration: historical main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "compares session deadline/current identity, persisted surveyed definition, own answers and results; not every lifecycle fixture",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -2947,10 +2947,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -2959,10 +2959,10 @@
             3,
             47
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real stale browser duplicate/Closed rejection and unchanged persisted counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -2984,10 +2984,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -2996,10 +2996,10 @@
             49,
             75
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real browser guest/wrong role/foreign owner denied; no client role-selector authority",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3021,10 +3021,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -3033,10 +3033,10 @@
             3,
             47
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real stale browser duplicate/Closed rejection and unchanged persisted counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-recovery-states.spec.ts",
@@ -3045,10 +3045,10 @@
             43,
             78
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real committed POST response delivery lost; UI blocks resend until real persisted ownstatus; one response",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -3057,10 +3057,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3082,10 +3082,10 @@
             43,
             78
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real committed POST response delivery lost; UI blocks resend until real persisted ownstatus; one response",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/release/g04.test.ts",
@@ -3094,10 +3094,10 @@
             118,
             129
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real network loss after response COMMIT: one committed response, ownstatus reconciliation, deliberate duplicate409",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3106,10 +3106,10 @@
             730,
             744
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "actual held Survey lock timesout503/error-only, zero rows, ownfalse; deliberate retry201",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3133,10 +3133,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3145,10 +3145,10 @@
             730,
             744
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "actual held Survey lock timesout503/error-only, zero rows, ownfalse; deliberate retry201",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3157,10 +3157,10 @@
             438,
             447
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "logout GET405; null Origin/cross-site403; forgedcookie401; courses HEAD405/Allow GET; results actorquery422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3182,10 +3182,10 @@
             3,
             41
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/release/g04.test.ts",
@@ -3194,10 +3194,10 @@
             180,
             191
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercised console outputs",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -3226,18 +3226,18 @@
             62,
             67
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "executes tests/database/constraints.sql transaction and rollback against real Postgre SQL; relevant constraints only",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/deliverable-1/release-process-and-contributions.md",
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3258,27 +3258,27 @@
             74,
             87
           ],
-          "kind": "Additional post-release verification: PASS",
-          "demonstrated": "PASS: unsupported-mode POST before duplicate, persisted rows unchanged",
-          "execution": "docs/deliverable-1/post-release-ac-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30 production / 2310e157 test publication"
+          "kind": "Automated: corrected main focused PostgreSQL regression",
+          "demonstrated": "Current main PASS: unsupported-mode POST before duplicate, persisted rows unchanged",
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/post-release/ac-gaps.test.ts",
           "case": "PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback",
           "lines": [
             121,
-            134
+            137
           ],
-          "kind": "Additional post-release verification: FAIL",
-          "demonstrated": "FAIL: both Published/Closed own readback returned200+answers instead of409",
-          "execution": "docs/deliverable-1/post-release-ac-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30 production / 2310e157 test publication"
+          "kind": "Automated: corrected main focused PostgreSQL regression",
+          "demonstrated": "PASS: Published and Closed unsupported-mode own readback409 MODE_NOT_SUPPORTED for eligible submitted and unsubmitted respondents; ineligible404 and owner403 precedence; no answer fallback or persisted-row changes.",
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
-      "result": "Partial / known failing branch on assessed release; PR47 candidate correction separate.",
-      "limitation": "Original release POST mode guard PASS; own readback FAIL in both states. Correction candidate PR47 separately53 PASS, not integrated or release fixed.",
-      "status": "PARTIAL / KNOWN FAILING BRANCH"
+      "result": "PASS for the supported-mode defensive boundary in the cited corrected-main PostgreSQL executions.",
+      "limitation": "Anonymous Mode itself remains Sprint 2 scope. Synthetic enum extension exists only in the disposable regression database; no production enum/schema change. Original failing observations remain historical and corrected in the current assessed release.",
+      "status": "PASS"
     },
     {
       "id": "AC-F04-23",
@@ -3295,10 +3295,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -3307,10 +3307,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3329,8 +3329,8 @@
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
@@ -3354,10 +3354,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -3366,10 +3366,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3392,10 +3392,10 @@
             89,
             102
           ],
-          "kind": "Additional post-release verification: PASS",
-          "demonstrated": "PASS: Draftresults409/erroronly, mode precedence and no writes",
-          "execution": "docs/deliverable-1/post-release-ac-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30 production / 2310e157 test publication"
+          "kind": "Automated: corrected main focused PostgreSQL regression",
+          "demonstrated": "Current main PASS: Draftresults409/erroronly, mode precedence and no writes",
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3419,10 +3419,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3431,10 +3431,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -3443,10 +3443,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -3478,10 +3478,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3490,10 +3490,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -3502,10 +3502,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3529,10 +3529,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-rejections.spec.ts",
@@ -3541,10 +3541,10 @@
             49,
             75
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real browser guest/wrong role/foreign owner denied; no client role-selector authority",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3567,10 +3567,10 @@
             438,
             447
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "logout GET405; null Origin/cross-site403; forgedcookie401; courses HEAD405/Allow GET; results actorquery422",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3579,10 +3579,10 @@
             674,
             698
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "foreign-owner detail/edit/delete/publish404; respondent management403; missing CSRF403; actor spoof422; cross-student read unavailable; owner cannot own-submission",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3606,10 +3606,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -3632,10 +3632,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
@@ -3658,15 +3658,15 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
-      "result": "PASS for the stated AC behavior in the cited real execution; no claim beyond the tested fixtures.",
-      "limitation": "Five ordered bins exact arrays including zero andsum-compatible counts for tested fixtures.",
-      "status": "PASS"
+      "result": "Distribution counts PASS; explicit score-label/order assertion is a reviewer-accepted Minor evidence limitation.",
+      "limitation": "Existing tests assert five distribution counts but do not explicitly assert score labels/order [1,2,3,4,5]. R1NNE0 accepted this evidence gap in PR #46 and release PR #48; no implementation defect or fabricated complete assertion is claimed.",
+      "status": "PARTIAL / ACCEPTED MINOR"
     },
     {
       "id": "AC-F05-09",
@@ -3684,10 +3684,10 @@
             15,
             18
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "null,3.33,3.67,1.125-to-1.13 and3.00 fixtures; not entire planned rounding matrix",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3696,10 +3696,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3723,10 +3723,10 @@
             745,
             760
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "inconsistent participation/bundle safe 500/no identity; zero-response Closed mean null and fivezero bins",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3735,10 +3735,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-recovery-states.spec.ts",
@@ -3747,10 +3747,10 @@
             80,
             118
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3773,10 +3773,10 @@
             576,
             602
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "membership-independent discovery/detail/submit; added member404; Published edit/delete409; frozen IDs/interpretation/title persist",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3785,10 +3785,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3811,10 +3811,10 @@
             300,
             332
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "concurrent same-user POST statuses201/409; own answers/status; Published count-only; close rejects further POST; Closed mean/bins/comment exact and no student ID",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -3823,10 +3823,10 @@
             653,
             673
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "UTF8/escaped malformed or over-limit text rejected; exact2000-codepoint text including leading spaces/newline preserved in own readback",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -3835,10 +3835,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3860,10 +3860,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -3872,10 +3872,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3900,10 +3900,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/release/g04.test.ts",
@@ -3912,10 +3912,10 @@
             180,
             191
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "positive pool-log entry captured; known password/token/cookie/feedback marker omitted from exercised console outputs",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -3932,10 +3932,10 @@
             3,
             41
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -3988,10 +3988,10 @@
             404,
             416
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "persisted answer corruption yields500 RESULTS_INCONSISTENT and no data",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "docs/sprints/sprint-1/g04-supplementary-evidence/original-stdin.mjs",
@@ -4017,10 +4017,10 @@
         {
           "file": "scripts/verify-restart.ts",
           "case": "Actual built API stop/start against same database and session secret",
-          "kind": "Automated process integration: historical main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "compares session deadline/current identity, persisted surveyed definition, own answers and results; not every lifecycle fixture",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -4029,10 +4029,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -4056,10 +4056,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/ui-accessibility-real.spec.ts",
@@ -4068,10 +4068,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "apps/api/tests/features/workflows.test.ts",
@@ -4080,10 +4080,10 @@
             603,
             633
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "per-user false/true submitted; exact ordered own answers; Participation/bundle/answer counts; count-only live view; closed per-question means/bins/null; forbidden identity keys absent",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -4105,10 +4105,10 @@
             3,
             41
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real expiry clears private unsaved state, held older read ignored; logout survives reload",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-recovery-states.spec.ts",
@@ -4117,10 +4117,10 @@
             80,
             118
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -4142,10 +4142,10 @@
             51,
             92
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "keyboard requiredrating422/no DBwrites/retained text, linked focus, one201/success focus, Closed mean2.00/literal comment and Backfocus",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/feedback.spec.ts",
@@ -4154,10 +4154,10 @@
             3,
             64
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real UI owner create/publish; student required rejection and keyboard rating; persist/reload/relogin; count-only Published, Closed means/bins/literal script text and real row counts",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         },
         {
           "file": "tests/browser/sprint1-recovery-states.spec.ts",
@@ -4166,10 +4166,10 @@
             80,
             118
           ],
-          "kind": "Automated: historical 214-main run",
+          "kind": "Automated: corrected main219run",
           "demonstrated": "real empty context/zero results, held loading versus delivery error and explicit successful retry",
-          "execution": "docs/sprints/sprint-1/main-release-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -4191,10 +4191,10 @@
             104,
             119
           ],
-          "kind": "Additional post-release verification: PASS",
-          "demonstrated": "PASS: Published/Closed results unsupported mode409/no count/text",
-          "execution": "docs/deliverable-1/post-release-ac-verification.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30 production / 2310e157 test publication"
+          "kind": "Automated: corrected main focused PostgreSQL regression",
+          "demonstrated": "Current main PASS: Published/Closed results unsupported mode409/no count/text",
+          "execution": "docs/sprints/sprint-1/corrected-main-verification.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Selected assertions evidenced; AC remains Partial where listed conditions are not demonstrated.",
@@ -4215,8 +4215,8 @@
           "case": "Actual preimplementation contracts, RED/GREEN commits, teammate reviews and staging/main ancestry",
           "kind": "Process/history inspection; not an automated application test",
           "demonstrated": "recorded commits/reviews establish sampled engineering sequence; not every planned STS permutation or unreported human work",
-          "execution": "docs/sprints/sprint-1/main-release-review-history.json",
-          "sourceCommit": "af2e1030984bcc816081b25b29c9de52a80efe30"
+          "execution": "docs/sprints/sprint-1/corrected-release-review-history.json",
+          "sourceCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a"
         }
       ],
       "result": "Process evidence inspected; no automated Pass or exhaustive Done claim.",
@@ -4228,6 +4228,6 @@
     "PARTIAL": 96,
     "PASS": 11,
     "PROCESS / PARTIAL": 5,
-    "PARTIAL / KNOWN FAILING BRANCH": 1
+    "PARTIAL / ACCEPTED MINOR": 1
   }
 }

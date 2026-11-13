@@ -1,0 +1,42 @@
+
+> lectra@0.0.0 build
+> npm run db:generate && npm run build --workspaces
+
+
+> lectra@0.0.0 db:generate
+> prisma generate
+
+
+✔ Generated Prisma Client (7.10.1) to ./apps/api/src/generated/prisma in 42ms
+
+
+> @lectra/api@0.0.0 build
+> tsc -p tsconfig.build.json
+
+
+> @lectra/web@0.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.6 building client environment for production...
+transforming...
+✓ 16 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.35 kB │ gzip:  0.26 kB
+dist/assets/index-2RIGuQzL.css    3.98 kB │ gzip:  1.51 kB
+dist/assets/index-BipY3lhw.js   249.07 kB │ gzip: 77.23 kB
+
+✓ built in 312ms
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+┌─────────────────────────────────────────────────────────┐
+│  Update available 7.10.1 -> 8.0.0-rc.33                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
