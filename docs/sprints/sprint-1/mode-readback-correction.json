@@ -1,0 +1,59 @@
+{
+  "testedCommit": "609bbcd36d3d3a5baeb9829ed9d36876ec5fe17e",
+  "results": [
+    {
+      "command": "npm run typecheck",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "summary": []
+    },
+    {
+      "command": "node --env-file=.local/mode-green.env node_modules/vitest/vitest.mjs run --config vitest.post-release.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  5 passed (5)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/mode-features.env node_modules/vitest/vitest.mjs run --config vitest.features.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  41 passed (41)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/mode-release.env node_modules/vitest/vitest.mjs run --config vitest.release.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  7 passed (7)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/mode-features.env --import tsx scripts/verify-restart.ts",
+      "exit": 0,
+      "summary": [
+        "Built API process restart: same persisted sessions, absolute deadline, survey, own answers and results verified; no migration or reseed between starts."
+      ]
+    }
+  ],
+  "date": "2026-11-13",
+  "status": "Correction candidate; not the immutable sprint-1 release",
+  "baselineRelease": "af2e1030984bcc816081b25b29c9de52a80efe30",
+  "redCommit": "eef5e75",
+  "redResult": "3 passed, 2 failed; Published and Closed own readback returned 200 instead of MODE_NOT_SUPPORTED",
+  "environment": "Node 24.22.1; PostgreSQL 17.11; four new isolated empty databases; only test fixture widens SurveyMode enum",
+  "totalSelectedPasses": 53,
+  "notClaimed": "No full 214-test rerun, browser rerun, human approval, main merge or tag replacement claimed.",
+  "files": {
+    "apps/api/src/feedback.ts": "623fcc799b7a9d065562eaa6c45553e244f684d1ff73ac2564d9cfce98d7eede",
+    "apps/api/tests/post-release/ac-gaps.test.ts": "0c826ca5b829096b5c426af68d4e07268fb38255dee9a9f8246eab8404e1f57a",
+    "vitest.post-release.config.ts": "a8db3ae2ac23bdfd179f533492c1e853804d5fda9156485df1cad008ee7fb425"
+  }
+}
