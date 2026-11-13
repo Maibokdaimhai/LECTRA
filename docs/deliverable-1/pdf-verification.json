@@ -1,9 +1,9 @@
 {
-  "dateBangkok": "2026-11-13",
+  "dateBangkok": "2026-11-14",
   "pdf": "docs/deliverable-1/lectra-deliverable-1.pdf",
   "pages": 279,
-  "sha256": "21c951910a240784fddacadd704ee5c91929573b9ec63abbef40e8e9e027f5a3",
-  "bytes": 1444031,
+  "sha256": "733029d99dc09afc71e913260c0e8ee0e83d6450eb7e4a10866624de0be9e273",
+  "bytes": 1470175,
   "partsStartPages": {
     "A": 3,
     "B": 30,
@@ -41,12 +41,12 @@
   "assessedApplication": "b458cb65736029f5c7de55e49c9afd6bc8de702a",
   "tag": "sprint-1.1",
   "tagObject": "017da08d7b1c9d9b293d3798a64f389108c4d7a4",
-  "reportSourceCommit": "4aeb69ab56b6b04805d6ec688838d9e59ce78e03",
+  "reportSourceCommit": "ddf6e16974412dc5fb18bf5ca4cb1da7a4c17a02",
   "all113AcIdsPresent": true,
   "all183PlannedStsPresent": true,
   "actualNavigationRangesVerified": true,
   "renderedPages": 279,
-  "visualQa": "All279pages rendered. All10contact sheets and selected100dpi affected pages inspected. After final editorial refinements, cover/affected PartF sheets and detailed changed paragraphs re-inspected. No observed layout defect; out-of-page glyph scan has zero findings.218body pages of completePartsA-E exactly match prior284-page report text after excluding versioned footers. Original source/photographs retained separately; all current application/authentication figures recaptured on corrected main.",
+  "visualQa": "Rebuilt with the existing generator and original ArialUnicodeMS/Tahoma-Bold fonts. All 279 pages rendered for comparison and scanned for out-of-page text; none found. Only cover/source-label and page228 README text changed. Cover/page228 and screenshot layout inspected visually. All other page text, screenshot image pixels, navigation, page ranges and AC/STS identifiers are unchanged; prior full visual review remains applicable.",
   "partsAtoEBodyPagesUnchanged": 218,
   "outOfPageGlyphs": [],
   "basicSecretPatternsPassed": true,
@@ -88,13 +88,31 @@
   },
   "assessedSourceHashesMatched": 84,
   "submission": "No LEB2 or original-deadline compliance claim. Final corrected-report publication is reviewed separately from the immutable application/tag.",
-  "previousPdfSha256": "03eca21d3a86f4089abbc44096ea616bcc807100c59f91a430f34d377f4ec1af",
+  "previousPdfSha256": "21c951910a240784fddacadd704ee5c91929573b9ec63abbef40e8e9e027f5a3",
   "historicalQaRecord": "docs/deliverable-1/pdf-verification-history-sprint-1.json",
   "currentSourceHashes": {
     "scripts/build-deliverable-report.py": "bcd5b9a3416ed716dcc07f1d27500123581b6e7846a595b0974c35543aecb59a",
     "docs/deliverable-1/release-ac-results.json": "9e9d95063b25607fb64633cbe4a6a160bdf2a3df9264c4a713fc194b42438c05",
     "docs/deliverable-1/release-ac-results.md": "702b6a9b3400db19fefe616f1c79a835c0581b601045c1b8ebed02cd2c9f7bd7",
     "docs/deliverable-1/ac-assertion-audit.json": "9587e1dd210204ddbd2e238652ebc0aee49e9ac759fd648c7f94da954ba9b8ef",
-    "docs/sprints/sprint-1/corrected-main-verification.json": "25e9e5d12d07e17bf9e96c6df44255bacf2044e654d33a4c83af3abcbcf1696b"
+    "docs/sprints/sprint-1/corrected-main-verification.json": "25e9e5d12d07e17bf9e96c6df44255bacf2044e654d33a4c83af3abcbcf1696b",
+    "README.md": "9b5a90d59a44ad6e55fe814e4c5e9774ed20237c3e78ab23feaa2bbb71d3eca2"
+  },
+  "previousReportSourceCommit": "4aeb69ab56b6b04805d6ec688838d9e59ce78e03",
+  "reportSourceState": "Uncommitted README status correction on review/pr-49; explicitly identified on the PDF cover.",
+  "readmeStatusCorrection": {
+    "dateBangkok": "2026-11-14",
+    "finding": "Stale README PDF status, embedded on page228",
+    "source": "README.md:115",
+    "affectedPdfPages": [
+      1,
+      228
+    ],
+    "previousPdfSha256": "21c951910a240784fddacadd704ee5c91929573b9ec63abbef40e8e9e027f5a3",
+    "previousReportSourceCommit": "4aeb69ab56b6b04805d6ec688838d9e59ce78e03",
+    "previousVisualQa": "All279pages rendered. All10contact sheets and selected100dpi affected pages inspected. After final editorial refinements, cover/affected PartF sheets and detailed changed paragraphs re-inspected. No observed layout defect; out-of-page glyph scan has zero findings.218body pages of completePartsA-E exactly match prior284-page report text after excluding versioned footers. Original source/photographs retained separately; all current application/authentication figures recaptured on corrected main.",
+    "build": "Existing scripts/build-deliverable-report.py executed twice with original font overrides; cover source label explicitly includes the uncommitted correction. Generator source unchanged.",
+    "verification": "279 pages; Parts A-F ranges and bookmarks unchanged; 113 unique AC and 183 unique planned STS identifiers; all screenshot image pixels unchanged; no out-of-page text.",
+    "applicationTestsRerun": false
   }
 }
