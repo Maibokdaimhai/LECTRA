@@ -1,0 +1,9 @@
+test_connection_controls_removed_but_docker_runtime_access_preserved (test_docker_verifier_environment.VerifierEnvironmentTests.test_connection_controls_removed_but_docker_runtime_access_preserved) ... ok
+test_does_not_mutate_calling_environment (test_docker_verifier_environment.VerifierEnvironmentTests.test_does_not_mutate_calling_environment) ... ok
+test_future_managed_key_is_automatically_isolated (test_docker_verifier_environment.VerifierEnvironmentTests.test_future_managed_key_is_automatically_isolated) ... ok
+test_managed_compose_values_cannot_override_env_file (test_docker_verifier_environment.VerifierEnvironmentTests.test_managed_compose_values_cannot_override_env_file) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

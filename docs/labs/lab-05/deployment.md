@@ -6,6 +6,8 @@ Episode 1 account/cost-control verification is recorded in [issue #50](https://g
 
 Episode 3 Docker packaging is tracked in [issue #53](https://github.com/Maibokdaimhai/LECTRA/issues/53). See [Docker setup, service roles, runtime settings and local persistence evidence](episode-3-docker.md). Local images are built and tested; this does not assert a Cloud Run deployment.
 
+Episode 4 CI preparation is tracked in [issue #55](https://github.com/Maibokdaimhai/LECTRA/issues/55): [workflow review, guide gates and actual run evidence](episode-4-ci.md). The workflow checks staging/main PRs with read-only permissions and no cloud credentials. Prepared deploy scripts are offline-only until their Episode 5 LECTRA environment adaptation/review; see [deploy notes](../../../deploy/README.md). The staging and main release/merge gates must both be recorded before Episode 4 is complete.
+
 ## Supported Episode 2 verification environment
 
 The Python verification runner supports **macOS or Linux, including Linux inside WSL 2**. Run it from a POSIX shell with native tools for that environment. **Native Windows Python, Command Prompt and PowerShell execution of this runner are unsupported**: `npm` is a `.cmd` shim there and the runner intentionally does not launch a Windows command shell. Native Windows support is not an additional instructor requirement.
