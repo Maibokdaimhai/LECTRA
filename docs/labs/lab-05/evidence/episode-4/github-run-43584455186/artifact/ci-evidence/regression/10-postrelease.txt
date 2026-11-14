@@ -1,0 +1,10 @@
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/post-release/ac-gaps.test.ts (5 tests) 1781ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  10:17:44
+   Duration  2.15s (tests 86%, import 9%, transform 5%)
+

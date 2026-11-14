@@ -1,0 +1,14 @@
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/foundation/database.test.ts (9 tests) 3911ms
+   ✓ deploys the actual migration history onto an empty database and deploys again without changes 1799ms
+   ✓ seeds synthetic role/context fixtures twice without changing hashes, IDs or sessions 624ms
+   ✓ retains the mapped session table in a second schema comparison 846ms
+   ✓ never overwrites submitted associations during a repeat seed 382ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  09:32:56
+   Duration  4.17s (tests 96%, transform 2%, import 1%)
+

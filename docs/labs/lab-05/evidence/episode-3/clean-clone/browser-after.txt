@@ -1,0 +1,1 @@
+Docker browser after: packaged UI, real persisted owner results, retained browser session and logout verified.

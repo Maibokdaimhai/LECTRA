@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 14108183222,
+      "node_id": "MDg6QXJ0aWZhY3QxNDEwODE4MzIyMg==",
+      "name": "ci-evidence-43580925042-1",
+      "size_in_bytes": 550334,
+      "url": "https://api.github.com/repos/Maibokdaimhai/LECTRA/actions/artifacts/14108183222",
+      "archive_download_url": "https://api.github.com/repos/Maibokdaimhai/LECTRA/actions/artifacts/14108183222/zip",
+      "expired": false,
+      "digest": "sha256:43abef8e83bc382cd49046fb5986ddbdb0a080f0de2f9353ea92510ebc064d26",
+      "created_at": "2026-11-14T09:36:08Z",
+      "updated_at": "2026-11-14T09:36:08Z",
+      "expires_at": "2027-02-12T09:31:09Z",
+      "workflow_run": {
+        "id": 43580925042,
+        "repository_id": 1447975991,
+        "head_repository_id": 1447975991,
+        "head_branch": "ci/55-pr-checks",
+        "head_sha": "bec735bdceaec6cd6de26229826dd463c8d6ed86"
+      }
+    }
+  ]
+}

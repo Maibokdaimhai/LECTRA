@@ -1,0 +1,129 @@
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.81kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:24.22.1-bookworm-slim
+#2 DONE 0.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 320B done
+#3 DONE 0.0s
+
+#4 [dependencies 1/9] FROM docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c
+#4 resolve docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 2.94kB done
+#5 DONE 0.0s
+
+#6 [build 4/6] COPY apps/web apps/web
+#6 CACHED
+
+#7 [build 3/6] COPY apps/api apps/api
+#7 CACHED
+
+#8 [dependencies 4/9] RUN npm install --global npm@10.9.2
+#8 CACHED
+
+#9 [dependencies 7/9] COPY apps/web/package.json apps/web/package.json
+#9 CACHED
+
+#10 [build 2/6] COPY prisma prisma
+#10 CACHED
+
+#11 [dependencies 6/9] COPY apps/api/package.json apps/api/package.json
+#11 CACHED
+
+#12 [dependencies 9/9] RUN npm ci
+#12 CACHED
+
+#13 [dependencies 5/9] COPY package.json package-lock.json ./
+#13 CACHED
+
+#14 [dependencies 8/9] COPY scripts/check-runtime.mjs scripts/check-runtime.mjs
+#14 CACHED
+
+#15 [dependencies 3/9] RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+#15 CACHED
+
+#16 [build 1/6] COPY tsconfig*.json prisma.config.ts ./
+#16 CACHED
+
+#17 [dependencies 2/9] WORKDIR /app
+#17 CACHED
+
+#18 [build 5/6] COPY scripts scripts
+#18 CACHED
+
+#19 [build 6/6] RUN npm run build
+#19 0.154 
+#19 0.154 > lectra@0.0.0 build
+#19 0.154 > npm run db:generate && npm run build --workspaces
+#19 0.154 
+#19 0.192 
+#19 0.192 > lectra@0.0.0 db:generate
+#19 0.192 > prisma generate
+#19 0.192 
+#19 0.542 Loaded Prisma config from prisma.config.ts.
+#19 0.542 
+#19 0.601 Prisma schema loaded from prisma/schema.prisma.
+#19 0.688 
+#19 0.688 ✔ Generated Prisma Client (7.10.1) to ./apps/api/src/generated/prisma in 52ms
+#19 0.688 
+#19 0.765 
+#19 0.765 > @lectra/api@0.0.0 build
+#19 0.765 > tsc -p tsconfig.build.json
+#19 0.765 
+#19 1.442 
+#19 1.442 > @lectra/web@0.0.0 build
+#19 1.442 > tsc --noEmit && vite build
+#19 1.442 
+#19 2.230 vite v8.3.6 building client environment for production...
+#19 2.237 transforming...
+#19 2.274 ✓ 16 modules transformed.
+#19 2.290 rendering chunks...
+#19 2.309 computing gzip size...
+#19 2.312 dist/index.html                   0.35 kB │ gzip:  0.26 kB
+#19 2.312 dist/assets/index-2RIGuQzL.css    3.98 kB │ gzip:  1.51 kB
+#19 2.312 dist/assets/index-BipY3lhw.js   249.07 kB │ gzip: 77.23 kB
+#19 2.312 
+#19 2.312 ✓ built in 81ms
+#19 DONE 2.4s
+
+#20 [runtime  8/12] COPY --from=build --chown=node:node /app/apps/web/package.json ./apps/web/package.json
+#20 CACHED
+
+#21 [runtime  5/12] COPY --from=build --chown=node:node /app/node_modules ./node_modules
+#21 CACHED
+
+#22 [runtime  9/12] COPY --from=build --chown=node:node /app/apps/web/dist ./apps/web/dist
+#22 CACHED
+
+#23 [runtime  7/12] COPY --from=build --chown=node:node /app/apps/api ./apps/api
+#23 CACHED
+
+#24 [runtime  6/12] COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /app/prisma.config.ts /app/tsconfig.base.json ./
+#24 CACHED
+
+#25 [runtime 10/12] COPY --from=build --chown=node:node /app/prisma ./prisma
+#25 CACHED
+
+#26 [runtime 11/12] COPY --from=build --chown=node:node /app/scripts ./scripts
+#26 DONE 0.0s
+
+#27 [runtime 12/12] RUN chmod +x apps/api/docker-entrypoint.sh
+#27 DONE 0.1s
+
+#28 exporting to image
+#28 exporting layers 0.1s done
+#28 exporting manifest sha256:49b3b3e5d1407e4a0d40f44489c69d6927970ebe0ec147b08e138d464ed37720 done
+#28 exporting config sha256:15ee8efc525e11437f2d11cb9a9f9642f0ed285199dbe53291b5a65968be6c66
+#28 exporting config sha256:15ee8efc525e11437f2d11cb9a9f9642f0ed285199dbe53291b5a65968be6c66 done
+#28 exporting attestation manifest sha256:7d4026f7f931cc58b2deb6ed3cb9b144bbe28caa794b845e3cf21775bd7cabe6 done
+#28 exporting manifest list sha256:197d0b54d770bf81e65c52ae0cae87f1d0c3ad4527a7d86e003d038fe140a5e4 done
+#28 naming to docker.io/library/lectra-unified:ep3-20261114081604575022 done
+#28 unpacking to docker.io/library/lectra-unified:ep3-20261114081604575022 0.0s done
+#28 DONE 0.2s

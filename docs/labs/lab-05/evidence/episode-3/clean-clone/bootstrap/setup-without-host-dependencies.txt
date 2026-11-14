@@ -1,0 +1,5 @@
+
+> lectra@0.0.0 setup:docker
+> node scripts/setup-docker.mjs
+
+Created ignored .local/docker.env with private random local credentials. No secret values printed. Existing files are never overwritten.

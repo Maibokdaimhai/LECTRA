@@ -1,0 +1,13 @@
+
+> lectra@0.0.0 test:api
+> vitest run --config vitest.api.config.ts
+
+
+ RUN  v5.1.0 /Users/meng/.codex/worktrees/review-pr38/LECTRA
+
+
+ Test Files  3 passed (3)
+      Tests  13 passed (13)
+   Start at  16:27:02
+   Duration  242ms (import 80%, tests 11%, transform 8%, worker 1%)
+

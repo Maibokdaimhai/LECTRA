@@ -3,6 +3,8 @@ import { z } from 'zod';
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().min(1).max(65535).default(3001),
+  // One hop is an explicit deployment choice, never inferred from client headers.
+  TRUST_PROXY: z.enum(['none', '1']).default('none'),
   APP_ORIGIN: z.url(),
   DATABASE_URL: z.url().refine(value => {
     try {

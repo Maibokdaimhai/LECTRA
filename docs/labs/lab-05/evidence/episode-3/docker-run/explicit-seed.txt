@@ -1,0 +1,10 @@
+
+> lectra@0.0.0 db:seed:production
+> node --import tsx scripts/production-database.ts seed
+
+Production database operation completed; no reset or automatic startup seed.
+ Container lectra-ep3-20261114081724517238-db-1 Running 
+ Container lectra-ep3-20261114081724517238-db-1 Waiting 
+ Container lectra-ep3-20261114081724517238-db-1 Healthy 
+ Container lectra-ep3-20261114081724517238-migrate-run-362ca0a27cb5 Creating 
+ Container lectra-ep3-20261114081724517238-migrate-run-362ca0a27cb5 Created 

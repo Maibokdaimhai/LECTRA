@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /Users/meng/.codex/worktrees/review-pr38/LECTRA
+
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  14:57:38
+   Duration  1.90s (tests 98%, import 2%, transform 1%)
+

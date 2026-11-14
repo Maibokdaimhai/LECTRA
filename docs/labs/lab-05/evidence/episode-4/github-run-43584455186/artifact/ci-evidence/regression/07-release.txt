@@ -1,0 +1,17 @@
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/release/g04.test.ts (7 tests) 19636ms
+   ✓ G04-F01: physical loss of authenticated UPSERT acknowledgement suppresses cookie and automatic resave 903ms
+   ✓ G04-F02: create failure after actual Survey insertion rolls back and permits same-Lecture creation 1554ms
+   ✓ G04-F03: physical loss after Draft COMMIT is reconciled by persisted definition without replay 2283ms
+   ✓ G04-F04: physical loss after response COMMIT preserves one response and own-status reconciliation 3453ms
+   ✓ G04-F05: a real two-connection deadlock aborts the route transaction and permits deliberate retry 3791ms
+   ✓ G04-F06: PostgreSQL serialization-error injection rolls back preceding writes and permits retry 3567ms
+   ✓ G04-F07: exercised pool logger and normal/error routes omit known secret and feedback markers 3067ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  10:17:20
+   Duration  20.00s (tests 99%, import 1%, transform 1%)
+

@@ -1,0 +1,72 @@
+{
+  "commit": "2e22c9337105db21d9d0d42bf74dafd17e852bf3",
+  "initialNodeModulesAbsent": true,
+  "initialPrivateConfigurationAbsent": true,
+  "containerBuildCompletedBeforeHostNpmCi": true,
+  "cloneSource": "Local Git repository via git clone --no-local; exact committed candidate, not copied working files.",
+  "commands": [
+    {
+      "label": "clone",
+      "command": [
+        "git",
+        "clone",
+        "--no-local",
+        "--branch",
+        "build/53-docker",
+        "<source-repository>",
+        "<fresh-checkout>"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "setup-without-host-dependencies",
+      "command": [
+        "npm",
+        "run",
+        "setup:docker"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "compose-build-without-host-dependencies",
+      "command": [
+        "docker",
+        "compose",
+        "--env-file",
+        ".local/docker.env",
+        "-p",
+        "lectra-ep3-clean-bootstrap",
+        "build"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "install-host-verifier-dependencies",
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "install-browser",
+      "command": [
+        "npm",
+        "run",
+        "browsers:install"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "docker-verification",
+      "command": [
+        "python3",
+        "scripts/verify-lab5-episode3.py",
+        "--create-local-containers",
+        "--evidence-dir",
+        ".local/clean-clone-evidence"
+      ],
+      "exit": 0
+    }
+  ]
+}

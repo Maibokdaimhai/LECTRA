@@ -1,0 +1,16 @@
+{
+  "id": 43580925042,
+  "name": "CI & Docker Build",
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  "run_number": 1,
+  "run_attempt": 1,
+  "head_branch": "ci/55-pr-checks",
+  "head_sha": "bec735bdceaec6cd6de26229826dd463c8d6ed86",
+  "html_url": "https://github.com/Maibokdaimhai/LECTRA/actions/runs/43580925042",
+  "created_at": "2026-11-14T09:31:08Z",
+  "updated_at": "2026-11-14T09:36:14Z",
+  "run_started_at": "2026-11-14T09:31:08Z",
+  "check_suite_id": 118003600375
+}

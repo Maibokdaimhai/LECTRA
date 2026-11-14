@@ -3,7 +3,7 @@ import { readConfig } from './config.js';
 try {
   const config = readConfig(process.env);
   const app = createApp(config);
-  const server = app.listen(config.PORT, '127.0.0.1', () => {
+  const server = app.listen(config.PORT, '0.0.0.0', () => {
     console.info(`LECTRA API listening on port ${config.PORT}`);
   });
   server.on('error', () => { console.error('API failed to listen.'); process.exitCode = 1; });

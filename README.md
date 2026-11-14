@@ -11,9 +11,11 @@ Sprint 1 provides real login, scoped Course/Section/Lecture discovery, Draft →
 - Git. Docker is an optional way to run the local database; an application image, CI/CD and cloud deployment are not required for this local setup.
 - Free demo ports: database 55432, API 3001, web 5173. Browser checks use 3102/4174, isolated UI checks 4175, smoke 3101/4173 and built-process restart 3105.
 
-Run commands from the repository root with the pinned runtime on PATH. Confirm `node --version` and `npm --version` first. The commands below also work in PowerShell; use `node --env-file=...` instead of platform-specific shell environment exports.
+Run commands from the repository root with the pinned runtime on PATH. Confirm `node --version` and `npm --version` first. The local setup commands below can be used in PowerShell; use `node --env-file=...` instead of platform-specific shell environment exports. **The Lab 5 Episode 2 Python verification runner requires macOS or Linux (including a WSL 2 Linux shell); native Windows Python/PowerShell is unsupported.** See [supported environments and WSL commands](docs/labs/lab-05/deployment.md#supported-episode-2-verification-environment).
 
 ## Fresh checkout and private configuration
+
+For the **Lab 5 container workflow**, see [Episode 3 Docker setup and evidence](docs/labs/lab-05/episode-3-docker.md). It uses separate ignored `.local/docker.env`, a Compose project and persistent volume; it does not reuse/reset the local test/demo database below. The root Dockerfile builds the combined API/SPA image for later CI/deployment.
 
 ```sh
 git clone --branch staging https://github.com/Maibokdaimhai/LECTRA.git
@@ -44,7 +46,9 @@ Wait for the TCP `pg_isready -h 127.0.0.1` check to report accepting connections
 
 `demo:config` validates test/development separation and creates ignored `.local/demo-setup.env` / `.local/demo.env` without overwriting them. `demo:migrate` applies the real forward migration history, including session storage; `demo:seed` creates/verifies synthetic fixtures and Argon2id hashes. Nothing seeds on application startup.
 
-Open **http://127.0.0.1:5173**. Use this exact origin: `localhost` and `127.0.0.1` are different origins for cookies/CSRF. API listens on loopback 3001; Vite proxies `/api` to it. Builds/typecheck generate the ignored Prisma client.
+Open **http://127.0.0.1:5173**. Use this exact origin: `localhost` and `127.0.0.1` are different origins for cookies/CSRF. API listens on `0.0.0.0:3001` for container compatibility; Vite proxies `/api` to it. Restrict local access with your firewall and loopback-only container port mappings. Builds/typecheck generate the ignored Prisma client.
+
+Lab 5 Episode 2 runtime changes and verification are documented in [cloud readiness](docs/labs/lab-05/episode-2-cloud-readiness.md). Cloud deployment and Docker packaging are separate later episodes; no live cloud deployment is claimed here.
 
 | Role / context | Synthetic login |
 | --- | --- |

@@ -1,0 +1,96 @@
+#0 building with "orbstack" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.81kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:24.22.1-bookworm-slim
+#2 DONE 0.5s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 320B done
+#3 DONE 0.0s
+
+#4 [dependencies 1/9] FROM docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c
+#4 resolve docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 2.94kB done
+#5 DONE 0.0s
+
+#6 [build 4/6] COPY apps/web apps/web
+#6 CACHED
+
+#7 [dependencies 2/9] WORKDIR /app
+#7 CACHED
+
+#8 [dependencies 8/9] COPY scripts/check-runtime.mjs scripts/check-runtime.mjs
+#8 CACHED
+
+#9 [dependencies 4/9] RUN npm install --global npm@10.9.2
+#9 CACHED
+
+#10 [runtime  8/12] COPY --from=build --chown=node:node /app/apps/web/package.json ./apps/web/package.json
+#10 CACHED
+
+#11 [runtime  9/12] COPY --from=build --chown=node:node /app/apps/web/dist ./apps/web/dist
+#11 CACHED
+
+#12 [runtime 10/12] COPY --from=build --chown=node:node /app/prisma ./prisma
+#12 CACHED
+
+#13 [dependencies 5/9] COPY package.json package-lock.json ./
+#13 CACHED
+
+#14 [build 3/6] COPY apps/api apps/api
+#14 CACHED
+
+#15 [runtime  6/12] COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /app/prisma.config.ts /app/tsconfig.base.json ./
+#15 CACHED
+
+#16 [build 6/6] RUN npm run build
+#16 CACHED
+
+#17 [build 1/6] COPY tsconfig*.json prisma.config.ts ./
+#17 CACHED
+
+#18 [build 5/6] COPY scripts scripts
+#18 CACHED
+
+#19 [dependencies 9/9] RUN npm ci
+#19 CACHED
+
+#20 [build 2/6] COPY prisma prisma
+#20 CACHED
+
+#21 [runtime 11/12] COPY --from=build --chown=node:node /app/scripts ./scripts
+#21 CACHED
+
+#22 [runtime  7/12] COPY --from=build --chown=node:node /app/apps/api ./apps/api
+#22 CACHED
+
+#23 [dependencies 3/9] RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+#23 CACHED
+
+#24 [runtime  5/12] COPY --from=build --chown=node:node /app/node_modules ./node_modules
+#24 CACHED
+
+#25 [dependencies 6/9] COPY apps/api/package.json apps/api/package.json
+#25 CACHED
+
+#26 [dependencies 7/9] COPY apps/web/package.json apps/web/package.json
+#26 CACHED
+
+#27 [runtime 12/12] RUN chmod +x apps/api/docker-entrypoint.sh
+#27 CACHED
+
+#28 exporting to image
+#28 exporting layers done
+#28 exporting manifest sha256:9637b80497fe8069a714354e46734b9f33eea3ab85762f92361a44b90971ea01 done
+#28 exporting config sha256:e8fec54e518c576400fa725364eb441fb8d83812cfe58375c373ae330be86931 done
+#28 exporting attestation manifest sha256:0145895b9eec1279a6f2db3f786d3861e31a42c2b9a8bb0b48a72c2109d69b58 0.0s done
+#28 exporting manifest list sha256:2c22f9bffbc8080502a8df74efeed343ca8fb0775b893c860231941e36deede5 0.0s done
+#28 naming to docker.io/library/lectra-unified:ep3-20261114082334394513 done
+#28 unpacking to docker.io/library/lectra-unified:ep3-20261114082334394513 0.0s done
+#28 DONE 0.1s

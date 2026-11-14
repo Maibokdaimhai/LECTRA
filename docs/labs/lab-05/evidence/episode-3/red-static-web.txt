@@ -1,0 +1,32 @@
+
+ RUN  v5.1.0 /Users/meng/.codex/worktrees/review-pr38/LECTRA
+
+ ❯ apps/api/tests/api/static-web.test.ts (2 tests | 1 failed) 33ms
+   × EP3-W01: serves packaged HTML and assets, with index cache disabled 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W01: serves packaged HTML and assets, with index cache disabled
+Error: expected 200 "OK", got 404 "Not Found"
+ ❯ apps/api/tests/api/static-web.test.ts:19:44
+     17| it('EP3-W01: serves packaged HTML and assets, with index cache disable…
+     18|   const app = createApp(undefined, undefined, root);
+     19|   const home = await request(app).get('/').expect(200);
+       |                                            ^
+     20|   expect(home.text).toContain('LECTRA packaged UI fixture');
+     21|   expect(home.headers['cache-control']).toContain('no-store');
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:404:14
+ ❯ node_modules/supertest/lib/test.js:460:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:437:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:302:23
+ ❯ localAssert node_modules/supertest/lib/test.js:220:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:227:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  15:09:57
+   Duration  291ms (import 74%, tests 15%, transform 11%, worker 1%)
+

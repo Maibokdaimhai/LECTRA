@@ -1,0 +1,43 @@
+Episode 2 static inspection — 2026-11-14
+
+Command: ["rg", "-n", "-i", "upload|multer|writeFile|createWriteStream|localStorage", "apps/api/src", "apps/web/src"]
+Exit: 1 (rg exit 1 means no matches)
+
+Command: ["rg", "-n", "X-Requester|x-requester|role selector|Development Requester", "apps/api/src", "apps/web/src"]
+Exit: 1 (rg exit 1 means no matches)
+
+Command: ["rg", "-n", "process\\.env|import\\.meta\\.env", "apps/api/src", "apps/web", "scripts", "prisma.config.ts"]
+Exit: 0 (rg exit 1 means no matches)
+prisma.config.ts:7:  datasource: { url: process.env.DATABASE_URL ?? 'postgresql://unused@127.0.0.1:1/unused' }
+scripts/dev.mjs:5:const apiPort = smoke ? 3101 : features ? 3102 : Number(process.env.PORT ?? 3001);
+scripts/dev.mjs:8:  ...process.env,
+apps/api/src/server.ts:4:  const config = readConfig(process.env);
+apps/web/vite.config.ts:5:  server: { proxy: { '/api': { target: process.env.API_PROXY_TARGET ?? 'http://127.0.0.1:3001', changeOrigin: false } } }
+scripts/prepare-browser.ts:6:    const expected = assertTestDatabase({ testUrl: process.env.TEST_DATABASE_URL, developmentUrl: process.env.DEVELOPMENT_DATABASE_URL, allowName: process.env.ALLOW_TEST_DATABASE });
+scripts/prepare-browser.ts:7:    if (process.env.ALLOW_BROWSER_TESTS !== expected || process.env.DATABASE_URL !== process.env.TEST_DATABASE_URL)
+scripts/prepare-browser.ts:9:    const pool = new Pool({ connectionString: process.env.TEST_DATABASE_URL });
+scripts/prepare-browser.ts:17:    execFileSync(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], { env: process.env, stdio: 'pipe' });
+scripts/prepare-browser.ts:18:    await seedSyntheticDatabase({ testUrl: process.env.TEST_DATABASE_URL, developmentUrl: process.env.DEVELOPMENT_DATABASE_URL, allowName: expected, seedName: expected, ownerPassword: process.env.SEED_OWNER_PASSWORD, respondentPassword: process.env.SEED_RESPONDENT_PASSWORD });
+scripts/playwright.mjs:4:  env: { ...process.env, PLAYWRIGHT_BROWSERS_PATH: resolve('.local/playwright-browsers') },
+scripts/database.ts:9:  const environment = process.env;
+scripts/production-database.ts:24:  productionDatabase(process.argv[2] ?? '', process.env).then(() => {
+scripts/orm-smoke.ts:10:  const expectedName = assertTestDatabase({ testUrl: process.env.TEST_DATABASE_URL, developmentUrl: process.env.DATABASE_URL, allowName: process.env.ALLOW_TEST_DATABASE });
+scripts/orm-smoke.ts:27:  const client = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.TEST_DATABASE_URL }) });
+scripts/demo-config.ts:7:    const expected = assertTestDatabase({ testUrl: process.env.TEST_DATABASE_URL, developmentUrl: process.env.DATABASE_URL, allowName: process.env.ALLOW_TEST_DATABASE });
+scripts/demo-config.ts:15:    const setup = `NODE_ENV=test\nDATABASE_URL=${value(process.env.DATABASE_URL!)}\nTEST_DATABASE_URL=${value(process.env.TEST_DATABASE_URL!)}\nALLOW_TEST_DATABASE=${expected}\nSEED_SYNTHETIC_DATA=${expected}\nSEED_OWNER_PASSWORD=${owner}\nSEED_RESPONDENT_PASSWORD=${student}\n`;
+scripts/demo-config.ts:16:    const runtime = `NODE_ENV=development\nDATABASE_URL=${value(process.env.TEST_DATABASE_URL!)}\nAPP_ORIGIN=http://127.0.0.1:5173\nSESSION_SECRET=${secret}\nPORT=3001\n`;
+scripts/verify-restart.ts:5:const expected = assertTestDatabase({ testUrl: process.env.TEST_DATABASE_URL, developmentUrl: process.env.DATABASE_URL, allowName: process.env.ALLOW_TEST_DATABASE });
+scripts/verify-restart.ts:6:if (process.env.ALLOW_FEATURE_TESTS !== expected)
+scripts/verify-restart.ts:8:const pool = new Pool({ connectionString: process.env.TEST_DATABASE_URL });
+scripts/verify-restart.ts:13:    child = spawn(process.execPath, ['apps/api/dist/server.js'], { env: { ...process.env, NODE_ENV: 'test', PORT: '3105', APP_ORIGIN: origin, DATABASE_URL: process.env.TEST_DATABASE_URL!, SESSION_SECRET: secret }, stdio: 'ignore' });
+scripts/verify-restart.ts:38:    if (!process.env.RESTART_PASSWORD)
+scripts/verify-restart.ts:41:    const owner = await login('owner.1@example.test', process.env.RESTART_PASSWORD), student = await login('respondent.11@example.test', process.env.RESTART_PASSWORD);
+
+Command: ["rg", "-n", "seed|migrate|TRUST_PROXY|listen", "apps/api/src/server.ts", "apps/api/src/app.ts"]
+Exit: 0 (rg exit 1 means no matches)
+apps/api/src/app.ts:10:  app.set('trust proxy', config?.TRUST_PROXY === '1' ? 1 : false);
+apps/api/src/server.ts:6:  const server = app.listen(config.PORT, '0.0.0.0', () => {
+apps/api/src/server.ts:7:    console.info(`LECTRA API listening on port ${config.PORT}`);
+apps/api/src/server.ts:9:  server.on('error', () => { console.error('API failed to listen.'); process.exitCode = 1; });
+
+Inspection: no application upload/local-file persistence implementation found; no identity bypass or startup seed/migration found. Seed/test tooling and runtime environment settings are inventoried in episode-2-cloud-readiness.md. This is source inspection, not an executed upload test.

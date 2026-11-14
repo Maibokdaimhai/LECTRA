@@ -1,0 +1,6 @@
+Controlled evaluation of the original verifier environment expression; no subprocess/container executed.
+Expected retained managed keys: []
+Actual retained managed keys: ['API_PORT', 'POSTGRES_PASSWORD', 'WEB_PORT']
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+AssertionError: Inherited Compose variables override generated env-file values
