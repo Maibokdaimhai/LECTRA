@@ -1,0 +1,1 @@
+Actual socket runtime: ready/health/SPA/login/Secure host cookie/me/logout/rejected me passed. TLS termination simulated locally; not GCP evidence.

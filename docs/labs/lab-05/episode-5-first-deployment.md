@@ -33,6 +33,22 @@ The database URL uses authority `localhost`, database `lectra` and **one** `host
 
 Cloud Run provides a deterministic URL `https://lectra-PROJECT_NUMBER.REGION.run.app`; the script obtains the project number and supplies this exact origin before the initial revision starts. Use that URL for login and evidence. A hashed Cloud Run alias may serve the page but is not the allowed login Origin. The proxy choice represents the single trusted Cloud Run TLS-termination hop; it is not inferred from arbitrary client headers. Local socket login tests simulate that hop and are labelled as such.
 
+## Connection budget (review correction)
+
+The URL's `connection_limit` is a Prisma CLI parameter, **not a pg.Pool limit**. Actual pools now come from one explicit factory, and the Prisma adapter owns/closes its supplied bounded pg pool.
+
+| Consumer | Effective limit | Deployment multiplicity / total |
+| --- | --- | --- |
+| HTTP auth, session store and domain routes | one shared pg pool, max3 | 3 service instances ×3 =9 |
+| Separate Prisma adapter if constructed in a service process | own pg pool, max1 | reserve 3×1 =3; current HTTP server does not construct it |
+| Production preflight or seed | pg pool max1 | one job task at a time =1 |
+| Prisma migration CLI | effective connection_limit1 | preflight pool ends first; replaces, rather than overlaps, the job's one connection |
+| Conservative normal application + one operator job | 9+3+1 | **13 of a verified minimum25**, leaves12 for PostgreSQL reserved/admin/monitoring/maintenance and short scaling transients |
+
+`--max=3` sets the **service-level** limit across revisions, in addition to revision `--max-instances=3`; migration/bootstrap both use tasks1, parallelism1, retries0 and execute sequentially. Run a single deployment/maintenance operation at a time; do not start extra independent executions/services against this small database. Before cloud migrate/seed, the guard actually reads `max_connections` and refuses values below25 or unreadable capacity. It does not assume a tier's capacity, raise database limits or change cloud settings automatically.
+
+Cloud Run can temporarily exceed a scaling setting. The 12-connection reserve is deliberate headroom, not a claim that service scaling is a hard database-wide admission lock. The current server uses only the shared HTTP pool (9 normal connections), and the independent Prisma reserve is conservative. Construct at most one Prisma adapter per process and reuse/close it; never create clients per request. Test-only CI/browser/ORM helpers use disposable guarded databases and are not deployed background workers. Additional workers, services, jobs, or sustained scaling require a new aggregate budget/capacity review; they are not covered by this deployment plan. The local and CI socket tests acquire up to each actual pool ceiling and verify an extra acquisition queues instead of opening another connection.
+
 ## Before the operator executes anything
 
 1. Review the adaptation PR, merge into staging, then use the normal teammate-reviewed staging→main release. CI and Docker/socket checks must pass on the final release head.
@@ -51,7 +67,21 @@ export REGION=asia-southeast1
 gcloud auth list --filter=status:ACTIVE --format='value(account)'
 gcloud config set project "$PROJECT_ID"
 gcloud billing projects describe "$PROJECT_ID" --format='value(billingEnabled)'
-# In an existing clean LECTRA checkout, do not clone over another folder:
+# Fresh Cloud Shell: choose a directory that does not already exist.
+# Refuse rather than overwrite an existing file, checkout or symlink.
+if [ ! -e "$HOME/LECTRA" ] && [ ! -L "$HOME/LECTRA" ]; then
+  git clone --branch main --single-branch https://github.com/Maibokdaimhai/LECTRA.git "$HOME/LECTRA"
+else
+  printf '%s\n' 'LECTRA already exists; use the existing-checkout steps below.'
+fi
+```
+
+For a fresh successful clone, enter it with `cd "$HOME/LECTRA"`. For an existing checkout, first inspect your work and update without discarding changes:
+
+```sh
+cd "$HOME/LECTRA"
+git status --short
+# Stop if changes exist; preserve/resolve them yourself. No reset or overwrite.
 git switch main
 git pull --ff-only origin main
 git status --short
@@ -110,3 +140,6 @@ Post the actual service URL and captioned screenshots to #59, retain sanitized s
 - [Cloud Run deterministic service URL](https://docs.cloud.google.com/run/docs/triggering/https-request).
 - [Cloud SQL connections from Cloud Run](https://docs.cloud.google.com/sql/docs/postgres/connect-run).
 - [Prisma PostgreSQL connection configuration](https://www.prisma.io/docs/orm/v7/core-concepts/supported-databases/postgresql).
+
+- [Cloud Run service-level maximum instances](https://docs.cloud.google.com/run/docs/configuring/max-instances).
+- [Cloud SQL PostgreSQL database flags and max_connections](https://docs.cloud.google.com/sql/docs/postgres/flags).

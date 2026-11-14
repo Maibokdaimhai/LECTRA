@@ -1,7 +1,7 @@
 import express, { type Express, type Request, type Response, type RequestHandler } from 'express';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
-import { Pool } from 'pg';
+import { createConnectionPool } from './connection-pool.js';
 import argon2 from 'argon2';
 import { randomBytes } from 'node:crypto';
 import { rateLimit } from 'express-rate-limit';
@@ -42,7 +42,7 @@ export const role = (expected: Actor['role']): RequestHandler => (req, _res, nex
 export const csrf: RequestHandler = (req, _res, next) => { if (!validToken(req.headers['x-csrf-token'], req.session?.csrfToken))
     return next(new HttpError(403, 'CSRF_INVALID')); next(); };
 export function setupAuth(app: Express, config: AppConfig, now: () => number = Date.now) {
-    const pool = new Pool({ connectionString: config.DATABASE_URL, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
+    const pool = createConnectionPool(config.DATABASE_URL, 'runtime');
     const Store = connectPgSimple(session);
     class AbsoluteStore extends Store {
         override get(sid: string, callback: (error: unknown, value?: session.SessionData | null) => void) {

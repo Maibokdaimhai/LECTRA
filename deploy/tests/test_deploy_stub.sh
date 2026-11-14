@@ -158,10 +158,12 @@ for MODE in first_run rerun partial job-fail demo; do
     grep -q -- '--no-storage-auto-increase' "$GCLOUD_LOG"
     if [ "$MODE" != job-fail ]; then
     grep -q -- 'APP_ORIGIN=https://lectra-123456789012.asia-southeast1.run.app,TRUST_PROXY=1' "$GCLOUD_LOG"
+    grep '^run deploy ' "$GCLOUD_LOG" | grep -q -- '--max 3 --max-instances 3'
     grep -q -- 'SESSION_SECRET=lectra-session-secret:latest' "$GCLOUD_LOG"
     fi
     grep -q -- 'ALLOW_PRODUCTION_DATABASE=lectra,ALLOW_CLOUD_SQL_INSTANCE=stub-gcp-project:asia-southeast1:lectra-pg' "$GCLOUD_LOG"
     grep '^run jobs deploy lectra-migrate ' "$GCLOUD_LOG" | grep -q 'db:migrate:production'
+    grep '^run jobs deploy lectra-migrate ' "$GCLOUD_LOG" | grep -q -- '--tasks 1 --parallelism 1 --max-retries 0'
     if grep '^run jobs deploy lectra-migrate ' "$GCLOUD_LOG" | grep -q 'db:seed'; then echo 'FAIL: ordinary migration seeds'; exit 1; fi
     if [ "$MODE" = demo ]; then
       grep '^run jobs deploy lectra-bootstrap ' "$GCLOUD_LOG" | grep -q 'SEED_PRODUCTION_DEMO=lectra'

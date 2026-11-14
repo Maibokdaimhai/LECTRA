@@ -303,6 +303,7 @@ run_cmd gcloud run jobs deploy "$MIGRATE_JOB_NAME" \
   --set-env-vars "$JOB_ENV" \
   --command "sh" \
   --args "-c,npm run db:migrate:production" \
+  --tasks 1 --parallelism 1 \
   --max-retries 0 \
   --task-timeout 300s \
   --project "$PROJECT_ID"
@@ -322,7 +323,7 @@ if [ "$SEED_DEMO_DATA" = true ]; then
     --service-account "$SA_EMAIL" --set-cloudsql-instances "$SQL_CONN_NAME" \
     --set-secrets "DATABASE_URL=${SECRET_DB_URL}:latest,SEED_OWNER_PASSWORD=${SECRET_OWNER_PASS}:latest,SEED_RESPONDENT_PASSWORD=${SECRET_RESPONDENT_PASS}:latest" \
     --set-env-vars "${JOB_ENV},SEED_PRODUCTION_DEMO=${DB_NAME}" --command sh \
-    --args '-c,npm run db:seed:production' --max-retries 0 --task-timeout 300s --project "$PROJECT_ID"
+    --args '-c,npm run db:seed:production' --tasks 1 --parallelism 1 --max-retries 0 --task-timeout 300s --project "$PROJECT_ID"
   run_cmd gcloud run jobs execute lectra-bootstrap --region "$REGION" --wait --project "$PROJECT_ID"
 fi
 
@@ -341,6 +342,7 @@ run_cmd gcloud run deploy "$SERVICE_NAME" \
   --set-secrets "DATABASE_URL=${SECRET_DB_URL}:latest,SESSION_SECRET=${SECRET_SESSION}:latest" \
   --set-env-vars "NODE_ENV=production,TZ=UTC,APP_ORIGIN=${APP_ORIGIN},TRUST_PROXY=1" \
   --min-instances 0 \
+  --max 3 \
   --max-instances 3 \
   --memory 512Mi \
   --cpu 1 \

@@ -20,3 +20,7 @@ No private `.local/episode5-private` environment files or cookie values are incl
 ## Completion evidence still missing by design
 
 Actual operator-confirmed project/region/budget, reviewed main SHA used in Cloud Shell, dry-run, Cloud Build/image digest, Cloud SQL/IAM/secrets metadata, migration/bootstrap jobs, public canonical service URL, real HTTPS login/readiness/persistence and captioned guide §§5.5/5.7 screenshots remain **Not executed by agent / reserved for the user**. See the [operator runbook](../../episode-5-first-deployment.md). Offline/local successes cannot close #59.
+
+## PR #60 review correction
+
+[Bounded-pool correction evidence](review-correction/README.md) records the real default10→max3 RED/GREEN result, five focused regressions, capacity/budget decisions and actual PostgreSQL pool-queue verification. Earlier CI/local records remain historical and are not rewritten.

@@ -94,6 +94,27 @@ try:
     app('07-seed-again', 'npm', 'run', 'db:seed:production')
     app('08-prisma-adapter', 'node', '--input-type=module', '-e',
         "import assert from 'node:assert/strict';import {createDatabase} from './apps/api/dist/database.js';const db=createDatabase(process.env.DATABASE_URL);try{assert.equal(await db.user.count(),7);console.log('Prisma adapter reads seven synthetic accounts through the selected socket');}finally{await db.$disconnect();}")
+    app('08b-effective-pool-ceilings', 'node', '--input-type=module', '-e', """
+import assert from 'node:assert/strict';
+import {createConnectionPool} from './apps/api/dist/connection-pool.js';
+import {createDatabaseAdapter} from './apps/api/dist/database.js';
+async function ceiling(pool,max){
+  const held=[];let pending;
+  try{
+    for(let i=0;i<max;i++)held.push(await pool.connect());
+    pending=pool.connect();assert.equal(pool.options.max,max);assert.equal(pool.totalCount,max);assert.equal(pool.waitingCount,1);
+    held.pop().release();const next=await pending;pending=undefined;
+    try{assert.equal((await next.query('SELECT 1 AS ok')).rows[0].ok,1);}finally{next.release();}
+  }finally{for(const c of held)c.release();if(pending)(await pending).release();}
+}
+const runtime=createConnectionPool(process.env.DATABASE_URL,'runtime');
+try{await ceiling(runtime,3);}finally{await runtime.end();}
+const adapter=await createDatabaseAdapter(process.env.DATABASE_URL).connect();
+try{await ceiling(adapter.underlyingDriver(),1);}finally{await adapter.dispose();}
+const operator=createConnectionPool(process.env.DATABASE_URL,'operator');
+try{await ceiling(operator,1);}finally{await operator.end();}
+console.log('Real PostgreSQL: runtime max3, Prisma max1, operator max1; excess acquire queued and resumed without opening extra connections.');
+""")
     run('09-runtime', ['docker', 'run', '-d', '--name', name + '-app', '--env-file', str(private / 'app.env'), *mount, image])
     run('10-health-login-logout', ['docker', 'exec', name + '-app', 'node', '--input-type=module', '-e', """
 import assert from 'node:assert/strict';

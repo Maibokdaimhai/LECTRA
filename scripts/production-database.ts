@@ -1,19 +1,21 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { pathToFileURL } from 'node:url';
-import { Pool } from 'pg';
+import { createConnectionPool, migrationConnectionString, assertCloudConnectionCapacity } from '../apps/api/src/connection-pool.js';
 import { productionTarget } from './production-database-config.js';
 import { seedFixtureRows } from './seed-database.js';
 
 export async function productionDatabase(action: string, environment: NodeJS.ProcessEnv) {
   const target = productionTarget(environment, action);
-  const pool = new Pool({ connectionString: target.connectionString, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
+  const pool = createConnectionPool(target.connectionString, 'operator');
   try {
-    if ((await pool.query('SELECT current_database() AS name')).rows[0]?.name !== target.name) throw new Error('Unexpected database.');
+    const row = (await pool.query("SELECT current_database() AS name, current_setting('max_connections')::int AS capacity")).rows[0];
+    if (row?.name !== target.name) throw new Error('Unexpected database.');
+    if (environment.ALLOW_CLOUD_SQL_INSTANCE) assertCloudConnectionCapacity(row.capacity);
   } finally { await pool.end(); }
   if (action === 'migrate') {
     await promisify(execFile)(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], {
-      env: { ...environment, DATABASE_URL: target.connectionString, PGOPTIONS: '-c timezone=UTC' }
+      env: { ...environment, DATABASE_URL: migrationConnectionString(target.connectionString), PGOPTIONS: '-c timezone=UTC' }
     });
   } else {
     await seedFixtureRows(target.connectionString, target.name, environment.SEED_OWNER_PASSWORD!, environment.SEED_RESPONDENT_PASSWORD!);
