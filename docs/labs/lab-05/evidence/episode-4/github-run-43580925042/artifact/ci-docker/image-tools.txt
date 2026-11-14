@@ -1,0 +1,1 @@
+Runtime tools and SPA present; private/config/test paths absent; uid=1000

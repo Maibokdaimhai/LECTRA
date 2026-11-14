@@ -1,0 +1,383 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.17kB done
+#1 DONE 0.0s
+
+#2 [client internal] load build definition from Dockerfile
+#2 transferring dockerfile: 903B done
+#2 DONE 0.0s
+
+#3 [server internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.61kB done
+#3 DONE 0.0s
+
+#4 [auth] library/nginx:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [auth] library/node:pull token for registry-1.docker.io
+#5 DONE 0.0s
+
+#6 [server internal] load metadata for docker.io/library/node:24.22.1-bookworm-slim
+#6 ...
+
+#7 [client internal] load metadata for docker.io/library/nginx:1.28-alpine
+#7 DONE 0.5s
+
+#6 [migrate internal] load metadata for docker.io/library/node:24.22.1-bookworm-slim
+#6 DONE 0.5s
+
+#8 [server internal] load .dockerignore
+#8 transferring context: 320B done
+#8 DONE 0.0s
+
+#9 [client internal] load build context
+#9 transferring context: 236.93kB 0.0s done
+#9 DONE 0.0s
+
+#10 [server internal] load build context
+#10 transferring context: 397.50kB 0.0s done
+#10 DONE 0.0s
+
+#11 [client dependencies 1/9] FROM docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c
+#11 resolve docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c done
+#11 sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c 3.93kB / 3.93kB done
+#11 sha256:e1582112fb9f152ed38eefcd712efc93fee1becb519fdfa57574d5e07eaa5e7d 1.93kB / 1.93kB done
+#11 sha256:4d4657ef82b5cf8fd56373dbf8b145cdc6d1d7aabbaca1e6a361efedae04e052 6.71kB / 6.71kB done
+#11 sha256:3c5439d0ae62993af4cc4e21b8c777297e81bc40e200d4633c85a3e0f977a3bc 15.73MB / 28.25MB 0.1s
+#11 sha256:0c1909f260bd6f20598f777dbcfdde8a739b1dc6a750e641dc36fad45e09c2c1 3.31kB / 3.31kB 0.1s done
+#11 sha256:a186b86152d92b5466c18410027465dbb26f0238ab7fca29a459b6896022bc2e 6.29MB / 51.08MB 0.1s
+#11 sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c 3.93kB / 3.93kB done
+#11 sha256:e1582112fb9f152ed38eefcd712efc93fee1becb519fdfa57574d5e07eaa5e7d 1.93kB / 1.93kB done
+#11 sha256:4d4657ef82b5cf8fd56373dbf8b145cdc6d1d7aabbaca1e6a361efedae04e052 6.71kB / 6.71kB done
+#11 sha256:3c5439d0ae62993af4cc4e21b8c777297e81bc40e200d4633c85a3e0f977a3bc 28.25MB / 28.25MB 0.2s
+#11 sha256:0c1909f260bd6f20598f777dbcfdde8a739b1dc6a750e641dc36fad45e09c2c1 3.31kB / 3.31kB 0.1s done
+#11 sha256:a186b86152d92b5466c18410027465dbb26f0238ab7fca29a459b6896022bc2e 31.46MB / 51.08MB 0.2s
+#11 sha256:1a501360ef0b4579641bfcd65436cd25419792156889ed3dcad867f76b64ef8a 1.71MB / 1.71MB 0.1s done
+#11 sha256:cfac3e1f67650e1076b4bf1cd7ba90f1a51bdd651fd85d384133e21bb1bbe1e7 451B / 451B 0.2s
+#11 sha256:3c5439d0ae62993af4cc4e21b8c777297e81bc40e200d4633c85a3e0f977a3bc 28.25MB / 28.25MB 0.3s done
+#11 sha256:a186b86152d92b5466c18410027465dbb26f0238ab7fca29a459b6896022bc2e 51.08MB / 51.08MB 0.3s
+#11 sha256:1a501360ef0b4579641bfcd65436cd25419792156889ed3dcad867f76b64ef8a 1.71MB / 1.71MB 0.1s done
+#11 sha256:cfac3e1f67650e1076b4bf1cd7ba90f1a51bdd651fd85d384133e21bb1bbe1e7 451B / 451B 0.3s done
+#11 extracting sha256:3c5439d0ae62993af4cc4e21b8c777297e81bc40e200d4633c85a3e0f977a3bc
+#11 sha256:a186b86152d92b5466c18410027465dbb26f0238ab7fca29a459b6896022bc2e 51.08MB / 51.08MB 0.6s done
+#11 extracting sha256:3c5439d0ae62993af4cc4e21b8c777297e81bc40e200d4633c85a3e0f977a3bc 1.0s done
+#11 extracting sha256:0c1909f260bd6f20598f777dbcfdde8a739b1dc6a750e641dc36fad45e09c2c1
+#11 extracting sha256:0c1909f260bd6f20598f777dbcfdde8a739b1dc6a750e641dc36fad45e09c2c1 done
+#11 extracting sha256:a186b86152d92b5466c18410027465dbb26f0238ab7fca29a459b6896022bc2e
+#11 extracting sha256:a186b86152d92b5466c18410027465dbb26f0238ab7fca29a459b6896022bc2e 1.3s done
+#11 extracting sha256:1a501360ef0b4579641bfcd65436cd25419792156889ed3dcad867f76b64ef8a
+#11 ...
+
+#12 [client runtime 1/4] FROM docker.io/library/nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+#12 resolve docker.io/library/nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236 0.0s done
+#12 sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236 10.32kB / 10.32kB done
+#12 sha256:dc73b49f5124cf2ee538dfbdfbd121f0b4ccdcb20fea30f3a81bd477c02e2bb5 12.29kB / 12.29kB done
+#12 sha256:0dcc88822d45581e65ae329f8be769762bf628d3b2bb7d2a077d4aa5c98b30e3 2.49kB / 2.49kB done
+#12 sha256:589002ba0eaed121a1dbf42f6648f29e5be55d5c8a6ee0f8eaa0285cc21ac153 3.86MB / 3.86MB 0.6s done
+#12 sha256:1d9cbdb003be4f77dc59400a5eb400afcac245934b539c7bffe52abae7720f3c 1.83MB / 1.83MB 0.6s done
+#12 extracting sha256:589002ba0eaed121a1dbf42f6648f29e5be55d5c8a6ee0f8eaa0285cc21ac153 0.1s done
+#12 sha256:8f7c784e247120771f7bdb83b2ab8e17af75af4858332b63e0ed40610f5a9b59 405B / 405B 0.6s done
+#12 sha256:e914c6e98e37815624beb8c5043be292f121898059d4d50c0709bc4da661f685 626B / 626B 0.6s done
+#12 sha256:d631a49fb4f72e5bc609d0af4ce6d3ed054498068dc16c730be6b4e37c4a7f6c 956B / 956B 0.6s done
+#12 sha256:44fa0a5a779fdf3b85972e8dfb3b2755a72a97290b682794f57212d88fa3a631 1.21kB / 1.21kB 0.6s done
+#12 sha256:0151c82f84a9c78800cb330f93f88d6ffe39f030ec9a60dbc0a12c4c7109536c 20.25MB / 20.25MB 0.8s done
+#12 sha256:98104829f3fe8d2ead9a69b1f56c1f98955fd2b5933f089301331bb1f349683b 1.40kB / 1.40kB 0.7s done
+#12 extracting sha256:1d9cbdb003be4f77dc59400a5eb400afcac245934b539c7bffe52abae7720f3c 0.1s done
+#12 extracting sha256:e914c6e98e37815624beb8c5043be292f121898059d4d50c0709bc4da661f685 done
+#12 extracting sha256:d631a49fb4f72e5bc609d0af4ce6d3ed054498068dc16c730be6b4e37c4a7f6c done
+#12 extracting sha256:8f7c784e247120771f7bdb83b2ab8e17af75af4858332b63e0ed40610f5a9b59 done
+#12 extracting sha256:44fa0a5a779fdf3b85972e8dfb3b2755a72a97290b682794f57212d88fa3a631 done
+#12 extracting sha256:98104829f3fe8d2ead9a69b1f56c1f98955fd2b5933f089301331bb1f349683b done
+#12 extracting sha256:0151c82f84a9c78800cb330f93f88d6ffe39f030ec9a60dbc0a12c4c7109536c 0.4s done
+#12 DONE 3.2s
+
+#13 [client runtime 2/4] COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+#13 DONE 0.0s
+
+#11 [server dependencies 1/9] FROM docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c
+#11 extracting sha256:1a501360ef0b4579641bfcd65436cd25419792156889ed3dcad867f76b64ef8a 0.0s done
+#11 extracting sha256:cfac3e1f67650e1076b4bf1cd7ba90f1a51bdd651fd85d384133e21bb1bbe1e7 done
+#11 DONE 3.3s
+
+#14 [server dependencies 2/9] WORKDIR /app
+#14 DONE 0.0s
+
+#15 [server dependencies 3/9] RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+#15 0.201 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+#15 0.248 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#15 0.265 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+#15 0.299 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
+#15 0.413 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+#15 0.414 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [370 kB]
+#15 1.305 Fetched 9409 kB in 1s (8230 kB/s)
+#15 1.305 Reading package lists...
+#15 1.778 Reading package lists...
+#15 2.254 Building dependency tree...
+#15 2.369 Reading state information...
+#15 2.507 The following additional packages will be installed:
+#15 2.508   libssl3
+#15 2.527 The following NEW packages will be installed:
+#15 2.528   ca-certificates libssl3 openssl
+#15 2.575 0 upgraded, 3 newly installed, 0 to remove and 3 not upgraded.
+#15 2.575 Need to get 3643 kB of archives.
+#15 2.575 After this operation, 8955 kB of additional disk space will be used.
+#15 2.575 Get:1 http://deb.debian.org/debian-security bookworm-security/main amd64 libssl3 amd64 3.0.22-1~deb12u2 [2040 kB]
+#15 2.670 Get:2 http://deb.debian.org/debian-security bookworm-security/main amd64 openssl amd64 3.0.22-1~deb12u2 [1442 kB]
+#15 2.675 Get:3 http://deb.debian.org/debian-security bookworm-security/main amd64 ca-certificates all 20250419~deb12u2 [161 kB]
+#15 2.793 debconf: delaying package configuration, since apt-utils is not installed
+#15 2.820 Fetched 3643 kB in 0s (25.6 MB/s)
+#15 2.835 Selecting previously unselected package libssl3:amd64.
+#15 2.835 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6096 files and directories currently installed.)
+#15 2.842 Preparing to unpack .../libssl3_3.0.22-1~deb12u2_amd64.deb ...
+#15 2.844 Unpacking libssl3:amd64 (3.0.22-1~deb12u2) ...
+#15 3.007 Selecting previously unselected package openssl.
+#15 3.008 Preparing to unpack .../openssl_3.0.22-1~deb12u2_amd64.deb ...
+#15 3.009 Unpacking openssl (3.0.22-1~deb12u2) ...
+#15 3.125 Selecting previously unselected package ca-certificates.
+#15 3.126 Preparing to unpack .../ca-certificates_20250419~deb12u2_all.deb ...
+#15 3.127 Unpacking ca-certificates (20250419~deb12u2) ...
+#15 3.164 Setting up libssl3:amd64 (3.0.22-1~deb12u2) ...
+#15 3.167 Setting up openssl (3.0.22-1~deb12u2) ...
+#15 3.171 Setting up ca-certificates (20250419~deb12u2) ...
+#15 3.249 debconf: unable to initialize frontend: Dialog
+#15 3.249 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#15 3.249 debconf: falling back to frontend: Readline
+#15 3.249 debconf: unable to initialize frontend: Readline
+#15 3.249 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC contains: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.36.0 /usr/local/share/perl/5.36.0 /usr/lib/x86_64-linux-gnu/perl5/5.36 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.36 /usr/share/perl/5.36 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 7.)
+#15 3.249 debconf: falling back to frontend: Teletype
+#15 3.653 Updating certificates in /etc/ssl/certs...
+#15 ...
+
+#16 [client build  3/11] RUN npm install --global npm@10.9.2
+#16 3.594 
+#16 3.594 removed 12 packages, and changed 105 packages in 3s
+#16 3.594 
+#16 3.594 25 packages are looking for funding
+#16 3.594   run `npm fund` for details
+#16 DONE 4.1s
+
+#17 [client build  4/11] COPY package.json package-lock.json ./
+#17 DONE 0.0s
+
+#18 [client build  5/11] COPY apps/api/package.json apps/api/package.json
+#18 DONE 0.0s
+
+#19 [client build  6/11] COPY apps/web/package.json apps/web/package.json
+#19 DONE 0.0s
+
+#20 [client build  7/11] COPY scripts/check-runtime.mjs scripts/check-runtime.mjs
+#20 DONE 0.0s
+
+#15 [server dependencies 3/9] RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+#15 4.182 148 added, 0 removed; done.
+#15 4.196 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+#15 4.205 Processing triggers for ca-certificates (20250419~deb12u2) ...
+#15 4.209 Updating certificates in /etc/ssl/certs...
+#15 4.627 0 added, 0 removed; done.
+#15 4.627 Running hooks in /etc/ca-certificates/update.d...
+#15 4.628 done.
+#15 DONE 4.7s
+
+#21 [server dependencies 4/9] RUN npm install --global npm@10.9.2
+#21 4.126 
+#21 4.126 removed 12 packages, and changed 105 packages in 4s
+#21 4.126 
+#21 4.126 25 packages are looking for funding
+#21 4.126   run `npm fund` for details
+#21 ...
+
+#22 [client build  8/11] RUN npm ci
+#22 7.807 
+#22 7.807 > lectra@0.0.0 preinstall
+#22 7.807 > node scripts/check-runtime.mjs
+#22 7.807 
+#22 7.848 
+#22 7.848 added 326 packages, and audited 329 packages in 8s
+#22 7.848 
+#22 7.848 67 packages are looking for funding
+#22 7.848   run `npm fund` for details
+#22 7.849 
+#22 7.849 found 0 vulnerabilities
+#22 7.850 npm notice
+#22 7.850 npm notice New major version of npm available! 10.9.2 -> 12.2.2
+#22 7.850 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#22 7.850 npm notice To update run: npm install -g npm@12.2.2
+#22 7.850 npm notice
+#22 DONE 8.1s
+
+#23 [client build  9/11] COPY tsconfig.base.json ./
+#23 DONE 0.6s
+
+#21 [server dependencies 4/9] RUN npm install --global npm@10.9.2
+#21 DONE 8.2s
+
+#24 [server dependencies 5/9] COPY package.json package-lock.json ./
+#24 DONE 0.0s
+
+#25 [client build 10/11] COPY apps/web ./apps/web
+#25 DONE 0.0s
+
+#26 [migrate dependencies 6/9] COPY apps/api/package.json apps/api/package.json
+#26 DONE 0.0s
+
+#27 [server dependencies 7/9] COPY apps/web/package.json apps/web/package.json
+#27 DONE 0.0s
+
+#28 [migrate dependencies 8/9] COPY scripts/check-runtime.mjs scripts/check-runtime.mjs
+#28 DONE 0.0s
+
+#29 [server dependencies 9/9] RUN npm ci
+#29 ...
+
+#30 [client build 11/11] RUN npm run build --workspace @lectra/web
+#30 0.349 
+#30 0.349 > @lectra/web@0.0.0 build
+#30 0.349 > tsc --noEmit && vite build
+#30 0.349 
+#30 3.083 vite v8.3.6 building client environment for production...
+#30 3.101 transforming...
+#30 3.173 ✓ 16 modules transformed.
+#30 3.197 rendering chunks...
+#30 3.241 computing gzip size...
+#30 3.246 dist/index.html                   0.35 kB │ gzip:  0.26 kB
+#30 3.246 dist/assets/index-2RIGuQzL.css    3.98 kB │ gzip:  1.51 kB
+#30 3.246 dist/assets/index-BipY3lhw.js   249.07 kB │ gzip: 77.23 kB
+#30 3.246 
+#30 3.247 ✓ built in 162ms
+#30 DONE 3.9s
+
+#29 [server dependencies 9/9] RUN npm ci
+#29 ...
+
+#31 [client runtime 3/4] COPY --from=build /app/apps/web/dist /usr/share/nginx/html
+#31 DONE 0.3s
+
+#32 [client runtime 4/4] RUN sed -i 's@/var/run/nginx.pid@/tmp/nginx.pid@;s@/run/nginx.pid@/tmp/nginx.pid@;/^user[[:space:]]/d' /etc/nginx/nginx.conf && chown -R nginx:nginx /var/cache/nginx
+#32 DONE 0.5s
+
+#29 [server dependencies 9/9] RUN npm ci
+#29 ...
+
+#33 [client] exporting to image
+#33 exporting layers
+#33 exporting layers 0.6s done
+#33 writing image sha256:28843dcc291d45b855a6763dae1d40ebac71d01fc511c0f212a6fd32653393e3 done
+#33 naming to docker.io/library/lectra-web:ep3-20261114093454788730 done
+#33 DONE 0.6s
+
+#34 [client] resolving provenance for metadata file
+#34 DONE 0.0s
+
+#29 [server dependencies 9/9] RUN npm ci
+#29 7.883 
+#29 7.883 > lectra@0.0.0 preinstall
+#29 7.883 > node scripts/check-runtime.mjs
+#29 7.883 
+#29 7.921 
+#29 7.921 added 326 packages, and audited 329 packages in 8s
+#29 7.921 
+#29 7.921 67 packages are looking for funding
+#29 7.921   run `npm fund` for details
+#29 7.922 
+#29 7.922 found 0 vulnerabilities
+#29 7.924 npm notice
+#29 7.924 npm notice New major version of npm available! 10.9.2 -> 12.2.2
+#29 7.924 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#29 7.924 npm notice To update run: npm install -g npm@12.2.2
+#29 7.924 npm notice
+#29 DONE 9.8s
+
+#35 [migrate build 1/6] COPY tsconfig*.json prisma.config.ts ./
+#35 DONE 0.0s
+
+#36 [server build 2/6] COPY prisma prisma
+#36 DONE 0.0s
+
+#37 [server build 3/6] COPY apps/api apps/api
+#37 DONE 0.0s
+
+#38 [server build 4/6] COPY apps/web apps/web
+#38 DONE 0.0s
+
+#39 [server build 5/6] COPY scripts scripts
+#39 DONE 0.0s
+
+#40 [server build 6/6] RUN npm run db:generate && npm run build --workspace @lectra/api
+#40 0.203 
+#40 0.203 > lectra@0.0.0 db:generate
+#40 0.203 > prisma generate
+#40 0.203 
+#40 0.963 Loaded Prisma config from prisma.config.ts.
+#40 0.963 
+#40 1.047 Prisma schema loaded from prisma/schema.prisma.
+#40 1.212 
+#40 1.212 ✔ Generated Prisma Client (7.10.1) to ./apps/api/src/generated/prisma in 102ms
+#40 1.212 
+#40 1.332 
+#40 1.332 > @lectra/api@0.0.0 build
+#40 1.332 > tsc -p tsconfig.build.json
+#40 1.332 
+#40 DONE 2.9s
+
+#41 [server runtime  5/11] COPY --from=build --chown=node:node /app/node_modules ./node_modules
+#41 DONE 3.7s
+
+#42 [server runtime  6/11] COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /app/prisma.config.ts /app/tsconfig.base.json ./
+#42 DONE 0.0s
+
+#43 [migrate runtime  7/11] COPY --from=build --chown=node:node /app/apps/api ./apps/api
+#43 DONE 0.0s
+
+#44 [migrate runtime  8/11] COPY --from=build --chown=node:node /app/apps/web/package.json ./apps/web/package.json
+#44 DONE 0.0s
+
+#45 [server runtime  9/11] COPY --from=build --chown=node:node /app/prisma ./prisma
+#45 DONE 0.0s
+
+#46 [server runtime 10/11] COPY --from=build --chown=node:node /app/scripts ./scripts
+#46 DONE 0.0s
+
+#47 [server runtime 11/11] RUN chmod +x apps/api/docker-entrypoint.sh
+#47 DONE 0.1s
+
+#48 [server] exporting to image
+#48 exporting layers
+#48 exporting layers 3.2s done
+#48 writing image sha256:b685eed835ecd5f072256462b2682f68d275a4827fe92ca05f17498522e2ded0 done
+#48 naming to docker.io/library/lectra-api:ep3-20261114093454788730 done
+#48 DONE 3.2s
+
+#49 [migrate] exporting to image
+#49 exporting layers 3.2s done
+#49 writing image sha256:b685eed835ecd5f072256462b2682f68d275a4827fe92ca05f17498522e2ded0 done
+#49 naming to docker.io/library/lectra-api:ep3-20261114093454788730 done
+#49 DONE 3.2s
+
+#50 [server] resolving provenance for metadata file
+#50 DONE 0.0s
+
+#51 [migrate] resolving provenance for metadata file
+#51 DONE 0.0s
+ migrate  Built
+ server  Built
+ client  Built

@@ -1,0 +1,10 @@
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/db/postgres.test.ts (2 tests) 33ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  09:33:01
+   Duration  197ms (tests 37%, transform 31%, import 28%, worker 4%)
+
