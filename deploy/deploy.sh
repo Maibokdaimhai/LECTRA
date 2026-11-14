@@ -1,54 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
+case $- in *x*) set +x; echo 'Refusing shell tracing for secret-bearing operations.' >&2; exit 2 ;; esac
+export CLOUDSDK_CORE_LOG_HTTP=false CLOUDSDK_CORE_VERBOSITY=warning
 
-# Episode 4: prepared template, NOT a reviewed live LECTRA cloud deployment.
-# Cloud SQL transport, APP_ORIGIN/session secrets and bootstrap policy are
-# finalized with the human operator in Episode 5. Only preview/stub use is enabled.
+# Episode 5: explicit reviewed-main operator deployment. Preview remains offline.
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/offline_guard.sh"
-require_offline_execution PREVIEW
+require_first_deployment_execution
 
 
-# ==============================================================================
-# LECTRA — Idempotent Google Cloud Run Deployment Script
-# ==============================================================================
-# Usage:
-#   ./deploy/deploy.sh [--demo]
-#
-# Environment Variables (Optional):
-#   PROJECT_ID   GCP Project ID (defaults to active gcloud config project)
-#   REGION       GCP Region (default: asia-southeast1)
-#   DRY_RUN      Set DRY_RUN=1 to print all gcloud commands without executing
-#
-# WHAT THIS SCRIPT DOES  (one-time / manual first setup; safe to re-run)
-#   Creates every cloud resource the app needs and does the first deployment:
-#   1 enable APIs     2 Artifact Registry  3 Cloud SQL instance  4 database
-#   5 runtime SA+IAM  6 DB user + secret   7 admin password      8 demo password
-#   (secret access)   9 build image        10 migrate+seed job   11 Cloud Run service
-#   After this, routine releases are done by GitHub Actions (deploy.yml ->
-#   deploy/release.sh), which only UPDATES these resources.
-#
-# ⭐ IMPORTANT
-#   - Idempotent: existing resources/secrets are reused, never overwritten
-#     (a re-run does not replace credentials).
-#   - Passwords are generated with openssl and live only in Secret Manager;
-#     they are never printed (run_cmd redacts --password=...).
-#   - Preview first with:  DRY_RUN=1 ./deploy/deploy.sh   (no gcloud calls)
-#   - Run from the REPO ROOT (step 9 builds the root Dockerfile).
-#   - Offline test: deploy/tests/test_deploy_stub.sh
-#
-# REFERENCES
-#   - gcloud run deploy : https://cloud.google.com/sdk/gcloud/reference/run/deploy
-#   - Cloud Run jobs    : https://cloud.google.com/run/docs/create-jobs
-#   - Cloud SQL + Run   : https://cloud.google.com/sql/docs/postgres/connect-run
-#   - Secret Manager    : https://cloud.google.com/secret-manager/docs
-#   - Artifact Registry : https://cloud.google.com/artifact-registry/docs/docker
-#
-# ⭐ CHANGE ME — groups using another tech stack must review (marked below):
-#   # CHANGE ME: resource names (REPO_NAME, SQL_INSTANCE, SERVICE_NAME, ...)
-#   # CHANGE ME: database engine/version (steps 3, 4, 6)
-#   # CHANGE ME: migrate/seed command of the Cloud Run job (step 10)
-#   # CHANGE ME: port / memory / scaling flags (step 11)
-# ==============================================================================
+# Manual first deployment; run only after this adaptation is reviewed into main.
+# Required live opt-in: PROJECT_ID and matching ALLOW_LIVE_GCP_PROJECT.
+# REGION defaults to asia-southeast1; DRY_RUN=1 performs no gcloud calls.
+# --demo explicitly creates/verifies synthetic owner/respondent fixtures in a
+# separate job. Ordinary migration and application startup never seed.
+# Secrets are generated once in Secret Manager; values are never printed.
+# release.sh and teardown.sh remain gated until their later guide episodes.
+# See docs/labs/lab-05/episode-5-first-deployment.md for operator/evidence steps.
 
 # ------------------------------------------------------------------------------
 # Settings & argument parsing
@@ -57,6 +24,7 @@ DRY_RUN="${DRY_RUN:-0}"
 # CHANGE ME: default region if your group uses another one.
 REGION="${REGION:-asia-southeast1}"
 SEED_DEMO_DATA="false"
+[[ "$REGION" =~ ^[a-z]+-[a-z]+[0-9]$ ]] || { echo 'Invalid region.' >&2; exit 2; }
 
 for arg in "$@"; do
   case "$arg" in
@@ -72,7 +40,6 @@ for arg in "$@"; do
 done
 
 # Helper: prints the command (DRY_RUN=1) or prints then executes it.
-# ⭐ IMPORTANT: --password=... is redacted in the log; keep this behaviour.
 run_cmd() {
   # Log the command without exposing generated database credentials.
   local arg
@@ -93,7 +60,7 @@ run_cmd() {
   fi
 }
 
-# Resolve the GCP project: $PROJECT_ID, else the active gcloud project.
+# Live execution requires explicit project confirmation; preview may use a placeholder.
 if [ "$DRY_RUN" = "1" ]; then
   PROJECT_ID="${PROJECT_ID:-example-gcp-project}"
 else
@@ -105,13 +72,20 @@ else
   fi
 fi
 
+[[ "$PROJECT_ID" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]] || { echo 'Invalid project ID.' >&2; exit 2; }
+if [ "$DRY_RUN" = 1 ]; then
+  SOURCE_SHA="<REVIEWED_MAIN_SHA>"
+  PROJECT_NUMBER="123456789012"
+else
+  SOURCE_SHA="$(git rev-parse HEAD)"
+  PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
+  [[ "$PROJECT_NUMBER" =~ ^[0-9]+$ ]] || { echo 'Missing project number.' >&2; exit 2; }
+  [[ "$(gcloud billing projects describe "$PROJECT_ID" --format='value(billingEnabled)')" == True ]] || { echo 'Billing is not enabled.' >&2; exit 2; }
+fi
+
 # ------------------------------------------------------------------------------
 # Resource names
-# ⚠️ The lab guide refers to these names (lectra, lectra-pg,
-#    lectra-runner, ...) and deploy.yml / release.sh / teardown.sh use the
-#    same ones. Keep them unless the guide says otherwise.
-# CHANGE ME: rename only if your group uses its own naming (then rename it in
-#            deploy.yml, release.sh, teardown.sh and the tests too).
+# Keep resource names consistent with the later release/teardown adaptations.
 # ------------------------------------------------------------------------------
 REPO_NAME="lectra"
 SQL_INSTANCE="lectra-pg"
@@ -122,15 +96,16 @@ MIGRATE_JOB_NAME="lectra-migrate"
 SA_NAME="lectra-runner"
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 SQL_CONN_NAME="${PROJECT_ID}:${REGION}:${SQL_INSTANCE}"
-IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}:latest"
+IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}:${SOURCE_SHA}"
+APP_ORIGIN="https://${SERVICE_NAME}-${PROJECT_NUMBER}.${REGION}.run.app"
 
 # Secret Manager secret names (values are never stored in this repo).
 SECRET_DB_URL="lectra-database-url"
-SECRET_ADMIN_PASS="lectra-admin-password"
-SECRET_DEMO_PASS="lectra-demo-password"
+SECRET_SESSION="lectra-session-secret"
+SECRET_OWNER_PASS="lectra-owner-password"
+SECRET_RESPONDENT_PASS="lectra-respondent-password"
 
-GENERATED_ADMIN_PASSWORD=""
-GENERATED_DEMO_PASSWORD=""
+
 
 echo "=================================================================="
 echo "LECTRA Cloud Run Deployment"
@@ -179,7 +154,7 @@ fi
 # ==============================================================================
 if [ "$DRY_RUN" = "1" ]; then
   run_cmd gcloud sql instances describe "$SQL_INSTANCE" --project "$PROJECT_ID"
-  run_cmd gcloud sql instances create "$SQL_INSTANCE" --database-version=POSTGRES_17 --edition=enterprise --tier=db-f1-micro --region="$REGION" --storage-size=10GB --storage-type=SSD --backup-start-time=03:00 --project "$PROJECT_ID"
+  run_cmd gcloud sql instances create "$SQL_INSTANCE" --database-version=POSTGRES_17 --edition=enterprise --tier=db-f1-micro --region="$REGION" --storage-size=10GB --storage-type=SSD --backup-start-time=03:00 --no-storage-auto-increase --project "$PROJECT_ID"
 else
   if ! gcloud sql instances describe "$SQL_INSTANCE" --project "$PROJECT_ID" >/dev/null 2>&1; then
     run_cmd gcloud sql instances create "$SQL_INSTANCE" \
@@ -189,10 +164,12 @@ else
       --region="$REGION" \
       --storage-size=10GB \
       --storage-type=SSD \
-      --backup-start-time=03:00 \
+      --backup-start-time=03:00 --no-storage-auto-increase \
       --project "$PROJECT_ID"
   fi
 fi
+
+run_cmd gcloud sql instances patch "$SQL_INSTANCE" --no-storage-auto-increase --project "$PROJECT_ID" --quiet
 
 # ==============================================================================
 # 4. Create Database (idempotent)
@@ -246,7 +223,8 @@ else
   if ! gcloud secrets describe "$SECRET_DB_URL" --project "$PROJECT_ID" >/dev/null 2>&1; then
     DB_PASS="$(openssl rand -hex 24)"
     if gcloud sql users list --instance="$SQL_INSTANCE" --project "$PROJECT_ID" --format="value(name)" | grep -qx "$DB_USER"; then
-      run_cmd gcloud sql users set-password "$DB_USER" --instance="$SQL_INSTANCE" --password="$DB_PASS" --project "$PROJECT_ID"
+      echo 'Database user exists but its URL secret is missing. Refusing credential rotation; inspect privately before repair.' >&2
+      exit 2
     else
       run_cmd gcloud sql users create "$DB_USER" --instance="$SQL_INSTANCE" --password="$DB_PASS" --project "$PROJECT_ID"
     fi
@@ -256,75 +234,65 @@ else
   fi
 fi
 
-# ==============================================================================
-# 7. Create ADMIN_PASSWORD in Secret Manager (only if secret does not exist yet)
-#    Read it later with: gcloud secrets versions access latest --secret=<name>
-# ==============================================================================
-if [ "$DRY_RUN" = "1" ]; then
-  run_cmd gcloud secrets describe "$SECRET_ADMIN_PASS" --project "$PROJECT_ID"
-  run_cmd gcloud secrets create "$SECRET_ADMIN_PASS" --replication-policy="automatic" --project "$PROJECT_ID"
-  run_cmd gcloud secrets versions add "$SECRET_ADMIN_PASS" --data-file=- --project "$PROJECT_ID"
-else
-  if ! gcloud secrets describe "$SECRET_ADMIN_PASS" --project "$PROJECT_ID" >/dev/null 2>&1; then
-    GENERATED_ADMIN_PASSWORD="$(openssl rand -base64 16 | tr -d '/+=' | cut -c1-14)Aa1!"
-    run_cmd gcloud secrets create "$SECRET_ADMIN_PASS" --replication-policy="automatic" --project "$PROJECT_ID"
-    printf "%s" "$GENERATED_ADMIN_PASSWORD" | gcloud secrets versions add "$SECRET_ADMIN_PASS" --data-file=- --project "$PROJECT_ID"
-  fi
-fi
-
-# ==============================================================================
-# 8. Optional Demo Password in Secret Manager when --demo is passed
-#    Only used to seed demo users (./deploy/deploy.sh --demo).
-# ==============================================================================
-JOB_SECRETS="DATABASE_URL=${SECRET_DB_URL}:latest,ADMIN_PASSWORD=${SECRET_ADMIN_PASS}:latest"
-if [ "$SEED_DEMO_DATA" = "true" ]; then
-  if [ "$DRY_RUN" = "1" ]; then
-    run_cmd gcloud secrets describe "$SECRET_DEMO_PASS" --project "$PROJECT_ID"
-    run_cmd gcloud secrets create "$SECRET_DEMO_PASS" --replication-policy="automatic" --project "$PROJECT_ID"
-    run_cmd gcloud secrets versions add "$SECRET_DEMO_PASS" --data-file=- --project "$PROJECT_ID"
+# Stable session key is generated once and reused on subsequent deployments.
+ensure_generated_secret() {
+  local name="$1" encoding="$2"
+  if [ "$DRY_RUN" = 1 ]; then
+    run_cmd gcloud secrets describe "$name" --project "$PROJECT_ID"
+    run_cmd gcloud secrets create "$name" --replication-policy=automatic --project "$PROJECT_ID"
+    run_cmd gcloud secrets versions add "$name" --data-file=- --project "$PROJECT_ID"
   else
-    if ! gcloud secrets describe "$SECRET_DEMO_PASS" --project "$PROJECT_ID" >/dev/null 2>&1; then
-      GENERATED_DEMO_PASSWORD="$(openssl rand -base64 16 | tr -d '/+=' | cut -c1-14)Dd1!"
-      run_cmd gcloud secrets create "$SECRET_DEMO_PASS" --replication-policy="automatic" --project "$PROJECT_ID"
-      printf "%s" "$GENERATED_DEMO_PASSWORD" | gcloud secrets versions add "$SECRET_DEMO_PASS" --data-file=- --project "$PROJECT_ID"
+    if ! gcloud secrets describe "$name" --project "$PROJECT_ID" >/dev/null 2>&1; then
+      local value
+      value="$(openssl rand -"$encoding" 48 | tr '+/' '-_' | tr -d '=\n')"
+      gcloud secrets create "$name" --replication-policy=automatic --project "$PROJECT_ID"
+      printf '%s' "$value" | gcloud secrets versions add "$name" --data-file=- --project "$PROJECT_ID"
+      unset value
     fi
+    [[ -n "$(gcloud secrets versions list "$name" --filter=state:ENABLED --limit=1 --format='value(name)' --project "$PROJECT_ID")" ]] || {
+      echo 'Secret exists without an enabled version; inspect privately before repair.' >&2; exit 2;
+    }
   fi
-  JOB_SECRETS="${JOB_SECRETS},DEMO_USER_PASSWORD=${SECRET_DEMO_PASS}:latest"
+}
+ensure_generated_secret "$SECRET_SESSION" base64
+JOB_SECRETS="DATABASE_URL=${SECRET_DB_URL}:latest"
+JOB_ENV="NODE_ENV=production,TZ=UTC,ALLOW_PRODUCTION_DATABASE=${DB_NAME},ALLOW_CLOUD_SQL_INSTANCE=${SQL_CONN_NAME}"
+if [ "$SEED_DEMO_DATA" = true ]; then
+  ensure_generated_secret "$SECRET_OWNER_PASS" hex
+  ensure_generated_secret "$SECRET_RESPONDENT_PASS" hex
 fi
-
-# ------------------------------------------------------------------------------
-# Secret access (per secret, NOT project-wide)
-# ⭐ IMPORTANT: test_deploy_stub.sh fails if a project-wide secretAccessor
-#    binding is added — keep access limited to this app's own secrets.
-# ------------------------------------------------------------------------------
-# Grant access only to this app's secrets, after they exist.
-RUNTIME_SECRETS=("$SECRET_DB_URL" "$SECRET_ADMIN_PASS")
-if [ "$SEED_DEMO_DATA" = "true" ]; then
-  RUNTIME_SECRETS+=("$SECRET_DEMO_PASS")
-fi
-for secret in "${RUNTIME_SECRETS[@]}"; do
-  run_cmd gcloud secrets add-iam-policy-binding "$secret" \
-    --member="serviceAccount:${SA_EMAIL}" \
-    --role="roles/secretmanager.secretAccessor" \
-    --project "$PROJECT_ID" --quiet
+# One runtime identity; only DB/session secrets are needed by the web service.
+# A separate bootstrap job uses role passwords explicitly, never on ordinary migration.
+for secret in "$SECRET_DB_URL" "$SECRET_SESSION"; do
+  run_cmd gcloud secrets add-iam-policy-binding "$secret" --member="serviceAccount:${SA_EMAIL}" \
+    --role=roles/secretmanager.secretAccessor --project "$PROJECT_ID" --quiet
 done
+if [ "$SEED_DEMO_DATA" = true ]; then
+  for secret in "$SECRET_OWNER_PASS" "$SECRET_RESPONDENT_PASS"; do
+    run_cmd gcloud secrets add-iam-policy-binding "$secret" --member="serviceAccount:${SA_EMAIL}" \
+      --role=roles/secretmanager.secretAccessor --project "$PROJECT_ID" --quiet
+  done
+fi
 
 # ==============================================================================
 # 9. Build & Push Unified Container Image via Cloud Build
 #    Builds the root Dockerfile (run this script from the repo root).
-#    Tag `latest` is only for this first manual setup; deploy.yml uses commit SHAs.
+#    Tag the reviewed main commit, then resolve/pin the immutable digest.
 # ==============================================================================
 run_cmd gcloud builds submit \
   --tag "$IMAGE_URI" \
   --project "$PROJECT_ID"
 
+if [ "$DRY_RUN" != 1 ]; then
+  IMAGE_URI="$(gcloud artifacts docker images describe "$IMAGE_URI" --project "$PROJECT_ID" --format='value(image_summary.fully_qualified_digest)')"
+  [[ "$IMAGE_URI" == "${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${SERVICE_NAME}@sha256:"* && "$IMAGE_URI" =~ @sha256:[0-9a-f]{64}$ ]] || { echo 'Missing immutable image digest.' >&2; exit 2; }
+fi
+
 # ==============================================================================
-# 10. Create/Update & Execute Cloud Run Job for Migration + Non-destructive Seed
+# 10. Forward-only migration, then an explicit optional bootstrap job
 #     ⭐ IMPORTANT: if this job fails the script stops BEFORE deploying the
 #        service, so a broken migration never reaches users.
-#     CHANGE ME: `--args` (prisma migrate deploy && npm run prisma:seed) is
-#        Prisma/npm specific — use your stack's migrate/seed command.
-#     deploy.yml / release.sh later re-run this same job (name: lectra-migrate).
+#     Later release automation reuses lectra-migrate; bootstrap is never part of it.
 # ==============================================================================
 run_cmd gcloud run jobs deploy "$MIGRATE_JOB_NAME" \
   --image "$IMAGE_URI" \
@@ -332,10 +300,10 @@ run_cmd gcloud run jobs deploy "$MIGRATE_JOB_NAME" \
   --service-account "$SA_EMAIL" \
   --set-cloudsql-instances "$SQL_CONN_NAME" \
   --set-secrets "$JOB_SECRETS" \
-  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok,SEED_DEMO_DATA=${SEED_DEMO_DATA}" \
+  --set-env-vars "$JOB_ENV" \
   --command "sh" \
-  --args "-c,npx prisma migrate deploy && npm run prisma:seed" \
-  --max-retries 1 \
+  --args "-c,npm run db:migrate:production" \
+  --max-retries 0 \
   --task-timeout 300s \
   --project "$PROJECT_ID"
 
@@ -349,10 +317,18 @@ if ! run_cmd gcloud run jobs execute "$MIGRATE_JOB_NAME" \
   exit 1
 fi
 
+if [ "$SEED_DEMO_DATA" = true ]; then
+  run_cmd gcloud run jobs deploy lectra-bootstrap --image "$IMAGE_URI" --region "$REGION" \
+    --service-account "$SA_EMAIL" --set-cloudsql-instances "$SQL_CONN_NAME" \
+    --set-secrets "DATABASE_URL=${SECRET_DB_URL}:latest,SEED_OWNER_PASSWORD=${SECRET_OWNER_PASS}:latest,SEED_RESPONDENT_PASSWORD=${SECRET_RESPONDENT_PASS}:latest" \
+    --set-env-vars "${JOB_ENV},SEED_PRODUCTION_DEMO=${DB_NAME}" --command sh \
+    --args '-c,npm run db:seed:production' --max-retries 0 --task-timeout 300s --project "$PROJECT_ID"
+  run_cmd gcloud run jobs execute lectra-bootstrap --region "$REGION" --wait --project "$PROJECT_ID"
+fi
+
 # ==============================================================================
 # 11. Deploy Cloud Run Service
-#     CHANGE ME: --port must equal the port in the Dockerfile (3000); tune
-#                --memory / --cpu / --max-instances for your app.
+#     The unified root image listens on PORT=3001 supplied by Cloud Run.
 #     ⚠️ --allow-unauthenticated makes the service public (needed for the demo).
 # ==============================================================================
 run_cmd gcloud run deploy "$SERVICE_NAME" \
@@ -362,19 +338,21 @@ run_cmd gcloud run deploy "$SERVICE_NAME" \
   --allow-unauthenticated \
   --service-account "$SA_EMAIL" \
   --add-cloudsql-instances "$SQL_CONN_NAME" \
-  --set-secrets "DATABASE_URL=${SECRET_DB_URL}:latest" \
-  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok" \
+  --set-secrets "DATABASE_URL=${SECRET_DB_URL}:latest,SESSION_SECRET=${SECRET_SESSION}:latest" \
+  --set-env-vars "NODE_ENV=production,TZ=UTC,APP_ORIGIN=${APP_ORIGIN},TRUST_PROXY=1" \
   --min-instances 0 \
   --max-instances 3 \
   --memory 512Mi \
   --cpu 1 \
-  --port 3000 \
+  --port 3001 \
   --project "$PROJECT_ID"
 
 if [ "$DRY_RUN" = "1" ]; then
-  SERVICE_URL="https://${SERVICE_NAME}-<hash>-as.a.run.app"
+  SERVICE_URL="$APP_ORIGIN"
 else
-  SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --project "$PROJECT_ID" --format='value(status.url)')"
+  # Use the deterministic URL used for CSRF's exact origin check. The hashed alias is not the login origin.
+  SERVICE_URL="$APP_ORIGIN"
+  gcloud run services describe "$SERVICE_NAME" --region "$REGION" --project "$PROJECT_ID" --format='value(status.latestReadyRevisionName)'
 fi
 
 # ------------------------------------------------------------------------------
@@ -386,9 +364,10 @@ printf '%s\n' "Deployment Completed!"
 printf '%s\n' "Service URL    : ${SERVICE_URL}"
 printf '%s\n' "Health Check   : ${SERVICE_URL}/api/health"
 printf '%s\n' "Readiness Check: ${SERVICE_URL}/api/ready"
-printf '%s\n' "Template only: live LECTRA account/bootstrap mapping is reviewed in Episode 5"
-printf '%s\n' "Admin Password : Stored in Secret Manager: ${SECRET_ADMIN_PASS} (not printed)."
+printf '%s\n' "Image: ${IMAGE_URI}"
+printf '%s\n' "Source commit: ${SOURCE_SHA}"
+
 if [ "$SEED_DEMO_DATA" = "true" ]; then
-  printf '%s\n' "Demo Password  : Stored in Secret Manager: ${SECRET_DEMO_PASS} (not printed)."
+  printf '%s\n' "Synthetic accounts: owner.1@example.test and respondent.11@example.test; role passwords in ${SECRET_OWNER_PASS} / ${SECRET_RESPONDENT_PASS}; never print in evidence."
 fi
 printf '%s\n' "=================================================================="

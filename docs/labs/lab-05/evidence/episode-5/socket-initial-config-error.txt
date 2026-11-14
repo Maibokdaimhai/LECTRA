@@ -1,0 +1,23 @@
+Controlled baseline reproduction: new tests against pre-change operator guard; expected failure.
+failed to load config from /Users/meng/.codex/worktrees/review-pr38/LECTRA/vitest.config.ts
+
+⎯⎯⎯⎯⎯⎯⎯ Startup Error ⎯⎯⎯⎯⎯⎯⎯⎯
+Error: Build failed with 1 error:
+
+[31m[UNRESOLVED_ENTRY] [0mCannot resolve entry module vitest.config.ts.
+
+    at aggregateBindingErrorsIntoJsError (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/rolldown/dist/shared/error-BJ9uQLIS.mjs:50:18)
+    at unwrapBindingResult (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/rolldown/dist/shared/error-BJ9uQLIS.mjs:20:128)
+    at #build (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/rolldown/dist/shared/rolldown-DWd2aEL4.mjs:146:34)
+    at async bundleConfigFile (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/vite/dist/node/chunks/node.js:38097:12)
+    at async bundleAndLoadConfigFile (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/vite/dist/node/chunks/node.js:37993:18)
+    at async loadConfigFromFile (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/vite/dist/node/chunks/node.js:37954:42)
+    at async resolveConfig (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/vite/dist/node/chunks/node.js:37555:22)
+    at async resolveConfig (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/vitest/dist/chunks/index.Di8au7q4.js:9300:25)
+    at async createVitest (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:13938:17)
+    at async prepareVitest (file:///Users/meng/.codex/worktrees/review-pr38/LECTRA/node_modules/vitest/dist/chunks/cli-api.COfZo8lK.js:14625:14) {
+  errors: [Getter/Setter]
+}
+
+
+
