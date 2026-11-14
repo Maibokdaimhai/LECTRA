@@ -44,7 +44,9 @@ Wait for the TCP `pg_isready -h 127.0.0.1` check to report accepting connections
 
 `demo:config` validates test/development separation and creates ignored `.local/demo-setup.env` / `.local/demo.env` without overwriting them. `demo:migrate` applies the real forward migration history, including session storage; `demo:seed` creates/verifies synthetic fixtures and Argon2id hashes. Nothing seeds on application startup.
 
-Open **http://127.0.0.1:5173**. Use this exact origin: `localhost` and `127.0.0.1` are different origins for cookies/CSRF. API listens on loopback 3001; Vite proxies `/api` to it. Builds/typecheck generate the ignored Prisma client.
+Open **http://127.0.0.1:5173**. Use this exact origin: `localhost` and `127.0.0.1` are different origins for cookies/CSRF. API listens on `0.0.0.0:3001` for container compatibility; Vite proxies `/api` to it. Restrict local access with your firewall and loopback-only container port mappings. Builds/typecheck generate the ignored Prisma client.
+
+Lab 5 Episode 2 runtime changes and verification are documented in [cloud readiness](docs/labs/lab-05/episode-2-cloud-readiness.md). Cloud deployment and Docker packaging are separate later episodes; no live cloud deployment is claimed here.
 
 | Role / context | Synthetic login |
 | --- | --- |
