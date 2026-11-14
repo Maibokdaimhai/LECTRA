@@ -1,0 +1,73 @@
+# Local HTTP Compose only. Cloud Run uses the root image and separately injected secrets.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: lectra
+      POSTGRES_DB: lectra_demo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run npm run setup:docker and use its env file}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  migrate:
+    image: ${API_IMAGE:-lectra-api:episode3}
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://lectra:${POSTGRES_PASSWORD:?Required}@db:5432/lectra_demo
+      ALLOW_PRODUCTION_DATABASE: lectra_demo
+      SEED_PRODUCTION_DEMO: lectra_demo
+      SEED_OWNER_PASSWORD: ${SEED_OWNER_PASSWORD:?Required}
+      SEED_RESPONDENT_PASSWORD: ${SEED_RESPONDENT_PASSWORD:?Required}
+    command: ["npm", "run", "db:migrate:production"]
+
+  server:
+    image: ${API_IMAGE:-lectra-api:episode3}
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      # Local HTTP only; actual authentication/CSRF/ownership remain enabled.
+      NODE_ENV: development
+      PORT: 3001
+      APP_ORIGIN: ${APP_ORIGIN:?Required}
+      DATABASE_URL: postgresql://lectra:${POSTGRES_PASSWORD:?Required}@db:5432/lectra_demo
+      SESSION_SECRET: ${SESSION_SECRET:?Required}
+      TRUST_PROXY: none
+    ports:
+      - "127.0.0.1:${API_PORT:-3001}:3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  client:
+    image: ${WEB_IMAGE:-lectra-web:episode3}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    depends_on:
+      server:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${WEB_PORT:-5173}:8080"
+
+volumes:
+  postgres_data:

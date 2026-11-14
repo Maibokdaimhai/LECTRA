@@ -1,0 +1,10 @@
+First Docker verification attempt, 2026-11-14:
+API/web/unified builds and runtime artifact checks passed. The nginx container
+failed at startup because the upstream image used /run/nginx.pid, while the
+initial non-root adaptation rewrote only /var/run/nginx.pid.
+Actual nginx error: open() "/run/nginx.pid" failed (13: Permission denied).
+The HTTP waiter encountered RemoteDisconnected before any domain/browser or
+persistence verification. Those later checks were not executed in this attempt.
+Correction: rewrite both possible PID paths to /tmp/nginx.pid and remove the
+root-only user directive. The readiness waiter now also handles early closed
+connections until its bounded timeout. Earlier results are retained, not relabeled.

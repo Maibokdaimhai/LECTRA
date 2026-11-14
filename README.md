@@ -15,6 +15,8 @@ Run commands from the repository root with the pinned runtime on PATH. Confirm `
 
 ## Fresh checkout and private configuration
 
+For the **Lab 5 container workflow**, see [Episode 3 Docker setup and evidence](docs/labs/lab-05/episode-3-docker.md). It uses separate ignored `.local/docker.env`, a Compose project and persistent volume; it does not reuse/reset the local test/demo database below. The root Dockerfile builds the combined API/SPA image for later CI/deployment.
+
 ```sh
 git clone --branch staging https://github.com/Maibokdaimhai/LECTRA.git
 cd LECTRA
