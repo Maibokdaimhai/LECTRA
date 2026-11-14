@@ -1,0 +1,11 @@
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/cloud/runtime.test.ts (7 tests) 3384ms
+   ✓ EP2-S04: production migrate/seed reruns and concurrent seeds preserve hashes and unrelated data 1615ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  09:32:19
+   Duration  3.80s (tests 91%, import 5%, transform 3%)
+

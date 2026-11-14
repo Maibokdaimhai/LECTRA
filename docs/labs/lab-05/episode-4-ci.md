@@ -40,7 +40,7 @@ The whole starter deploy set is included with LECTRA naming/PostgreSQL 17 and a 
 
 See [Episode 4 evidence index](evidence/episode-4/README.md). Local service-mode reproduction passed 249 tests and all 17 matrix commands, plus offline and Python tooling checks. It is local author evidence, not a GitHub Actions result. The local record predates addition of GitHub run-metadata capture to the runner; current assessed workflow/source evidence must come from the actual PR run and artifact.
 
-At implementation time the reviewed staging/main integration gates remain pending. Do not mark this issue Done or claim the workflow is already on main until those facts are verified. Workflow run IDs, step outcomes, artifacts and tested source hashes will be recorded as real runs complete; no placeholder green run is accepted.
+At implementation time the reviewed staging/main integration gates remain pending. Do not mark this issue Done or claim the workflow is already on main until those facts are verified. [Actual successful implementation run 43580925042](evidence/episode-4/github-run-43580925042/README.md) records all step outcomes, extracted artifacts, 249 passing selected application tests, 30 Docker checks and actual amd64 images. Its branch head is `bec735b`; its tested synthetic merge is `d6ca26b`. Captioned screenshots and logs are retained. Main-target release evidence is still pending.
 
 ## References
 

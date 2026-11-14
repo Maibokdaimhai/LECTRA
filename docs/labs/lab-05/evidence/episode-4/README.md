@@ -8,6 +8,6 @@
 
 ## GitHub evidence
 
-Real PR run/job/check metadata, conclusions, logs and artifacts are recorded here only after execution. A configured workflow is not evidence that it ran; a staging pass is not evidence of a main-target release pass. The retained workflow/deploy files must reach main through teammate-reviewed integration/release before Episode 4 is complete.
+[Actual successful GitHub run 43580925042](github-run-43580925042/README.md) retains run/job/artifact metadata, 249 passing selected application tests, 30 passing Docker checks, logs, source hashes and five captioned Chromium screenshots. All 104 regression and 80 Docker hashes matched at collection. A configured workflow is not evidence that it ran; a staging pass is not evidence of a main-target release pass. The retained workflow/deploy files must reach main through teammate-reviewed integration/release before Episode 4 is complete.
 
 The workflow uploads sanitized logs/results/source hashes and actual Docker browser screenshots as a per-run GitHub artifact. Private `.local/episode3` environment/cookie files and repository `.env` files are not uploaded. Historical Sprint 1/Episodes 2–3 evidence remains unchanged. Current expected selected application matrix is 249; Python and shell offline checks are separate counts, not added to that historical matrix.

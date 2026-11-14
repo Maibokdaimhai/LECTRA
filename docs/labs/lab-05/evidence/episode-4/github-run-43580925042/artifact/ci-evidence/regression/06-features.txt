@@ -1,0 +1,12 @@
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/features/workflows.test.ts (41 tests) 10976ms
+   ✓ TEST-F01-I14/I22: old tokens fail; the eleventh valid-shape login is throttled 301ms
+   ✓ INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds 5142ms
+
+ Test Files  1 passed (1)
+      Tests  41 passed (41)
+   Start at  09:32:24
+   Duration  11.47s (tests 97%, import 2%, transform 2%)
+

@@ -1,0 +1,148 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 132405278136,
+      "run_id": 43580925042,
+      "workflow_name": "CI & Docker Build",
+      "head_branch": "ci/55-pr-checks",
+      "run_url": "https://api.github.com/repos/Maibokdaimhai/LECTRA/actions/runs/43580925042",
+      "run_attempt": 1,
+      "head_sha": "bec735bdceaec6cd6de26229826dd463c8d6ed86",
+      "url": "https://api.github.com/repos/Maibokdaimhai/LECTRA/actions/jobs/132405278136",
+      "html_url": "https://github.com/Maibokdaimhai/LECTRA/actions/runs/43580925042/job/132405278136",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-14T09:31:09Z",
+      "started_at": "2026-11-14T09:31:12Z",
+      "completed_at": "2026-11-14T09:36:13Z",
+      "name": "test-and-docker",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-14T09:31:13Z",
+          "completed_at": "2026-11-14T09:31:14Z"
+        },
+        {
+          "name": "Initialize containers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-14T09:31:14Z",
+          "completed_at": "2026-11-14T09:31:23Z"
+        },
+        {
+          "name": "Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-14T09:31:23Z",
+          "completed_at": "2026-11-14T09:31:24Z"
+        },
+        {
+          "name": "Set up Node 24.22.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-14T09:31:24Z",
+          "completed_at": "2026-11-14T09:31:30Z"
+        },
+        {
+          "name": "Set up Python 3.14",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-14T09:31:30Z",
+          "completed_at": "2026-11-14T09:31:30Z"
+        },
+        {
+          "name": "Install locked dependencies and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-14T09:31:30Z",
+          "completed_at": "2026-11-14T09:32:01Z"
+        },
+        {
+          "name": "Check deploy scripts offline and verifier regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-14T09:32:01Z",
+          "completed_at": "2026-11-14T09:32:05Z"
+        },
+        {
+          "name": "Test API/database and UI; typecheck and build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-14T09:32:05Z",
+          "completed_at": "2026-11-14T09:34:54Z"
+        },
+        {
+          "name": "Build and verify Docker images on linux/amd64",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-14T09:34:54Z",
+          "completed_at": "2026-11-14T09:36:07Z"
+        },
+        {
+          "name": "Upload actual CI evidence (also on failure)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-14T09:36:07Z",
+          "completed_at": "2026-11-14T09:36:09Z"
+        },
+        {
+          "name": "Post Set up Python 3.14",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-14T09:36:09Z",
+          "completed_at": "2026-11-14T09:36:09Z"
+        },
+        {
+          "name": "Post Set up Node 24.22.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-14T09:36:09Z",
+          "completed_at": "2026-11-14T09:36:11Z"
+        },
+        {
+          "name": "Post Checkout repository",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-14T09:36:11Z",
+          "completed_at": "2026-11-14T09:36:11Z"
+        },
+        {
+          "name": "Stop containers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-11-14T09:36:11Z",
+          "completed_at": "2026-11-14T09:36:11Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-14T09:36:11Z",
+          "completed_at": "2026-11-14T09:36:11Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Maibokdaimhai/LECTRA/check-runs/132405278136",
+      "labels": [
+        "ubuntu-24.04"
+      ]
+    }
+  ]
+}
