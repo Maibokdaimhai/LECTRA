@@ -1,6 +1,6 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { Pool } from 'pg';
+import { createConnectionPool, migrationConnectionString } from '../apps/api/src/connection-pool.js';
 import { assertTestDatabase } from '../apps/api/src/test-database.js';
 import { seedSyntheticDatabase } from './seed-database.js';
 
@@ -28,13 +28,13 @@ async function main() {
         [...url.searchParams.keys()].some(k => ['host', 'port'].includes(k.toLowerCase()))) throw new Error('Development migration requires explicit target opt-in.');
     connectionString = environment.DATABASE_URL!;
   } else throw new Error('Unknown database operation.');
-  const pool = new Pool({ connectionString, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
+  const pool = createConnectionPool(connectionString, 'operator');
   try {
     if ((await pool.query<{ name: string }>('SELECT current_database() AS name')).rows[0]?.name !== expected) throw new Error('Unexpected migration database.');
   } finally { await pool.end(); }
   // No shell interpolation; only the selected, checked URL is given to Prisma.
   await promisify(execFile)(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], {
-    env: { ...environment, DATABASE_URL: connectionString, PGOPTIONS: '-c timezone=UTC' }
+    env: { ...environment, DATABASE_URL: migrationConnectionString(connectionString), PGOPTIONS: '-c timezone=UTC' }
   });
   console.info('Forward migration deployment completed. No reset or seed was performed.');
 }

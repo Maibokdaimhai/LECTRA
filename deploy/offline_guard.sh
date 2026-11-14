@@ -13,3 +13,22 @@ require_offline_execution() {
   echo 'Episode 4 template only: live cloud execution is disabled. Use DRY_RUN=1 for supported previews or the offline test harness. Complete/review LECTRA deployment adaptation in Episode 5.' >&2
   exit 2
 }
+
+# Only the first-deployment entry point can opt in to reviewed live execution.
+# release/teardown remain offline-only until their later episodes are reviewed.
+require_first_deployment_execution() {
+  if [[ "${DRY_RUN:-0}" == 1 ]]; then return; fi
+  local stub_dir="${LECTRA_OFFLINE_STUB_DIR:-}"
+  if [[ -n "$stub_dir" && -d "$stub_dir" && "$(command -v gcloud || true)" == "$stub_dir/gcloud" ]] &&
+     grep -q '^# LECTRA_OFFLINE_TEST_STUB$' "$stub_dir/gcloud"; then return; fi
+  if [[ -z "${PROJECT_ID:-}" || "${ALLOW_LIVE_GCP_PROJECT:-}" != "$PROJECT_ID" ]]; then
+    echo 'First deployment: live cloud execution is disabled without exact ALLOW_LIVE_GCP_PROJECT confirmation. Preview with DRY_RUN=1.' >&2
+    exit 2
+  fi
+  if [[ "$(git rev-parse --show-toplevel)" != "$PWD" || "$(git symbolic-ref --short HEAD)" != main ||
+        -n "$(git status --porcelain)" ||
+        "$(git rev-parse HEAD)" != "$(git ls-remote origin refs/heads/main | cut -f1)" ]]; then
+    echo 'Deploy only a clean latest reviewed main checkout from the repository root.' >&2
+    exit 2
+  fi
+}

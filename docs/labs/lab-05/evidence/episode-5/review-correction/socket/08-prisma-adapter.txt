@@ -1,0 +1,1 @@
+Prisma adapter reads seven synthetic accounts through the selected socket

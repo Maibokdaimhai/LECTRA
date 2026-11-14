@@ -1,0 +1,5 @@
+
+> lectra@0.0.0 db:migrate:production
+> node --import tsx scripts/production-database.ts migrate
+
+Production database operation refused or failed. Check target, credentials and migration status privately; no automatic retry/reset.

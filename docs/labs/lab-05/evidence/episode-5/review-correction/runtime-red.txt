@@ -1,0 +1,33 @@
+
+ RUN  v5.1.0 /Users/meng/.codex/worktrees/review-pr38/LECTRA
+
+ ❯ apps/api/tests/unit/connection-pool-baseline.test.ts (1 test | 1 failed) 7ms
+   × R60-P01: actual HTTP auth/session/domain pool has max3, independent of driver URL limit 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/api/tests/unit/connection-pool-baseline.test.ts > R60-P01: actual HTTP auth/session/domain pool has max3, independent of driver URL limit
+AssertionError: expected 10 to be 3 // Object.is equality
+
+- Expected
++ Received
+
+- 3
++ 10
+
+ ❯ apps/api/tests/unit/connection-pool-baseline.test.ts:9:50
+      7|   const app = createApp(readConfig({ NODE_ENV: 'test', APP_ORIGIN: 'ht…
+      8|     SESSION_SECRET: Buffer.alloc(32, 7).toString('base64url') }));
+      9|   try { expect(app.locals.auth.pool.options.max).toBe(3); }
+       |                                                  ^
+     10|   finally { await app.locals.close(); }
+     11| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  02:26:57
+   Duration  205ms (import 80%, transform 15%, tests 4%, worker 1%)
+
