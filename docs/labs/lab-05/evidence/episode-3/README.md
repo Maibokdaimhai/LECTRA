@@ -32,6 +32,14 @@ Screenshots are actual Chromium captures of the Docker-served application, using
 - [After restart, narrow](docker-run/after-results-narrow.png): persisted results at 360px after container replacement.
 - [Logout after restart](docker-run/after-logout.png): login screen restored and private feedback hidden.
 
+## Fresh-clone reproduction
+
+`clean-clone/` records another successful Docker run at exact commit **`2e22c9337105db21d9d0d42bf74dafd17e852bf3`**. A new clone was created with `git clone --no-local` from the local Git repository at that committed branch; working-tree files were not copied. The initial clone had **no node_modules, .env or .local**. The setup helper and Compose image build completed **before installing any host npm dependencies**. Then `npm ci` and Chromium installation prepared only the host verification tools, and the full Docker/API/browser/down-up verification passed again: **18 CLI commands / 25 executable checks**. Its 78 build/source hashes match the implementation being submitted.
+
+See `clean-clone/bootstrap/record.json` and the six bootstrap logs for the exact checkout SHA, absence checks and actual command outcomes. `clean-clone/results.json` contains actual image IDs, source hashes and final command/check results; screenshots there are separate actual captures from that fresh clone. Docker's shared local layer/download cache was available; this is a fresh source/private-config/database run, not a claim of a no-cache image build or an independent teammate review.
+
+The subsequent evidence/documentation commit also preserves PDF attributes and adds LF checkout policy for shell scripts; it does not change the tested Dockerfiles/application/helper bytes. Check those bytes against the recorded source hashes when reviewing the final PR head.
+
 ## Regression and TDD
 
 `regression/results.json` and its 16 logs record **241 passed / 0 failed / 0 skipped**, plus typecheck, API/web build, ORM and actual process-restart checks. The original selected 239 cases plus two new static-serving API cases were executed. This does not alter Episode 2's historical 239-test or Sprint 1's historical 219-test results.

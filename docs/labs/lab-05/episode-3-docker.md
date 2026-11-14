@@ -20,6 +20,8 @@ The starter kit uses `server/` and `client/`; LECTRA uses npm workspaces under `
 
 Additional implementation/test/helper/docs files are necessary adaptations, not a claim that the guide itself mandates their exact names or design. Express now serves the built SPA in the unified production image. Unknown API routes still produce JSON 404; missing assets/dotfiles/unsafe methods are not disguised as successful SPA pages. No npm dependency was added. Node 24.22.1, npm 10.9.2 and PostgreSQL 17 remain the accepted runtime versions. Debian bookworm-slim supports the API/Prisma/Argon2 toolchain; nginx 1.28-alpine serves Compose assets. Actual resolved image IDs/architecture are recorded in the Docker verification results; this run is arm64, not an amd64/Cloud Run execution claim.
 
+`.gitattributes` keeps shell entrypoints at LF line endings across checkouts, including when a Windows Git client otherwise prefers CRLF. Dockerfiles set the entrypoint execute permission during image build.
+
 ## Service review and trust boundaries
 
 | Service | Role | Startup dependency | Data/ports |
