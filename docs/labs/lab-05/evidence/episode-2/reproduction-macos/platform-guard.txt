@@ -1,0 +1,2 @@
+Simulated win32 platform guard: PASS — explanatory refusal before any subprocess/container call.
+Episode 2 verification supports macOS or Linux (including WSL 2). On Windows, open a WSL Linux shell and use Linux Python/Node/npm with Docker WSL integration. Native Windows Python is unsupported; no database/container was created.

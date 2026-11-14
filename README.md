@@ -11,7 +11,7 @@ Sprint 1 provides real login, scoped Course/Section/Lecture discovery, Draft →
 - Git. Docker is an optional way to run the local database; an application image, CI/CD and cloud deployment are not required for this local setup.
 - Free demo ports: database 55432, API 3001, web 5173. Browser checks use 3102/4174, isolated UI checks 4175, smoke 3101/4173 and built-process restart 3105.
 
-Run commands from the repository root with the pinned runtime on PATH. Confirm `node --version` and `npm --version` first. The commands below also work in PowerShell; use `node --env-file=...` instead of platform-specific shell environment exports.
+Run commands from the repository root with the pinned runtime on PATH. Confirm `node --version` and `npm --version` first. The local setup commands below can be used in PowerShell; use `node --env-file=...` instead of platform-specific shell environment exports. **The Lab 5 Episode 2 Python verification runner requires macOS or Linux (including a WSL 2 Linux shell); native Windows Python/PowerShell is unsupported.** See [supported environments and WSL commands](docs/labs/lab-05/deployment.md#supported-episode-2-verification-environment).
 
 ## Fresh checkout and private configuration
 

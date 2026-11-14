@@ -1,8 +1,8 @@
 # Episode 2 verification record
 
-Actual local execution on **14 November 2026**, using Node 24.22.1/npm 10.9.2, PostgreSQL 17 in a new dedicated container and eight new test databases. This is local production-profile and regression evidence, not a GCP deployment result.
+Original local execution on **14 November 2026**, on macOS/arm64 using Node 24.22.1/npm 10.9.2, PostgreSQL 17 in a new dedicated container and eight new test databases. This is local production-profile and regression evidence, not a GCP deployment result. The original file did not capture full OS metadata; the correction's fresh macOS reproduction records that metadata explicitly. Native Windows is not a supported runner environment; [WSL/Linux instructions and supported prerequisites](../../deployment.md#supported-episode-2-verification-environment) are documented separately.
 
-**239 passed / 0 failed / 0 skipped** across the selected Vitest/Playwright suites. Typecheck, build, ORM and actual built-process restart also exited 0. All **16 commands** in `results.json` exited 0. The exact candidate source/config/test/runner content is identified by **79 SHA-256 entries** in that file; its `baseCommit` is the accepted main commit before this implementation, not a claim that uncommitted changes existed in the historical release. The final PR commit is identified in GitHub and can be compared with these hashes.
+**239 passed / 0 failed / 0 skipped** across the selected Vitest/Playwright suites. Typecheck, build, ORM and actual built-process restart also exited 0. All **16 commands** in the original `results.json` exited 0. The original implementation candidate (`9ee6378`) is identified by **79 SHA-256 entries** in that file; its `baseCommit` is the accepted main commit before implementation. The reproducibility correction changes the runner, so its current hash must be checked against [the separate macOS reproduction record](reproduction-macos/results.json), not asserted to match the historical runner hash. The original evidence files remain unchanged.
 
 | Log | Actual result |
 | --- | --- |

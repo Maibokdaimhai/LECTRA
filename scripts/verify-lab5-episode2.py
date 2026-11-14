@@ -1,4 +1,7 @@
-"""Local-only Episode 2 verification. Requires Docker, installed npm deps and Chromium.
+"""Local-only Episode 2 verification for macOS or Linux (including WSL 2 Linux).
+
+Native Windows Python/PowerShell is unsupported. Requires Linux/macOS Node/npm,
+Python 3, Docker with Linux containers, installed npm dependencies and Chromium.
 
 Creates one dedicated PostgreSQL 17 container and eight NEW disposable databases.
 Never connects to GCP, reads .env files, resets a database, or touches other containers.
@@ -11,18 +14,26 @@ import hashlib
 import json
 import os
 import pathlib
+import platform
 import re
 import secrets
 import subprocess
+import sys
 import time
+
+if sys.platform not in ('darwin', 'linux'):
+    raise SystemExit('Episode 2 verification supports macOS or Linux (including WSL 2). On Windows, open a WSL Linux shell and use Linux Python/Node/npm with Docker WSL integration. Native Windows Python is unsupported; no database/container was created.')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--create-local-test-databases', action='store_true', required=True)
+parser.add_argument('--evidence-dir', help='New output directory relative to repository root (default: ignored .local/lab5-episode2/<timestamp>).')
 args = parser.parse_args()
 repo = pathlib.Path(__file__).resolve().parent.parent
-out = repo / 'docs/labs/lab-05/evidence/episode-2'
+stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d%H%M%S%f')
+out = repo / args.evidence_dir if args.evidence_dir else repo / '.local/lab5-episode2' / stamp
+if (out / 'results.json').exists():
+    raise SystemExit('Evidence directory already contains results.json; choose a new directory to preserve earlier evidence.')
 out.mkdir(parents=True, exist_ok=True)
-stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d%H%M%S')
 container = 'lectra-lab5-ep2-' + stamp
 password, owner, respondent, session = [secrets.token_urlsafe(32) for _ in range(4)]
 base = {k: v for k, v in os.environ.items() if not k.startswith(('PG', 'SEED_', 'ALLOW_', 'TEST_DATABASE', 'DATABASE_', 'APP_ORIGIN', 'SESSION_SECRET', 'NODE_ENV', 'TRUST_PROXY', 'PORT', 'RESTART_PASSWORD', 'DEVELOPMENT_DATABASE'))}
@@ -47,11 +58,26 @@ def run(label, command, env=None):
            'summary': [line.strip() for line in text.splitlines() if re.search(r'Tests\s|Test Files\s|\d+ passed \(|restart:', line)]}
     results.append(row)
     print(json.dumps(row), flush=True)
-    (out / 'results.json').write_text(json.dumps({'baseCommit': base_sha, 'sourceHashes': hashes, 'results': results}, indent=2) + '\n')
+    (out / 'results.json').write_text(json.dumps({'baseCommit': base_sha, 'environment': host, 'sourceHashes': hashes, 'results': results}, indent=2) + '\n')
     if p.returncode:
         raise RuntimeError('Verification failed: ' + label + '; see sanitized log.')
 
 base_sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip()
+host = {'system': platform.system(), 'machine': platform.machine(), 'osRelease': platform.release(),
+        'macOSVersion': platform.mac_ver()[0] if sys.platform == 'darwin' else None,
+        'python': platform.python_version()}
+for tool, command in [('node', ['node', '--version']), ('npm', ['npm', '--version']),
+                      ('docker', ['docker', 'version', '--format', '{{.Client.Version}}/{{.Server.Version}}'])]:
+    try:
+        check = capture(command)
+    except FileNotFoundError:
+        raise SystemExit(f'{tool} is unavailable. Use the supported macOS/Linux environment and install prerequisites; no container was created.')
+    if check.returncode:
+        raise SystemExit(f'{tool} preflight failed. Check the documented runtime/Docker prerequisites; no container was created.')
+    host[tool] = check.stdout.strip()
+if host['node'] != 'v24.22.1' or host['npm'] != '10.9.2':
+    raise SystemExit('Select Node 24.22.1 and npm 10.9.2 in this macOS/Linux shell before verification; no container was created.')
+print('Evidence output: ' + str(out.relative_to(repo) if out.is_relative_to(repo) else out), flush=True)
 paths = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=repo, text=True).splitlines()
 hashes = {p: hashlib.sha256((repo / p).read_bytes()).hexdigest() for p in sorted(set(paths))
           if (p.startswith(('apps/', 'scripts/', 'prisma/')) or p in ['package.json', 'package-lock.json', '.env.example', '.env.test.example'] or p.startswith(('vitest.', 'playwright', 'tsconfig', 'prisma.config'))) and (repo / p).is_file()}

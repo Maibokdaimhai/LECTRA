@@ -83,7 +83,11 @@ The existing `seedSyntheticDatabase` and disposable-test guards remain unchanged
 
 ## Verification, evidence and review
 
-Run from the repository root using pinned Node/npm and installed Chromium:
+**Supported reproduction platforms: macOS and Linux (including Linux inside WSL 2). Native Windows Python/PowerShell is unsupported.** Use the environment's own Node/npm/Python and Linux Docker containers; Windows `.cmd` executables and Windows-installed dependencies must not be reused inside WSL. The runner now rejects unsupported platforms before creating a container. This scope is a team tooling decision, not an additional instructor requirement.
+
+The demonstrated successful supported environment is **macOS 26.6.2 / arm64**, Python 3.14.0, Node 24.22.1/npm 10.9.2. The correction's actual results and environment metadata are recorded separately in `evidence/episode-2/reproduction-macos/`. Linux/WSL commands are provided for reproduction, but a successful run on those platforms is not claimed. See [exact WSL/Ubuntu installation, checkout and verification commands](deployment.md#exact-wsl-2--ubuntu-reproduction-steps).
+
+Run from the repository root in the supported POSIX environment using pinned Node/npm, Python 3.10+, Docker and installed Chromium:
 
 ```sh
 npm ci
@@ -91,13 +95,14 @@ npm run browsers:install
 python3 scripts/verify-lab5-episode2.py --create-local-test-databases
 ```
 
-The Python standard-library runner requires Docker, creates one dedicated PostgreSQL 17 container and eight new databases, uses private generated credentials, executes typecheck/build and the full selected regression/browser matrix, and stops only its own container in `finally`. No existing database is reused/reset. Docker test infrastructure is a verification prerequisite, not a claim that the Episode 3 application image is implemented. Container/database storage is retained stopped for investigation; it is not removed automatically. Credentials remain in memory and are redacted from retained logs. Repeated verification uses a new timestamped container. Do not run concurrently on the same fixed browser ports or overwrite evidence without preserving relevant failed attempts.
+The Python standard-library runner requires Docker, creates one dedicated PostgreSQL 17 container and eight new databases, uses private generated credentials, executes typecheck/build and the full selected regression/browser matrix, and stops only its own container in `finally`. No existing database is reused/reset. Docker test infrastructure is a verification prerequisite, not a claim that the Episode 3 application image is implemented. Container/database storage is retained stopped for investigation; it is not removed automatically. Credentials remain in memory and are redacted from retained logs. Repeated verification uses a new timestamped container. Output defaults to a new ignored `.local/lab5-episode2/<timestamp>/` directory; `--evidence-dir <new-directory>` allows an explicit evidence destination. A destination with `results.json` is refused to preserve historical evidence. OS/tool preflight is recorded in new results. Do not run concurrently on the same fixed browser ports.
 
 Evidence under `evidence/episode-2/`:
 
 - `red-runtime.txt`: six genuine pre-implementation assertion failures (proxy config and readiness). `restricted-run.txt` preserves the earlier restricted-port run; its EPERM is an environment failure, not application RED evidence.
 - `initial-runner-failure.txt`: transparent local-infrastructure setup failure; corrected by waiting for TCP PostgreSQL readiness instead of the temporary initialization socket. No application tests ran in that attempt.
-- `results.json`: assessed base commit, SHA-256 map of the candidate source/config/test/runner files and each command's real exit status. Local candidate hashes distinguish the changes under review from the accepted Sprint 1 base.
+- `results.json`: original implementation record for `9ee6378`, including its assessed base commit, 79 source hashes and command exits. These original hashes identify that earlier candidate and are not silently rewritten after the runner correction.
+- `reproduction-macos/results.json`: correction reproduction with actual host/tool metadata, current assessed source hashes and the 16 command results; see its README for the exact invocation. This supplements rather than replaces the original results.
 - `01-*.txt` through `16-*.txt`: command outputs for typecheck/build, unit/API/cloud/feature/release/foundation/database/post-release suites, ORM, built restart and browser suites.
 - `static-review.txt`: bounded source inspection for uploads, identity shortcuts, environment reads and absence of startup seed.
 
