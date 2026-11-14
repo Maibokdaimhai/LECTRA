@@ -32,3 +32,21 @@ it('EP3-W02: API misses stay JSON; missing assets, dotfiles and unsafe methods n
   await request(app).post('/').send({}).expect(404);
   await request(app).get('/unknown').accept('json').expect(404);
 });
+it.each(['/%2eprivate', '/missing%2ejs', '/assets%2fmissing'])('EP3-W03: encoded excluded path %s returns 404 for GET and HEAD', async path => {
+  const app = createApp(undefined, undefined, root);
+  const response = await request(app).get(path).accept('html').expect(404);
+  expect(response.text).not.toContain('LECTRA packaged UI fixture');
+  expect(response.text).not.toContain('must never be served');
+  await request(app).head(path).accept('html').expect(404);
+});
+it.each(['/%', '/%ZZ', '/%E0%A4%A', '/%00'])('EP3-W04: malformed or null encoded path %s is rejected safely', async path => {
+  const response = await request(createApp(undefined, undefined, root)).get(path).accept('html').expect(400);
+  expect(response.text).not.toContain('LECTRA packaged UI fixture');
+  expect(response.text).not.toContain('URIError');
+});
+it('EP3-W05: valid encoded asset and client route still work; query encoding does not change path validation', async () => {
+  const app = createApp(undefined, undefined, root);
+  expect((await request(app).get('/assets/app%2ejs').expect(200)).text).toContain('packaged asset');
+  expect((await request(app).get('/surveys/%76iew').accept('html').expect(200)).text).toContain('LECTRA packaged UI fixture');
+  await request(app).get('/surveys/view?filter=%ZZ').accept('html').expect(200);
+});

@@ -2,6 +2,8 @@
 
 Executed locally on **14 November 2026**, macOS 26.6.2/arm64, Python 3.14.0, Node 24.22.1/npm 10.9.2, Docker 29.8.2 and Compose 5.5.0. Actual runtime metadata, source SHA-256 values and built image IDs/architecture are retained in the JSON records. No GCP/CI execution or teammate review is claimed.
 
+**Latest review correction:** [updated path/environment verification](review-correction/README.md). Its records supersede the original candidate for current PR-head validation. The initial 241-test and fresh-clone records below remain historical; their source hashes are not asserted to match the changed path/verifier implementation.
+
 ## Docker and packaged browser verification
 
 Invocation from the implementation working tree, with installed project dependencies/Chromium:
@@ -10,7 +12,7 @@ Invocation from the implementation working tree, with installed project dependen
 python3 scripts/verify-lab5-episode3.py --create-local-containers --evidence-dir docs/labs/lab-05/evidence/episode-3/docker-run
 ```
 
-`docker-run/results.json` records **18 successful CLI commands and 25 successful executable checks**, including two actual Chromium phases. The 78 recorded file hashes match the tested Docker/application/helper inputs. This is not a count of 25 Vitest tests; domain/HTTP/browser assertions are part of the standalone Docker verification.
+The original `docker-run/results.json` records **18 successful CLI commands and 25 successful executable checks**, including two actual Chromium phases. Its 78 file hashes identify the original tested Docker/application/helper inputs before review corrections. This is not a count of 25 Vitest tests; domain/HTTP/browser assertions are part of the standalone Docker verification.
 
 | Evidence | What it proves |
 | --- | --- |
@@ -34,11 +36,11 @@ Screenshots are actual Chromium captures of the Docker-served application, using
 
 ## Fresh-clone reproduction
 
-`clean-clone/` records another successful Docker run at exact commit **`2e22c9337105db21d9d0d42bf74dafd17e852bf3`**. A new clone was created with `git clone --no-local` from the local Git repository at that committed branch; working-tree files were not copied. The initial clone had **no node_modules, .env or .local**. The setup helper and Compose image build completed **before installing any host npm dependencies**. Then `npm ci` and Chromium installation prepared only the host verification tools, and the full Docker/API/browser/down-up verification passed again: **18 CLI commands / 25 executable checks**. Its 78 build/source hashes match the implementation being submitted.
+`clean-clone/` records another successful Docker run at exact commit **`2e22c9337105db21d9d0d42bf74dafd17e852bf3`**. A new clone was created with `git clone --no-local` from the local Git repository at that committed branch; working-tree files were not copied. The initial clone had **no node_modules, .env or .local**. The setup helper and Compose image build completed **before installing any host npm dependencies**. Then `npm ci` and Chromium installation prepared only the host verification tools, and the full Docker/API/browser/down-up verification passed again: **18 CLI commands / 25 executable checks**. Its 78 build/source hashes identify that initial implementation, not the later review correction.
 
 See `clean-clone/bootstrap/record.json` and the six bootstrap logs for the exact checkout SHA, absence checks and actual command outcomes. `clean-clone/results.json` contains actual image IDs, source hashes and final command/check results; screenshots there are separate actual captures from that fresh clone. Docker's shared local layer/download cache was available; this is a fresh source/private-config/database run, not a claim of a no-cache image build or an independent teammate review.
 
-The subsequent evidence/documentation commit also preserves PDF attributes and adds LF checkout policy for shell scripts; it does not change the tested Dockerfiles/application/helper bytes. Check those bytes against the recorded source hashes when reviewing the final PR head.
+The subsequent initial evidence/documentation commit `a7c40a0` preserves PDF attributes and adds LF checkout policy for shell scripts without changing those tested Dockerfiles/application/helper bytes. Later review corrections change web path handling and verifier isolation; use the separate correction source hashes for the current PR head. A fresh-clone repetition of the correction is not claimed.
 
 ## Regression and TDD
 

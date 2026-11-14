@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/tooling",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "exit": 0,
+  "passed": 4,
+  "sourceHashes": {
+    "scripts/docker_verifier_environment.py": "b1aa2092ed9e02e4a81524f7865bd8fcec032d83982a8cd57fa656fc30df2341",
+    "tests/tooling/test_docker_verifier_environment.py": "7e1d2bc6322fc7a3ea7e1e3eca048c9d1207a3edaed7063f733107076f8c7847"
+  },
+  "log": "python-environment-tests.txt"
+}

@@ -1,0 +1,206 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.63kB done
+#1 DONE 0.0s
+
+#2 [migrate internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.61kB done
+#2 DONE 0.0s
+
+#3 [client internal] load build definition from Dockerfile
+#3 transferring dockerfile: 903B done
+#3 DONE 0.0s
+
+#4 [client internal] load metadata for docker.io/library/nginx:1.28-alpine
+#4 DONE 0.0s
+
+#5 [client internal] load metadata for docker.io/library/node:24.22.1-bookworm-slim
+#5 DONE 1.7s
+
+#6 [server internal] load .dockerignore
+#6 transferring context: 320B done
+#6 DONE 0.0s
+
+#7 [server dependencies 1/9] FROM docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c
+#7 resolve docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c 0.0s done
+#7 DONE 0.1s
+
+#8 [client runtime 1/4] FROM docker.io/library/nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+#8 resolve docker.io/library/nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236 0.0s done
+#8 DONE 0.1s
+
+#9 [server internal] load build context
+#9 transferring context: 394.47kB 0.0s done
+#9 DONE 0.0s
+
+#10 [client internal] load build context
+#10 transferring context: 236.93kB 0.0s done
+#10 DONE 0.0s
+
+#11 [client runtime 3/4] COPY --from=build /app/apps/web/dist /usr/share/nginx/html
+#11 CACHED
+
+#12 [client build 11/11] RUN npm run build --workspace @lectra/web
+#12 CACHED
+
+#13 [client build  7/11] COPY scripts/check-runtime.mjs scripts/check-runtime.mjs
+#13 CACHED
+
+#14 [client build 10/11] COPY apps/web ./apps/web
+#14 CACHED
+
+#15 [client build  4/11] COPY package.json package-lock.json ./
+#15 CACHED
+
+#16 [client runtime 2/4] COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+#16 CACHED
+
+#17 [client build  3/11] RUN npm install --global npm@10.9.2
+#17 CACHED
+
+#18 [client build  5/11] COPY apps/api/package.json apps/api/package.json
+#18 CACHED
+
+#19 [client build  8/11] RUN npm ci
+#19 CACHED
+
+#20 [client build  9/11] COPY tsconfig.base.json ./
+#20 CACHED
+
+#21 [client build  6/11] COPY apps/web/package.json apps/web/package.json
+#21 CACHED
+
+#22 [client runtime 4/4] RUN sed -i 's@/var/run/nginx.pid@/tmp/nginx.pid@;s@/run/nginx.pid@/tmp/nginx.pid@;/^user[[:space:]]/d' /etc/nginx/nginx.conf && chown -R nginx:nginx /var/cache/nginx
+#22 CACHED
+
+#23 [migrate build 1/6] COPY tsconfig*.json prisma.config.ts ./
+#23 CACHED
+
+#24 [migrate dependencies 4/9] RUN npm install --global npm@10.9.2
+#24 CACHED
+
+#25 [migrate dependencies 2/9] WORKDIR /app
+#25 CACHED
+
+#26 [migrate dependencies 9/9] RUN npm ci
+#26 CACHED
+
+#27 [migrate dependencies 6/9] COPY apps/api/package.json apps/api/package.json
+#27 CACHED
+
+#28 [migrate dependencies 8/9] COPY scripts/check-runtime.mjs scripts/check-runtime.mjs
+#28 CACHED
+
+#29 [migrate dependencies 5/9] COPY package.json package-lock.json ./
+#29 CACHED
+
+#30 [migrate dependencies 3/9] RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+#30 CACHED
+
+#31 [migrate dependencies 7/9] COPY apps/web/package.json apps/web/package.json
+#31 CACHED
+
+#32 [migrate build 2/6] COPY prisma prisma
+#32 CACHED
+
+#33 [client] exporting to image
+#33 exporting layers done
+#33 exporting manifest sha256:4ee58bb2cee3ccc0468e31386d177ba878d61fbd8e50037575d4cd733de28776 0.0s done
+#33 exporting config sha256:086fe8c068dfe4c768959060706eddc193d1042807f61a66bd92cfc9e2413954 0.0s done
+#33 exporting attestation manifest sha256:d856723f208908f2197f7d9482e17c4c23b6e4eb35a66620c0965600905c65f3 0.0s done
+#33 exporting manifest list sha256:878c8577fe02b321920ccaaf9e92fdbfcad969ea4bd63b7ef31b1af77994bb15
+#33 exporting manifest list sha256:878c8577fe02b321920ccaaf9e92fdbfcad969ea4bd63b7ef31b1af77994bb15 0.0s done
+#33 naming to docker.io/library/lectra-web:ep3-20261114085421655725 done
+#33 unpacking to docker.io/library/lectra-web:ep3-20261114085421655725 0.0s done
+#33 DONE 0.1s
+
+#34 [server build 3/6] COPY apps/api apps/api
+#34 DONE 0.1s
+
+#35 [migrate build 4/6] COPY apps/web apps/web
+#35 DONE 0.1s
+
+#36 [server build 5/6] COPY scripts scripts
+#36 DONE 0.1s
+
+#37 [client] resolving provenance for metadata file
+#37 DONE 0.0s
+
+#38 [migrate build 6/6] RUN npm run db:generate && npm run build --workspace @lectra/api
+#38 0.387 
+#38 0.387 > lectra@0.0.0 db:generate
+#38 0.387 > prisma generate
+#38 0.387 
+#38 0.864 Loaded Prisma config from prisma.config.ts.
+#38 0.864 
+#38 0.948 Prisma schema loaded from prisma/schema.prisma.
+#38 1.059 
+#38 1.059 ✔ Generated Prisma Client (7.10.1) to ./apps/api/src/generated/prisma in 70ms
+#38 1.059 
+#38 1.145 
+#38 1.145 > @lectra/api@0.0.0 build
+#38 1.145 > tsc -p tsconfig.build.json
+#38 1.145 
+#38 DONE 2.2s
+
+#39 [migrate runtime  5/11] COPY --from=build --chown=node:node /app/node_modules ./node_modules
+#39 CACHED
+
+#40 [migrate runtime  6/11] COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /app/prisma.config.ts /app/tsconfig.base.json ./
+#40 CACHED
+
+#41 [migrate runtime  7/11] COPY --from=build --chown=node:node /app/apps/api ./apps/api
+#41 ...
+
+#39 [server runtime  5/11] COPY --from=build --chown=node:node /app/node_modules ./node_modules
+#39 CACHED
+
+#40 [server runtime  6/11] COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /app/prisma.config.ts /app/tsconfig.base.json ./
+#40 CACHED
+
+#41 [migrate runtime  7/11] COPY --from=build --chown=node:node /app/apps/api ./apps/api
+#41 DONE 0.1s
+
+#42 [server runtime  8/11] COPY --from=build --chown=node:node /app/apps/web/package.json ./apps/web/package.json
+#42 DONE 0.1s
+
+#43 [migrate runtime  9/11] COPY --from=build --chown=node:node /app/prisma ./prisma
+#43 DONE 0.1s
+
+#44 [server runtime 10/11] COPY --from=build --chown=node:node /app/scripts ./scripts
+#44 DONE 0.1s
+
+#45 [server runtime 11/11] RUN chmod +x apps/api/docker-entrypoint.sh
+#45 DONE 0.1s
+
+#46 [migrate] exporting to image
+#46 exporting layers 0.2s done
+#46 exporting manifest sha256:ba47606a1e2791305c62b6bf261fa2b0b6fab7bb9ae9ab477b2154cfdad16873 0.0s done
+#46 exporting config sha256:c8ebea5b312d792fb53bb7b56c09af10aac963bb45a5d6d47279621021bffe05 0.0s done
+#46 exporting attestation manifest sha256:b160f02465b7a504ee2fb2682fc9958a521e6b5731f67182aa166fbd626d3753
+#46 exporting attestation manifest sha256:b160f02465b7a504ee2fb2682fc9958a521e6b5731f67182aa166fbd626d3753 0.1s done
+#46 exporting manifest list sha256:4e05b8584c46393caf5740e06c2562f9d2991ae2e57e9680b7805aeb5c1173a1 0.0s done
+#46 naming to docker.io/library/lectra-api:ep3-20261114085421655725 done
+#46 unpacking to docker.io/library/lectra-api:ep3-20261114085421655725 0.1s done
+#46 DONE 0.5s
+
+#47 [server] exporting to image
+#47 exporting layers 0.2s done
+#47 exporting manifest sha256:16fcfce8c9cf00201b8ea2426fca580c43a9fbf5cc7e90174e4b758aa756bab4 done
+#47 exporting config sha256:d130687d6acd0bf6ecd87d2c4455d7701023d602628a765640d5f4ef64364d83 0.0s done
+#47 exporting attestation manifest sha256:f32917d878fb23e6142c88d4ec8c37707d1e43043eda5638b98816aae23eb6d3 0.1s done
+#47 exporting manifest list sha256:e61be4cc9cfe9b36dab933662ec92942c39d75c02ab8eac6ffa16c4737850467 done
+#47 naming to docker.io/library/lectra-api:ep3-20261114085421655725 done
+#47 unpacking to docker.io/library/lectra-api:ep3-20261114085421655725 0.1s done
+#47 DONE 0.4s
+
+#48 [server] resolving provenance for metadata file
+#48 DONE 0.1s
+
+#49 [migrate] resolving provenance for metadata file
+#49 DONE 0.0s
+ Image lectra-api:ep3-20261114085421655725 Building 
+ Image lectra-api:ep3-20261114085421655725 Building 
+ Image lectra-web:ep3-20261114085421655725 Building 
+ Image lectra-web:ep3-20261114085421655725 Built 
+ Image lectra-api:ep3-20261114085421655725 Built 
+ Image lectra-api:ep3-20261114085421655725 Built 

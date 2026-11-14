@@ -20,6 +20,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from docker_verifier_environment import isolated_environment
 
 if sys.platform not in ('darwin', 'linux'):
     raise SystemExit('Use macOS or a Linux/WSL 2 shell with Docker Linux containers; native Windows Python is unsupported.')
@@ -52,8 +53,7 @@ values = {'POSTGRES_PASSWORD': password, 'SESSION_SECRET': secret, 'SEED_OWNER_P
           'API_PORT': str(api_port), 'API_IMAGE': api_image, 'WEB_IMAGE': web_image}
 env_file.write_text(''.join(f'{k}={v}\n' for k, v in values.items()))
 env_file.chmod(0o600)
-base = {k: v for k, v in os.environ.items() if not k.startswith(('PG', 'COMPOSE_', 'SEED_', 'ALLOW_', 'DATABASE_', 'TEST_DATABASE', 'APP_ORIGIN', 'SESSION_SECRET', 'NODE_ENV', 'TRUST_PROXY', 'PORT', 'API_IMAGE', 'WEB_IMAGE'))}
-base['NO_COLOR'] = '1'
+base = isolated_environment(os.environ, values.keys())
 compose = ['docker', 'compose', '--env-file', str(env_file), '-p', project]
 rows = []
 checks = []
@@ -153,6 +153,7 @@ try:
                           ('compose', ['docker', 'compose', 'version', '--short'])]:
         environment[tool] = run('version-' + tool, command).strip()
     check('Pinned Node/npm selected', environment['node'] == 'v24.22.1' and environment['npm'] == '10.9.2')
+    check('Inherited shell cannot override generated Compose settings', not (set(base) & set(values)))
     run('compose-config', compose + ['config', '--quiet'])
     run('compose-build', compose + ['build'])
     run('unified-build', ['docker', 'build', '--progress', 'plain', '-t', unified_image, '.'])
@@ -214,6 +215,13 @@ try:
     wait_ready(unified_url)
     with urllib.request.urlopen(unified_url) as response:
         check('Unified production image serves SPA on supplied PORT', response.status == 200 and '<div id="root">' in response.read().decode())
+    for pathname, status in [('/%2eprivate', 404), ('/missing%2ejs', 404), ('/assets%2fmissing', 404), ('/%ZZ', 400)]:
+        try:
+            response = urllib.request.urlopen(urllib.request.Request(unified_url + pathname, headers={'Accept': 'text/html'}), timeout=10)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            check('Unified encoded-path exclusion ' + pathname, response.status == status and '<div id="root">' not in response.read().decode())
     prod = Client(unified_url, 'https://lectra.example.test', forwarded=True)
     _, cookie_headers = prod.login('owner.1@example.test', owner_password)
     check('Unified production login issues secure host cookie under simulated TLS termination', '__Host-lectra.sid=' in cookie_headers['Set-Cookie'] and 'Secure' in cookie_headers['Set-Cookie'])

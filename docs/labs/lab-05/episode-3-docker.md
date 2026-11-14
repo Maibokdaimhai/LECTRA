@@ -20,6 +20,8 @@ The starter kit uses `server/` and `client/`; LECTRA uses npm workspaces under `
 
 Additional implementation/test/helper/docs files are necessary adaptations, not a claim that the guide itself mandates their exact names or design. Express now serves the built SPA in the unified production image. Unknown API routes still produce JSON 404; missing assets/dotfiles/unsafe methods are not disguised as successful SPA pages. No npm dependency was added. Node 24.22.1, npm 10.9.2 and PostgreSQL 17 remain the accepted runtime versions. Debian bookworm-slim supports the API/Prisma/Argon2 toolchain; nginx 1.28-alpine serves Compose assets. Actual resolved image IDs/architecture are recorded in the Docker verification results; this run is arm64, not an amd64/Cloud Run execution claim.
 
+Static exclusions use one safely decoded pathname, matching static-file handling: encoded dotfiles/extensions/assets cannot fall through to the SPA. Malformed URI encoding or a decoded null byte returns 400. Existing encoded assets and client routes still work; query-string encoding is not interpreted as part of the pathname.
+
 `.gitattributes` keeps shell entrypoints at LF line endings across checkouts, including when a Windows Git client otherwise prefers CRLF. Dockerfiles set the entrypoint execute permission during image build.
 
 ## Service review and trust boundaries
@@ -116,9 +118,11 @@ python3 scripts/verify-lab5-episode3.py --create-local-containers
 
 Python 3.10+, pinned Node/npm, Docker and installed Chromium are required. The verifier creates task-specific credentials, image tags, Compose project, host ports and volume; performs real API/Chromium checks; down/up retains the volume; the temporary unified container is stopped and removed after its checks; finally the verifier stops only its own Compose containers. It never deletes the data volume or changes GCP/IAM/billing. Private env/browser-cookie files are retained in an ignored mode-0700 directory for inspection. Output defaults there too; use `--evidence-dir <new-directory>` for an intentional evidence record. An existing results.json is not overwritten.
 
+The verifier removes every key it generates for the Compose env file from the inherited subprocess environment, including WEB_PORT, API_PORT and POSTGRES_PASSWORD. This prevents shell precedence from overriding the isolated configuration; Docker access/tool-path settings remain available. The managed-key list is derived from the generated values, not maintained as a separate hardcoded list. Its Python regressions run with `python3 -m unittest discover -s tests/tooling -p 'test_*.py' -v`.
+
 Checks include all service states, explicit seed/no automatic reseed, built HTML/asset loading, real login, author/publish/respond/close/results, required-answer and duplicate rejection, actual browser login/results, unified production PORT/secure-cookie/API checks, SIGTERM exit 0, database snapshot equality, owner/student readback and absolute session expiry after down/up, resumed browser session and successful logout. These are executable checks; the images are rendered from the actual packaged UI with synthetic data.
 
-The existing regression matrix can be reproduced separately using `python3 scripts/verify-lab5-episode2.py --create-local-test-databases`. With the two new static-serving tests this candidate has 241 selected tests, separate from Episode 2's historical 239 and Sprint 1's historical 219. See [Episode 3 evidence](evidence/episode-3/README.md) for actual outcomes, limitations and retained failed attempts.
+The existing regression matrix can be reproduced separately using `python3 scripts/verify-lab5-episode2.py --create-local-test-databases`. The review-corrected candidate has 249 selected Vitest/Playwright tests, plus four separate Python environment tests. Episode 3's original 241, Episode 2's historical 239 and Sprint 1's historical 219 remain unchanged historical records. See [Episode 3 evidence](evidence/episode-3/README.md) for actual outcomes, limitations and retained failed attempts.
 
 ## Evidence illustrations
 
