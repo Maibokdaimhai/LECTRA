@@ -1,0 +1,61 @@
+
+ RUN  v5.1.0 /Users/meng/.codex/worktrees/review-pr38/LECTRA
+
+ ❯ apps/api/tests/api/static-web.test.ts (10 tests | 7 failed) 34ms
+   × EP3-W03: encoded excluded path /%2eprivate returns 404 for GET and HEAD 2ms
+   × EP3-W03: encoded excluded path /missing%2ejs returns 404 for GET and HEAD 1ms
+   × EP3-W03: encoded excluded path /assets%2fmissing returns 404 for GET and HEAD 1ms
+   × EP3-W04: malformed or null encoded path /% is rejected safely 1ms
+   × EP3-W04: malformed or null encoded path /%ZZ is rejected safely 1ms
+   × EP3-W04: malformed or null encoded path /%E0%A4%A is rejected safely 1ms
+   × EP3-W04: malformed or null encoded path /%00 is rejected safely 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W03: encoded excluded path /%2eprivate returns 404 for GET and HEAD
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W03: encoded excluded path /missing%2ejs returns 404 for GET and HEAD
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W03: encoded excluded path /assets%2fmissing returns 404 for GET and HEAD
+Error: expected 404 "Not Found", got 200 "OK"
+ ❯ apps/api/tests/api/static-web.test.ts:37:64
+     35| it.each(['/%2eprivate', '/missing%2ejs', '/assets%2fmissing'])('EP3-W0…
+     36|   const app = createApp(undefined, undefined, root);
+     37|   const response = await request(app).get(path).accept('html').expect(…
+       |                                                                ^
+     38|   expect(response.text).not.toContain('LECTRA packaged UI fixture');
+     39|   expect(response.text).not.toContain('must never be served');
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:404:14
+ ❯ node_modules/supertest/lib/test.js:460:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:437:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:302:23
+ ❯ localAssert node_modules/supertest/lib/test.js:220:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:227:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W04: malformed or null encoded path /% is rejected safely
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W04: malformed or null encoded path /%ZZ is rejected safely
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W04: malformed or null encoded path /%E0%A4%A is rejected safely
+ FAIL  apps/api/tests/api/static-web.test.ts > EP3-W04: malformed or null encoded path /%00 is rejected safely
+Error: expected 400 "Bad Request", got 200 "OK"
+ ❯ apps/api/tests/api/static-web.test.ts:43:98
+     41| });
+     42| it.each(['/%', '/%ZZ', '/%E0%A4%A', '/%00'])('EP3-W04: malformed or nu…
+     43|   const response = await request(createApp(undefined, undefined, root)…
+       |                                                                                                  ^
+     44|   expect(response.text).not.toContain('LECTRA packaged UI fixture');
+     45|   expect(response.text).not.toContain('URIError');
+ ❯ Test._assertStatus node_modules/supertest/lib/test.js:404:14
+ ❯ node_modules/supertest/lib/test.js:460:13
+ ❯ Test._assertFunction node_modules/supertest/lib/test.js:437:13
+ ❯ Test.assert node_modules/supertest/lib/test.js:302:23
+ ❯ localAssert node_modules/supertest/lib/test.js:220:38
+ ❯ Server.<anonymous> node_modules/supertest/lib/test.js:227:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 3 passed (10)
+   Start at  15:53:12
+   Duration  305ms (import 73%, tests 15%, transform 11%, worker 1%)
+

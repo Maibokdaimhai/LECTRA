@@ -8,6 +8,7 @@ dist/
 test-results/
 playwright-report/
 coverage/
+__pycache__/
 apps/api/src/generated/prisma/
 *.tsbuildinfo
 .DS_Store

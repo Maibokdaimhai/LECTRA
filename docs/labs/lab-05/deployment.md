@@ -4,6 +4,8 @@
 
 Episode 1 account/cost-control verification is recorded in [issue #50](https://github.com/Maibokdaimhai/LECTRA/issues/50#issuecomment-6873522036). Episode 2 code preparation, full configuration inventory, local production-profile checks and operator commands are documented in [cloud readiness](episode-2-cloud-readiness.md) and [issue #51](https://github.com/Maibokdaimhai/LECTRA/issues/51).
 
+Episode 3 Docker packaging is tracked in [issue #53](https://github.com/Maibokdaimhai/LECTRA/issues/53). See [Docker setup, service roles, runtime settings and local persistence evidence](episode-3-docker.md). Local images are built and tested; this does not assert a Cloud Run deployment.
+
 ## Supported Episode 2 verification environment
 
 The Python verification runner supports **macOS or Linux, including Linux inside WSL 2**. Run it from a POSIX shell with native tools for that environment. **Native Windows Python, Command Prompt and PowerShell execution of this runner are unsupported**: `npm` is a `.cmd` shim there and the runner intentionally does not launch a Windows command shell. Native Windows support is not an additional instructor requirement.
@@ -90,4 +92,4 @@ Do not replace committed evidence with your reproduction output. Use `--evidence
 
 ## Later episode records
 
-No application Docker image, GCP service URL, cloud region/resource inventory, deployed release SHA or CI/CD execution is claimed by Episode 2. Record actual values and evidence here as Episodes 3–8 are performed: image build/run, PR CI and required checks, reviewed cloud resource plan and first deployment, identity federation/merge gate, automatic deployment/smoke, persistent data through restart/redeploy, and rollback. Review commands with the human operator before changing cloud billing, IAM or databases. Keep real secret values out of this file.
+Episode 3 adds locally verified API/web and unified Docker images, named-volume persistence and packaged browser evidence. Actual image IDs/architecture are recorded in its evidence, not substituted for a deployed release SHA. No GCP service URL, cloud region/resource inventory, deployed release SHA or CI/CD execution is claimed yet. Record actual values as Episodes 4–8 are performed: PR CI/required checks, reviewed cloud resource plan and first deployment, identity federation/merge gate, automatic deployment/smoke, cloud persistence through restart/redeploy, and rollback. Review commands with the human operator before changing cloud billing, IAM or databases. Keep real secret values out of this file.

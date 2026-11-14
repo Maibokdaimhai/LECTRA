@@ -1,0 +1,11 @@
+
+> lectra@0.0.0 preinstall
+> node scripts/check-runtime.mjs
+
+
+added 325 packages, and audited 328 packages in 3s
+
+66 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities

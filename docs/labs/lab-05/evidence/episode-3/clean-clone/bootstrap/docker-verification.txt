@@ -1,0 +1,44 @@
+version-node: exit 0
+version-npm: exit 0
+version-docker: exit 0
+version-compose: exit 0
+PASS: Pinned Node/npm selected
+compose-config: exit 0
+compose-build: exit 0
+unified-build: exit 0
+PASS: api image uses non-root identity
+PASS: api image metadata/history contains no generated runtime secrets
+PASS: web image uses non-root identity
+PASS: web image metadata/history contains no generated runtime secrets
+PASS: unified image uses non-root identity
+PASS: unified image metadata/history contains no generated runtime secrets
+image-tools: exit 0
+compose-up: exit 0
+compose-state: exit 0
+PASS: db/server/client running; migrate exited 0
+PASS: Startup migration does not auto-seed
+explicit-seed: exit 0
+PASS: Explicit seed creates seven synthetic accounts
+PASS: Health and readiness respond through nginx
+PASS: Built web HTML and referenced asset served by nginx
+PASS: Packaged JavaScript asset is served
+PASS: Real login/author/publish/required-validation/one-time feedback
+PASS: Closed owner results contain stored feedback
+browser-before: exit 0
+unified-up: exit 0
+PASS: Unified production image serves SPA on supplied PORT
+PASS: Unified production login issues secure host cookie under simulated TLS termination
+PASS: Unified API reads the same persisted domain data
+PASS: Unified API misses remain JSON
+unified-stop: exit 0
+PASS: Unified PID 1 exits gracefully on SIGTERM
+unified-remove-container: exit 0
+compose-down-retain-volume: exit 0
+compose-up-existing-volume: exit 0
+PASS: Down/up retains session identity and absolute expiry
+PASS: Down/up retains own submission and closed owner results
+PASS: Down/up leaves database domain snapshot unchanged
+PASS: Down/up does not duplicate seed users
+browser-after: exit 0
+PASS: Browser resumes stored session and verifies saved results/logout after down/up
+Stopped only task-owned containers; database volume and private local configuration retained.
