@@ -1,0 +1,37 @@
+
+Running 22 tests using 1 worker
+
+  ✓   1 [chromium-wide] › tests/browser/feedback.spec.ts:3:1 › B23-01 real owner → student → closed results, persisted reload/relogin and validation (1.9s)
+  ✓   2 [chromium-wide] › tests/browser/feedback.spec.ts:66:1 › B23-02 real invalid then keyboard login and one StrictMode bootstrap (227ms)
+  ✓   3 [chromium-wide] › tests/browser/sprint1-recovery-states.spec.ts:3:1 › B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload (1.6s)
+  ✓   4 [chromium-wide] › tests/browser/sprint1-recovery-states.spec.ts:43:1 › B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation (1.4s)
+  ✓   5 [chromium-wide] › tests/browser/sprint1-recovery-states.spec.ts:80:1 › B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry (1.4s)
+  ✓   6 [chromium-wide] › tests/browser/sprint1-rejections.spec.ts:3:1 › B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows (2.1s)
+  ✓   7 [chromium-wide] › tests/browser/sprint1-rejections.spec.ts:49:1 › B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access (1.1s)
+  ✓   8 [chromium-wide] › tests/browser/ui-accessibility-real.spec.ts:22:1 › UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists (824ms)
+  ✓   9 [chromium-wide] › tests/browser/ui-accessibility-real.spec.ts:51:1 › UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results (1.2s)
+  ✓  10 [chromium-narrow] › tests/browser/feedback.spec.ts:3:1 › B23-01 real owner → student → closed results, persisted reload/relogin and validation (1.9s)
+  ✓  11 [chromium-narrow] › tests/browser/feedback.spec.ts:66:1 › B23-02 real invalid then keyboard login and one StrictMode bootstrap (231ms)
+  ✓  12 [chromium-narrow] › tests/browser/sprint1-recovery-states.spec.ts:3:1 › B23-05 real expiry clears unsaved private state and ignores a delayed older read; logout survives reload (1.6s)
+  ✓  13 [chromium-narrow] › tests/browser/sprint1-recovery-states.spec.ts:43:1 › B23-06 real committed POST loses delivery and remains blocked until real persisted reconciliation (1.3s)
+  ✓  14 [chromium-narrow] › tests/browser/sprint1-recovery-states.spec.ts:80:1 › B23-07 real empty contexts and zero results distinguish held loading, delivery error and successful retry (1.3s)
+  ✓  15 [chromium-narrow] › tests/browser/sprint1-rejections.spec.ts:3:1 › B23-03 genuine stale forms reject duplicate and Closed submissions without extra rows (2.1s)
+  ✓  16 [chromium-narrow] › tests/browser/sprint1-rejections.spec.ts:49:1 › B23-04 genuine browser sessions reject wrong role, foreign Course owner and guest access (1.1s)
+  ✓  17 [chromium-narrow] › tests/browser/ui-accessibility-real.spec.ts:22:1 › UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists (828ms)
+  ✓  18 [chromium-narrow] › tests/browser/ui-accessibility-real.spec.ts:51:1 › UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results (1.1s)
+  ✓  19 [chromium-320] › tests/browser/ui-accessibility-real.spec.ts:22:1 › UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists (854ms)
+  ✓  20 [chromium-320] › tests/browser/ui-accessibility-real.spec.ts:51:1 › UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results (1.2s)
+  ✓  21 [chromium-zoom200] › tests/browser/ui-accessibility-real.spec.ts:22:1 › UI-F01/F02 real Draft rejection retains fields and keyboard reorder persists (1.9s)
+  ✓  22 [chromium-zoom200] › tests/browser/ui-accessibility-real.spec.ts:51:1 › UI-F02/F03 real rejection, retained text, confirmed success focus and Closed results (1.9s)
+
+  22 passed (31.4s)
+[WebServer] (node:69340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+(node:69349) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:69485) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:69511) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:69517) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

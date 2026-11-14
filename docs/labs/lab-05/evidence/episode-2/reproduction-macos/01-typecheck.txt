@@ -1,0 +1,22 @@
+
+> lectra@0.0.0 typecheck
+> npm run db:generate && npm run typecheck --workspaces && tsc --noEmit -p tsconfig.tooling.json
+
+
+> lectra@0.0.0 db:generate
+> prisma generate
+
+
+✔ Generated Prisma Client (7.10.1) to ./apps/api/src/generated/prisma in 41ms
+
+
+> @lectra/api@0.0.0 typecheck
+> tsc --noEmit
+
+
+> @lectra/web@0.0.0 typecheck
+> tsc --noEmit
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.

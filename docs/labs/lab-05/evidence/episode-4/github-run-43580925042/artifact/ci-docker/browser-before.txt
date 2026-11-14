@@ -1,0 +1,1 @@
+Docker browser before: packaged UI, real persisted owner results, real login and private session capture verified.

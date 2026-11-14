@@ -1,0 +1,16 @@
+
+> lectra@0.0.0 test:api
+> vitest run --config vitest.api.config.ts
+
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/api/readiness.test.ts (1 test) 32ms
+ ✓ apps/api/tests/api/health.test.ts (2 tests) 34ms
+ ✓ apps/api/tests/api/static-web.test.ts (10 tests) 82ms
+
+ Test Files  3 passed (3)
+      Tests  13 passed (13)
+   Start at  10:17:03
+   Duration  656ms (import 64%, transform 24%, tests 10%, worker 1%)
+
