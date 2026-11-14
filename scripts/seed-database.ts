@@ -38,7 +38,15 @@ export async function seedSyntheticDatabase(options: Options) {
   if (options.seedName !== expected) throw new Error('Synthetic seed requires explicit SEED_SYNTHETIC_DATA matching the disposable test database.');
   const ownerPassword = password(options.ownerPassword);
   const respondentPassword = password(options.respondentPassword);
-  const pool = new Pool({ connectionString: options.testUrl!, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
+  await seedFixtureRows(options.testUrl!, expected, ownerPassword, respondentPassword);
+}
+
+// Shared insert/verify transaction. Callers validate target authorization first;
+// the disposable test entry point above retains its original strict guards.
+export async function seedFixtureRows(connectionString: string, expected: string, owner: string, respondent: string) {
+  const ownerPassword = password(owner);
+  const respondentPassword = password(respondent);
+  const pool = new Pool({ connectionString, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
   try {
     const client = await pool.connect();
     try {

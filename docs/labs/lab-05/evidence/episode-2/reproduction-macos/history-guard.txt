@@ -1,0 +1,3 @@
+Existing-evidence protection: PASS.
+Evidence directory already contains results.json; choose a new directory to preserve earlier evidence.
+Original results.json SHA-256 unchanged: a7a15b7cbeed25e7be0daa07c123d6aa171416f8b900ab2265822cd459c9e350

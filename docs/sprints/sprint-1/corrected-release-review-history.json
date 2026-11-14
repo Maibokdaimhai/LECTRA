@@ -1,0 +1,160 @@
+{
+  "dateBangkok": "2026-11-13",
+  "source": "Actual GitHub API; historical sourcePRs plus accepted correction/main release",
+  "pullRequests": [
+    {
+      "number": 37,
+      "title": "test: verify integrated Sprint 1 API and database rules",
+      "author": "Maibokdaimhai",
+      "headBranch": "test/22-sprint1-api-integration",
+      "sourceSha": "b024596bd09daea7099acc3607d4be25cdc0dd84",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "4ff4562a8cf1a58fa5c6ae1d958b4ab8c0b2e18f",
+      "mergedAt": "2026-11-10T13:28:53Z",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "2726f9a595067ea09f21626894895f059782e3be",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/37#pullrequestreview-5832194353",
+          "submittedAt": "2026-11-09T20:24:45Z",
+          "body": "**Request Changes \u2014 One Minor Evidence Correction**\n\nNo actionable Blocker/Major implementation findings were identified.\n\nIndependent verification passed:\n- 32 feature/API/PostgreSQL tests\n- 37 unit tests\n- 2 API liveness tests\n\nCoverage inventory checks confirmed 113 unique AC records, 183 unique STS records, valid references and bidirectional mappings.\n\n### Minor \u2014 Unsupported Evidence Mapping\n\n**File:** `docs/sprints/sprint-1/issue-22-coverage.json`  \n**Location:** `TEST-F02-I10` (line 2384)\n\nThe cited INT22-03 scenario does not perform the membership changes or subsequent discovery checks required by this test case. INT22-02 verifies detail/submission eligibility, not discovery behavior.\n\nPlease remove the unsupported INT22-03 mapping and update AC-F02-08's selected evidence and the coverage summary totals.\n\nAlternatively, add explicit integration assertions that remove an eligible member, add an ineligible member, and verify the resulting discovery behavior.\n\nPlease retain the Partial disposition only when supported by actual test evidence.\n\nAll other reviewed implementation and verification findings are satisfactory.\n\n**Recommendation: Request changes for this Minor evidence correction only.**"
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "b024596bd09daea7099acc3607d4be25cdc0dd84",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/37#pullrequestreview-5842618558",
+          "submittedAt": "2026-11-10T13:28:24Z",
+          "body": "**APPROVE** \u2014 The previous Minor evidence finding is fully resolved in `b024596`.\n\nVerified that:\n- The unsupported INT22-03 mapping was removed from TEST-F02-I10.\n- TEST-F02-I10 is explicitly marked Not demonstrated.\n- AC-F02-08 has no unsupported selected evidence and remains pending disposition.\n- Coverage totals are consistent: 113 AC / 183 STS, with 104 Partial and 46 Not demonstrated.\n- All IDs and bidirectional references remain valid.\n\nThe correction is documentation-only. Application, test and configuration files remain unchanged from the independently tested source commit `40d8ea1`.\n\nNo new actionable findings identified.\n\n**Ready for approval and merge.**"
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "title": "test(e2e): add Sprint 1 browser journeys and fix closed survey recovery",
+      "author": "R1NNE0",
+      "headBranch": "test/23-sprint1-browser-journeys",
+      "sourceSha": "4527ba5b26973fd14d42e3d1415c07632510315f",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "60736fb0f4f3e900a68179ed71d11668861445f9",
+      "mergedAt": "2026-11-10T06:07:57Z",
+      "reviews": [
+        {
+          "reviewer": "Maibokdaimhai",
+          "state": "APPROVED",
+          "sourceSha": "4527ba5b26973fd14d42e3d1415c07632510315f",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/38#pullrequestreview-5836366253",
+          "submittedAt": "2026-11-10T03:33:56Z",
+          "body": "**Recommendation: Approve \u2014 PR #38**\n\nAI-assisted review of commit `4527ba5b26973fd14d42e3d1415c07632510315f`.\n\nNo actionable findings were identified within the reviewed scope.\n\nThe DEF-B23-01 fix correctly refreshes authoritative Survey state for `409 INVALID_STATE`, reconciles submission status, preserves uncertainty when recovery fails, and removes submission controls after closure without automatically replaying the POST. Other 409 responses retain their existing recovery behavior.\n\nIndependently verified on the exact PR head:\n\n- Typecheck and production build: passed.\n- Unit tests: 37 passed.\n- API liveness: 2 passed.\n- Real browser/API/PostgreSQL journeys: 14 passed.\n- Isolated mocked-browser recovery: 38 passed.\n- Workspace smoke: 4 passed.\n\n**95 tests passed**, with no failures or skips. The real-browser tests used a new isolated PostgreSQL database.\n\nAlso checked scenario/AC/STS references, screenshot hashes, and source hashes accounting for Windows LF/CRLF differences. The evidence appropriately distinguishes real integration tests, mocked recovery, historical failures and partial STS coverage.\n\nThis review does not certify complete Product DoD, release readiness or the final PDF. Those remain separate acceptance gates."
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "title": "release: LECTRA Sprint 1 identified-feedback MVP",
+      "author": "Maibokdaimhai",
+      "headBranch": "staging",
+      "sourceSha": "5848d958885603143b000bea81950d8c9737716d",
+      "base": "main",
+      "merged": true,
+      "mergeSha": "af2e1030984bcc816081b25b29c9de52a80efe30",
+      "mergedAt": "2026-11-12T14:38:45Z",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "5848d958885603143b000bea81950d8c9737716d",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/40#pullrequestreview-5876302498",
+          "submittedAt": "2026-11-12T14:38:33Z",
+          "body": "**Sprint 1 Final Release Review \u2014 Approved**\n\nReviewed the Sprint 1 release integration, including the completed corrections from PRs #42\u2013#45.\n\nThe identified Blocker/Major findings have been addressed, with regression tests and source-bound verification evidence.\n\nThe final staging candidate includes the reviewed corrections. I accept the documented G-04 dispositions and remaining limitations for the bounded Sprint 1 MVP scope.\n\nNo further actionable findings from my review.\n\n**Approved for merging into main**, subject to required checks passing.\n\nPost-main verification and immutable release tagging remain required under Issue #25."
+        }
+      ]
+    },
+    {
+      "number": 45,
+      "title": "fix(auth): finalize MVP logout and session lifetime guarantees",
+      "author": "Maibokdaimhai",
+      "headBranch": "fix/25-final-session-boundaries",
+      "sourceSha": "c125a6078b2337f29f0a1c3fcbcecfc519cd02f4",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "5848d958885603143b000bea81950d8c9737716d",
+      "mergedAt": "2026-11-12T14:35:36Z",
+      "reviews": []
+    },
+    {
+      "number": 46,
+      "title": "docs(deliverable): publish verified main release and complete Parts A-F report",
+      "author": "Maibokdaimhai",
+      "headBranch": "docs/26-main-release-report",
+      "sourceSha": "25858e17f7c46532c0808c88c0ca4830cdba5169",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "4070a872e4ee925bf777b607c2787cfdb6af6f97",
+      "mergedAt": "2026-11-13T12:31:46Z",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "25858e17f7c46532c0808c88c0ca4830cdba5169",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/46#pullrequestreview-5890983265",
+          "submittedAt": "2026-11-13T12:28:32Z",
+          "body": "**Approve \u2014 Minor Evidence Limitation Acknowledged**\n\nReviewed the latest PR #46. No Blocker or Major findings remain.\n\nThe AC-F05-08 evidence limitation is acknowledged: existing assertions verify distribution counts but do not explicitly verify score labels and ordering `[1,2,3,4,5]`. This is a minor documentation/evidence gap, not a confirmed implementation defect, and is accepted as a known limitation for this deliverable.\n\nThe remaining evidence mappings, PDF verification, release history, and PR #47 integration were reviewed without further actionable findings.\n\n**Approved with the documented Minor limitation. Ready for merge.**"
+        }
+      ]
+    },
+    {
+      "number": 47,
+      "title": "fix(responses): reject unsupported modes in own-submission readback",
+      "author": "Maibokdaimhai",
+      "headBranch": "fix/25-unsupported-mode-readback",
+      "sourceSha": "12ddce3cb77c07245917e01364223322d220931b",
+      "base": "staging",
+      "merged": true,
+      "mergeSha": "970872e36c246beeea551be5b5acbb1c02b48295",
+      "mergedAt": "2026-11-13T12:20:41Z",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "CHANGES_REQUESTED",
+          "sourceSha": "12ddce3cb77c07245917e01364223322d220931b",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/47#pullrequestreview-5890774345",
+          "submittedAt": "2026-11-13T12:13:32Z",
+          "body": "**Request Changes \u2014 One Minor Integration Issue (R47-01)**\n\nThe production fix correctly resolves PR46-DEF-01, preserving authorization and error precedence. Independently verified all five focused PostgreSQL regression tests passing.\n\n**Minor \u2014 Conflicting test ownership with PR #46**\n\nBoth PR #46 and PR #47 independently add `apps/api/tests/post-release/ac-gaps.test.ts`, with PR #47 containing additional authorization assertions.\n\nPlease establish PR #47's enhanced test file as canonical and synchronize PR #46 accordingly before integrating both changes. Preserve the original RED evidence and historical Sprint 1 release results.\n\nNo Blocker or Major implementation findings were identified. The production correction itself is ready for approval once this integration issue is resolved."
+        },
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "12ddce3cb77c07245917e01364223322d220931b",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/47#pullrequestreview-5890869808",
+          "submittedAt": "2026-11-13T12:20:29Z",
+          "body": "**Approve \u2014 R47-01 Resolved**\n\nRe-reviewed the latest PR #46 and PR #47 integration changes.\n\nConfirmed that `ac-gaps.test.ts` and `vitest.post-release.config.ts` are now identical across both PR heads. PR #47's enhanced authorization assertions are preserved, and the original RED evidence remains archived separately.\n\nThe previously reported Minor integration issue (R47-01) is resolved.\n\nThe production correction and five focused PostgreSQL regression tests were verified in the previous review. No remaining actionable Blocker, Major, or Minor findings.\n\n**Ready for approval and merge.**"
+        }
+      ]
+    },
+    {
+      "number": 48,
+      "title": "release(sprint-1): release reviewed mode-readback correction and assessment evidence",
+      "author": "Maibokdaimhai",
+      "headBranch": "staging",
+      "sourceSha": "4070a872e4ee925bf777b607c2787cfdb6af6f97",
+      "base": "main",
+      "merged": true,
+      "mergeSha": "b458cb65736029f5c7de55e49c9afd6bc8de702a",
+      "mergedAt": "2026-11-13T14:33:27Z",
+      "reviews": [
+        {
+          "reviewer": "R1NNE0",
+          "state": "APPROVED",
+          "sourceSha": "4070a872e4ee925bf777b607c2787cfdb6af6f97",
+          "url": "https://github.com/Maibokdaimhai/LECTRA/pull/48#pullrequestreview-5892805437",
+          "submittedAt": "2026-11-13T14:33:13Z",
+          "body": "**Approve \u2014 Final Sprint 1 Release**\n\nThe integrated candidate contains the reviewed PR #47 correction and approved PR #46 deliverable report without unexpected changes.\n\nVerified that all 84 published source hashes match the candidate. Historical Sprint 1 release evidence and the immutable `sprint-1` tag remain preserved, with post-release correction evidence clearly separated.\n\nThe accepted AC-F05-08 evidence limitation is explicitly acknowledged in the review and release records.\n\nNo new actionable Blocker, Major, or Minor findings remain.\n\n**Approved. Ready for merge into `main`.**\n\nPost-main verification and creation of a separate correction release tag remain subsequent release steps."
+        }
+      ]
+    }
+  ]
+}

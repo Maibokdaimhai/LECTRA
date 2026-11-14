@@ -1,0 +1,9 @@
+Initial local runner attempt on 2026-11-14:
+Stopped dedicated local test container: lectra-lab5-ep2-20261114071630
+RuntimeError: Could not create new disposable database.
+
+Diagnosis: pg_isready without -h observed the temporary Unix-socket bootstrap
+server during image initialization. Container logs showed database shutdown
+during createdb. No application suite ran in this attempt.
+Correction: wait for TCP readiness with pg_isready -h 127.0.0.1 before createdb.
+This failed setup attempt is not counted as an application test failure or pass.

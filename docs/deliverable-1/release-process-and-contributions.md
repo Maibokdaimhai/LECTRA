@@ -5,7 +5,7 @@ Owner explicitly confirmed account/name mapping on 2026-11-12.
 ## Completed Issue / PR samples
 
 ### Issue #22 / PR #37
-Feature/contracts: F-01–F-05 cross-feature verification / accepted contracts. Actual author: Maibokdaimhai; branch test/22-sprint1-api-integration → staging; reviewed source b024596bd09daea7099acc3607d4be25cdc0dd84; staging merge 4ff4562a8cf1a58fa5c6ae1d958b4ab8c0b2e18f at 2026-11-10T13:28:53Z. This merge is an ancestor of assessed main af2e1030984bcc816081b25b29c9de52a80efe30; git ancestry verified.
+Feature/contracts: F-01–F-05 cross-feature verification / accepted contracts. Actual author: Maibokdaimhai; branch test/22-sprint1-api-integration → staging; reviewed source b024596bd09daea7099acc3607d4be25cdc0dd84; staging merge 4ff4562a8cf1a58fa5c6ae1d958b4ab8c0b2e18f at 2026-11-10T13:28:53Z. This merge is an ancestor of assessed main b458cb65736029f5c7de55e49c9afd6bc8de702a; git ancestry verified.
 
 **Actual review:** R1NNE0 / CHANGES_REQUESTED / 2026-11-09T20:24:45Z / source 2726f9a595067ea09f21626894895f059782e3be
 **Request Changes — One Minor Evidence Correction**
@@ -53,7 +53,7 @@ No new actionable findings identified.
 **Ready for approval and merge.**
 
 ### Issue #23 / PR #38
-Feature/contracts: F-01/F-03/F-04/F-05 browser and recovery integration. Actual author: R1NNE0; branch test/23-sprint1-browser-journeys → staging; reviewed source 4527ba5b26973fd14d42e3d1415c07632510315f; staging merge 60736fb0f4f3e900a68179ed71d11668861445f9 at 2026-11-10T06:07:57Z. This merge is an ancestor of assessed main af2e1030984bcc816081b25b29c9de52a80efe30; git ancestry verified.
+Feature/contracts: F-01/F-03/F-04/F-05 browser and recovery integration. Actual author: R1NNE0; branch test/23-sprint1-browser-journeys → staging; reviewed source 4527ba5b26973fd14d42e3d1415c07632510315f; staging merge 60736fb0f4f3e900a68179ed71d11668861445f9 at 2026-11-10T06:07:57Z. This merge is an ancestor of assessed main b458cb65736029f5c7de55e49c9afd6bc8de702a; git ancestry verified.
 
 **Actual review:** Maibokdaimhai / APPROVED / 2026-11-10T03:33:56Z / source 4527ba5b26973fd14d42e3d1415c07632510315f
 **Recommendation: Approve — PR #38**
@@ -121,3 +121,9 @@ Connection-loss correction retains two explicit failing-before regressions and p
 c125a6078b2337f29f0a1c3fcbcecfc519cd02f4 | 2026-11-12T21:30:46+07:00 | fix(auth): recover logout after CSRF cookie rotation
 Logout native-cookie regression: actual pre-fix 403 at both widths, corrected source passes; actual post-main 2 passes
 
+
+## Actual correction and final release follow-through
+
+R1NNE0 reviewed PR #47, independently reported five focused PostgreSQL passes, requested canonical test synchronization R47-01 and then approved the unchanged corrected source after synchronization in PR #46. R1NNE0 approved PR #46 head 25858e1 with the explicit AC-F05-08 Minor evidence limitation. PR #47 merged as 970872e3; PR #46 merged as 4070a872. R1NNE0 then approved staging 4070a872 in release PR #48, explicitly acknowledging the 84 source hashes, historical evidence separation and accepted Minor limitation. PR #48 merged as b458cb65. Exact-main 219 selected executions, build/typecheck/ORM/restart then passed, followed by annotated tag sprint-1.1. Actual review texts/versions are retained in corrected-release-review-history.json and current Part F; no AI review is substituted for those human approvals.
+
+These are observed authorship/review contributions, with AI assistance disclosed. Additional personal hours/pair work/comprehension are not inferred.

@@ -1,6 +1,6 @@
 {
   "date": "2026-11-13",
-  "status": "Assessed Sprint 1 report; final team acceptance pending",
+  "status": "Reviewed corrected Sprint1 main release; final assessment report",
   "students": [
     {
       "id": "67070501022",
@@ -14,8 +14,8 @@
     }
   ],
   "identitySource": "Owner explicitly confirmed account/name mapping on 2026-11-12.",
-  "testedCommit": "af2e1030984bcc816081b25b29c9de52a80efe30",
-  "releaseTag": "sprint-1",
+  "testedCommit": "b458cb65736029f5c7de55e49c9afd6bc8de702a",
+  "releaseTag": "sprint-1.1",
   "results": [
     {
       "command": "npm run typecheck",
@@ -91,32 +91,40 @@
       "command": "npm run test:e2e:recovery",
       "exit": 0,
       "summary": [
-        "84 passed (32.7s)"
+        "84 passed (32.8s)"
       ]
     },
     {
       "command": "npm run test:e2e",
       "exit": 0,
       "summary": [
-        "4 passed (933ms)"
+        "4 passed (938ms)"
       ]
     },
     {
       "command": "node --env-file=.local/main-browser.env scripts/playwright.mjs test --config playwright.features.config.ts",
       "exit": 0,
       "summary": [
-        "22 passed (31.5s)"
+        "22 passed (31.3s)"
       ]
     },
     {
       "command": "node --env-file=.local/main-logout.env scripts/playwright.mjs test --config playwright.logout.config.ts",
       "exit": 0,
       "summary": [
-        "2 passed (2.5s)"
+        "2 passed (2.4s)"
+      ]
+    },
+    {
+      "command": "node --env-file=.local/main-postrelease.env node_modules/vitest/vitest.mjs run --config vitest.post-release.config.ts",
+      "exit": 0,
+      "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  5 passed (5)"
       ]
     }
   ],
-  "verificationSummary": "214 selected tests passed on the actual merged main commit: 41 unit, 2 liveness, 41 API/PostgreSQL, 7 release/PostgreSQL, 9 foundation, 2 database tooling, 84 isolated HTTP/browser, 22 real browser/API/PostgreSQL, 2 real native-cookie logout/API/PostgreSQL and 4 smoke. Final failures/skips zero; typecheck/build/ORM and actual built-process restart also passed. Selected tests are not exhaustive certification of every larger STS row.",
+  "verificationSummary": "Actual merged main b458cb65736029f5c7de55e49c9afd6bc8de702a, tag sprint-1.1, passed 219 selected automated executions with 0 failures and 0 skips. Typecheck, build, ORM and actual built-process restart passed. These are fresh post-main results, not a sum of historical runs. The exact suite counts, commands, source hashes, accepted limitations and actual release approval appear in Part F.",
   "aiUse": "Codex assisted planning, implementation, test execution, reviews and report assembly under the owners instructions. Actual GitHub human reviews are recorded separately; AI review is not teammate approval. Both students remain responsible for explaining and validating submitted work.",
   "contributionBoundary": "Table identifies observed artifact authorship and substantive reviews, not hours/line counts or proof of unaided authorship/comprehension. Pair sessions/hours were not reported and are not invented.",
   "contributions": [
@@ -132,7 +140,7 @@
     }
   ],
   "board": {
-    "source": "Actual authenticated GitHub Kanban read, 2026-11-12 after #24/#25 completion",
+    "source": "Actual authenticated Kanban read and screenshot after corrected main/tag,13November2026",
     "counts": {
       "Backlog": 1,
       "Specified": 0,
@@ -141,6 +149,6 @@
       "Fixing": 0,
       "Done": 23
     },
-    "openItems": "#8 remains overall delivery tracker; #26 remains report assembly/review. Kanban still lists #26 in Backlog at capture; report work is underway. This is the observed release-time board, not a fabricated all-Done delivery/submission state."
+    "openItems": "#26 final report publication/review follow-through; #8 umbrella closure. Board still places #26 in Backlog despite active assembly; this is observed, not an all-Done or course-submission claim."
   }
 }

@@ -1,3 +1,9 @@
+# Current correction release status — 2026-11-13
+
+Reviewed release PR #48 merged as **b458cb65736029f5c7de55e49c9afd6bc8de702a**. Exact-main verification passed **219 selected tests / 0 failed / 0 skipped**, typecheck/build/ORM/built-process restart, followed by new annotated tag **sprint-1.1**. See [current release](corrected-main-release.md) and [actual commands/hashes/review](corrected-main-verification.json). PR46-DEF-01 is corrected; the original sprint-1 tag and historical failures/results remain unchanged. AC-F05-08 retains its explicitly accepted Minor evidence limitation. Dated observations below are historical.
+
+---
+
 # Sprint 1 release readiness — Issue #25
 
 **Accepted main release (2026-11-12):** [sprint-1 / main af2e103 with 214 actual post-main passing tests](main-release.md) supersedes earlier pending release observations. [Exact commands/SHA/hash evidence](main-release-verification.json) and [actual human release approval](main-release-review-history.json) retain the assessed application separately from this report revision. Earlier dated sections below are historical, not current open blockers.
