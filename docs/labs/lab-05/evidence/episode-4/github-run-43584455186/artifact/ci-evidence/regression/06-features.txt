@@ -1,0 +1,13 @@
+
+ RUN  v5.1.0 /home/runner/work/LECTRA/LECTRA
+
+ ✓ apps/api/tests/features/workflows.test.ts (41 tests) 11363ms
+   ✓ R40-01 / TEST-F01-I18: an exact-expiry persistence failure cannot leave a login cookie or usable session 337ms
+   ✓ INT22-08: a real held Survey lock returns safe timeout with zero rows, then a deliberate retry succeeds 5140ms
+   ✓ INT22-09: inconsistent own participation/bundle fails closed without data, and an empty Closed survey has null results 1288ms
+
+ Test Files  1 passed (1)
+      Tests  41 passed (41)
+   Start at  10:17:08
+   Duration  11.78s (tests 97%, import 2%, transform 1%)
+

@@ -1,0 +1,127 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.81kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:24.22.1-bookworm-slim
+#2 DONE 0.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 320B done
+#3 DONE 0.0s
+
+#4 [dependencies 1/9] FROM docker.io/library/node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 3.05kB done
+#5 DONE 0.0s
+
+#6 [dependencies 3/9] RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+#6 CACHED
+
+#7 [build 2/6] COPY prisma prisma
+#7 CACHED
+
+#8 [dependencies 2/9] WORKDIR /app
+#8 CACHED
+
+#9 [dependencies 5/9] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [build 1/6] COPY tsconfig*.json prisma.config.ts ./
+#10 CACHED
+
+#11 [dependencies 4/9] RUN npm install --global npm@10.9.2
+#11 CACHED
+
+#12 [dependencies 9/9] RUN npm ci
+#12 CACHED
+
+#13 [build 4/6] COPY apps/web apps/web
+#13 CACHED
+
+#14 [dependencies 7/9] COPY apps/web/package.json apps/web/package.json
+#14 CACHED
+
+#15 [build 3/6] COPY apps/api apps/api
+#15 CACHED
+
+#16 [dependencies 6/9] COPY apps/api/package.json apps/api/package.json
+#16 CACHED
+
+#17 [dependencies 8/9] COPY scripts/check-runtime.mjs scripts/check-runtime.mjs
+#17 CACHED
+
+#18 [build 5/6] COPY scripts scripts
+#18 CACHED
+
+#19 [build 6/6] RUN npm run build
+#19 0.203 
+#19 0.203 > lectra@0.0.0 build
+#19 0.203 > npm run db:generate && npm run build --workspaces
+#19 0.203 
+#19 0.279 
+#19 0.279 > lectra@0.0.0 db:generate
+#19 0.279 > prisma generate
+#19 0.279 
+#19 0.967 Loaded Prisma config from prisma.config.ts.
+#19 0.967 
+#19 1.041 Prisma schema loaded from prisma/schema.prisma.
+#19 1.188 
+#19 1.188 ✔ Generated Prisma Client (7.10.1) to ./apps/api/src/generated/prisma in 92ms
+#19 1.188 
+#19 1.307 
+#19 1.307 > @lectra/api@0.0.0 build
+#19 1.307 > tsc -p tsconfig.build.json
+#19 1.307 
+#19 2.661 
+#19 2.661 > @lectra/web@0.0.0 build
+#19 2.661 > tsc --noEmit && vite build
+#19 2.661 
+#19 4.215 vite v8.3.6 building client environment for production...
+#19 4.223 transforming...
+#19 4.275 ✓ 16 modules transformed.
+#19 4.292 rendering chunks...
+#19 4.321 computing gzip size...
+#19 4.324 dist/index.html                   0.35 kB │ gzip:  0.26 kB
+#19 4.324 dist/assets/index-2RIGuQzL.css    3.98 kB │ gzip:  1.51 kB
+#19 4.324 dist/assets/index-BipY3lhw.js   249.07 kB │ gzip: 77.23 kB
+#19 4.324 
+#19 4.324 ✓ built in 108ms
+#19 DONE 4.4s
+
+#11 [dependencies 4/9] RUN npm install --global npm@10.9.2
+#11 CACHED
+
+#20 [runtime  5/12] COPY --from=build --chown=node:node /app/node_modules ./node_modules
+#20 DONE 4.0s
+
+#21 [runtime  6/12] COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /app/prisma.config.ts /app/tsconfig.base.json ./
+#21 DONE 0.0s
+
+#22 [runtime  7/12] COPY --from=build --chown=node:node /app/apps/api ./apps/api
+#22 DONE 0.0s
+
+#23 [runtime  8/12] COPY --from=build --chown=node:node /app/apps/web/package.json ./apps/web/package.json
+#23 DONE 0.0s
+
+#24 [runtime  9/12] COPY --from=build --chown=node:node /app/apps/web/dist ./apps/web/dist
+#24 DONE 0.0s
+
+#25 [runtime 10/12] COPY --from=build --chown=node:node /app/prisma ./prisma
+#25 DONE 0.0s
+
+#26 [runtime 11/12] COPY --from=build --chown=node:node /app/scripts ./scripts
+#26 DONE 0.0s
+
+#27 [runtime 12/12] RUN chmod +x apps/api/docker-entrypoint.sh
+#27 DONE 0.1s
+
+#28 exporting to image
+#28 exporting layers
+#28 exporting layers 3.3s done
+#28 writing image sha256:ca78002ebdc19e99e9c4d83e946cfd4a42d97ec8829e415f2f28706a1fad8db1 done
+#28 naming to docker.io/library/lectra-unified:ep3-20261114101923486030 done
+#28 DONE 3.3s
