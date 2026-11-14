@@ -25,7 +25,9 @@ if sys.platform not in ('darwin', 'linux'):
     raise SystemExit('Episode 2 verification supports macOS or Linux (including WSL 2). On Windows, open a WSL Linux shell and use Linux Python/Node/npm with Docker WSL integration. Native Windows Python is unsupported; no database/container was created.')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--create-local-test-databases', action='store_true', required=True)
+mode = parser.add_mutually_exclusive_group(required=True)
+mode.add_argument('--create-local-test-databases', action='store_true')
+mode.add_argument('--use-ci-postgres', action='store_true', help='Use the disposable CI PostgreSQL service (never a deployed database).')
 parser.add_argument('--evidence-dir', help='New output directory relative to repository root (default: ignored .local/lab5-episode2/<timestamp>).')
 args = parser.parse_args()
 repo = pathlib.Path(__file__).resolve().parent.parent
@@ -36,6 +38,10 @@ if (out / 'results.json').exists():
 out.mkdir(parents=True, exist_ok=True)
 container = 'lectra-lab5-ep2-' + stamp
 password, owner, respondent, session = [secrets.token_urlsafe(32) for _ in range(4)]
+if args.use_ci_postgres:
+    if os.environ.get('ALLOW_CI_DATABASE_SETUP') != 'lectra_ci_control' or os.environ.get('CI_POSTGRES_PASSWORD') != 'lectra_ci_only':
+        raise SystemExit('CI service mode requires the dedicated disposable control database and test-only credentials.')
+    password = os.environ['CI_POSTGRES_PASSWORD']
 base = {k: v for k, v in os.environ.items() if not k.startswith(('PG', 'SEED_', 'ALLOW_', 'TEST_DATABASE', 'DATABASE_', 'APP_ORIGIN', 'SESSION_SECRET', 'NODE_ENV', 'TRUST_PROXY', 'PORT', 'RESTART_PASSWORD', 'DEVELOPMENT_DATABASE'))}
 base['NO_COLOR'] = '1'
 redactions = [password, owner, respondent, session]
@@ -66,6 +72,12 @@ base_sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=
 host = {'system': platform.system(), 'machine': platform.machine(), 'osRelease': platform.release(),
         'macOSVersion': platform.mac_ver()[0] if sys.platform == 'darwin' else None,
         'python': platform.python_version()}
+if os.environ.get('GITHUB_ACTIONS') == 'true':
+    host['github'] = {key: os.environ.get(key) for key in ['GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_EVENT_NAME', 'GITHUB_REPOSITORY']}
+    event = json.loads(pathlib.Path(os.environ['GITHUB_EVENT_PATH']).read_text())
+    pr = event.get('pull_request', {})
+    host['github']['pullRequestHeadSha'] = pr.get('head', {}).get('sha')
+    host['github']['pullRequestBaseSha'] = pr.get('base', {}).get('sha')
 for tool, command in [('node', ['node', '--version']), ('npm', ['npm', '--version']),
                       ('docker', ['docker', 'version', '--format', '{{.Client.Version}}/{{.Server.Version}}'])]:
     try:
@@ -80,29 +92,36 @@ if host['node'] != 'v24.22.1' or host['npm'] != '10.9.2':
 print('Evidence output: ' + str(out.relative_to(repo) if out.is_relative_to(repo) else out), flush=True)
 paths = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard'], cwd=repo, text=True).splitlines()
 hashes = {p: hashlib.sha256((repo / p).read_bytes()).hexdigest() for p in sorted(set(paths))
-          if (p.startswith(('apps/', 'scripts/', 'prisma/')) or p in ['package.json', 'package-lock.json', '.env.example', '.env.test.example'] or p.startswith(('vitest.', 'playwright', 'tsconfig', 'prisma.config'))) and (repo / p).is_file()}
+          if (p.startswith(('apps/', 'scripts/', 'prisma/', '.github/', 'deploy/', 'tests/tooling/')) or p in ['package.json', 'package-lock.json', '.env.example', '.env.test.example'] or p.startswith(('vitest.', 'playwright', 'tsconfig', 'prisma.config'))) and (repo / p).is_file()}
 created = False
 try:
-    p = capture(['docker', 'run', '-d', '--name', container, '-e', 'POSTGRES_USER=lectra', '-e', 'POSTGRES_PASSWORD', '-p', '127.0.0.1::5432', 'postgres:17'], {**base, 'POSTGRES_PASSWORD': password})
-    if p.returncode:
-        raise RuntimeError('Could not create dedicated local test container.')
-    created = True
-    for _ in range(100):
-        if capture(['docker', 'exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', 'lectra']).returncode == 0:
-            break
-        time.sleep(0.2)
+    if args.use_ci_postgres:
+        port = os.environ.get('CI_POSTGRES_PORT', '5432')
+        if not port.isdigit() or not 1 <= int(port) <= 65535:
+            raise SystemExit('Invalid disposable CI PostgreSQL port.')
+        run('00-ci-databases', ['node', 'scripts/prepare-ci-databases.mjs'], {**base, 'ALLOW_CI_DATABASE_SETUP': 'lectra_ci_control', 'CI_POSTGRES_PASSWORD': password, 'CI_POSTGRES_PORT': port})
     else:
-        raise RuntimeError('PostgreSQL readiness timeout.')
-    port = json.loads(capture(['docker', 'inspect', container]).stdout)[0]['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort']
+        p = capture(['docker', 'run', '-d', '--name', container, '-e', 'POSTGRES_USER=lectra', '-e', 'POSTGRES_PASSWORD', '-p', '127.0.0.1::5432', 'postgres:17'], {**base, 'POSTGRES_PASSWORD': password})
+        if p.returncode:
+            raise RuntimeError('Could not create dedicated local test container.')
+        created = True
+        for _ in range(100):
+            if capture(['docker', 'exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', 'lectra']).returncode == 0:
+                break
+            time.sleep(0.2)
+        else:
+            raise RuntimeError('PostgreSQL readiness timeout.')
+        port = json.loads(capture(['docker', 'inspect', container]).stdout)[0]['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort']
     profiles = {}
     dev = f'postgresql://lectra:{password}@127.0.0.1:{port}/lectra_dev'
     for kind, flag in [('cloud', 'ALLOW_CLOUD_TESTS'), ('features', 'ALLOW_FEATURE_TESTS'), ('release', 'ALLOW_RELEASE_TESTS'),
                        ('foundation', 'ALLOW_FOUNDATION_TESTS'), ('tooling', None), ('browser', 'ALLOW_BROWSER_TESTS'),
                        ('logout', 'ALLOW_BROWSER_TESTS'), ('postrelease', 'ALLOW_POST_RELEASE_TESTS')]:
         name = 'lectra_test_ep2_' + kind
-        p = capture(['docker', 'exec', container, 'createdb', '-U', 'lectra', name])
-        if p.returncode:
-            raise RuntimeError('Could not create new disposable database.')
+        if not args.use_ci_postgres:
+            p = capture(['docker', 'exec', container, 'createdb', '-U', 'lectra', name])
+            if p.returncode:
+                raise RuntimeError('Could not create new disposable database.')
         url = f'postgresql://lectra:{password}@127.0.0.1:{port}/{name}'
         profiles[kind] = {**base, 'NODE_ENV': 'test', 'DATABASE_URL': dev, 'TEST_DATABASE_URL': url,
                           'DEVELOPMENT_DATABASE_URL': dev, 'ALLOW_TEST_DATABASE': name,
