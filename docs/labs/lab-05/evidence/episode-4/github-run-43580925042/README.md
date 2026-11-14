@@ -48,4 +48,4 @@ After logout: browser returns to the login screen. Corresponding browser/API ass
 
 ## Gates still requiring human integration
 
-This run proves the staging-target implementation check. It does not prove review/approval, a staging merge, the main-target release check, a main merge, branch-protection enforcement or deployment to GCP. Draft release PR #57 must wait for #56 to merge and then pass its own check. Close issue #55 only after the guide's reviewed main integration gate is verified.
+This run proves the staging-target implementation check. It does not prove review/approval, a staging merge, the main-target release check, a main merge, branch-protection enforcement or deployment to GCP. Subsequently R1NNE0 approved #56 and it merged as `b501940`; [release PR #57 also passed its own check](../github-run-43584455186/README.md). Final evidence integration, latest release check, teammate approval and main merge remain pending. Close issue #55 only after the guide's reviewed main integration gate is verified.
