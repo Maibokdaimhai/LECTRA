@@ -1,4 +1,5 @@
-import { Pool, type PoolClient } from 'pg';
+import type { PoolClient } from 'pg';
+import { createConnectionPool } from '../apps/api/src/connection-pool.js';
 import argon2 from 'argon2';
 import { isDeepStrictEqual } from 'node:util';
 import { fixtures } from '../prisma/fixtures.js';
@@ -46,7 +47,7 @@ export async function seedSyntheticDatabase(options: Options) {
 export async function seedFixtureRows(connectionString: string, expected: string, owner: string, respondent: string) {
   const ownerPassword = password(owner);
   const respondentPassword = password(respondent);
-  const pool = new Pool({ connectionString, options: '-c timezone=UTC', connectionTimeoutMillis: 3000 });
+  const pool = createConnectionPool(connectionString, 'operator');
   try {
     const client = await pool.connect();
     try {

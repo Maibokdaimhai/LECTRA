@@ -6,7 +6,7 @@
 #   these scenarios, asserting on the recorded commands:
 #     first_run : nothing exists      -> everything is created
 #     rerun     : everything exists   -> nothing replaced (credentials kept)
-#     partial   : DB secret missing   -> DB user password reset + secret created
+#     partial   : DB secret missing with existing user -> fail without credential rotation
 #     job-fail  : migration fails     -> script exits 1, service NOT deployed
 #     demo      : --demo flag         -> demo secret is created and granted
 #   It also checks: `--edition=enterprise`, no project-wide secretAccessor role,
@@ -55,6 +55,12 @@ for arg in "$@"; do
   esac
 done
 printf '%s\n' "${redacted[*]}" >> "$GCLOUD_LOG"
+if [ "${1:-} ${2:-}" = 'projects describe' ]; then echo 123456789012; exit 0; fi
+if [ "${1:-} ${2:-} ${3:-}" = 'billing projects describe' ]; then echo True; exit 0; fi
+if [ "${1:-} ${2:-} ${3:-}" = 'secrets versions list' ]; then echo 1; exit 0; fi
+if [ "${1:-} ${2:-} ${3:-}" = 'artifacts docker images' ]; then
+  echo 'asia-southeast1-docker.pkg.dev/stub-gcp-project/lectra/lectra@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'; exit 0
+fi
 if [ "${1:-} ${2:-}" = 'config get-value' ]; then
   echo stub-gcp-project
   exit 0
@@ -112,11 +118,12 @@ for MODE in first_run rerun partial job-fail demo; do
   fi
   expected=0
   if [ "$MODE" = job-fail ]; then expected=1; fi
+  if [ "$MODE" = partial ]; then expected=2; fi
   if [ "$result" -ne "$expected" ]; then
     echo "FAIL $MODE: unexpected exit $result (wanted $expected)"
     exit 1
   fi
-  if [ "$MODE" = job-fail ]; then
+  if [ "$MODE" = job-fail ] || [ "$MODE" = partial ]; then
     if grep -q '^run deploy ' "$GCLOUD_LOG"; then
       echo 'FAIL: service deployed after migration failure'; exit 1
     fi
@@ -126,24 +133,43 @@ for MODE in first_run rerun partial job-fail demo; do
   if grep -q '^projects add-iam-policy-binding .*roles/secretmanager.secretAccessor' "$GCLOUD_LOG"; then
     echo 'FAIL: runtime has project-wide secret access'; exit 1
   fi
-  for secret in lectra-database-url lectra-admin-password; do
+  if [ "$MODE" != partial ]; then
+  for secret in lectra-database-url lectra-session-secret; do
     grep -q "^secrets add-iam-policy-binding $secret .*roles/secretmanager.secretAccessor" "$GCLOUD_LOG"
   done
+  fi
   if [ "$MODE" = demo ]; then
-    grep -q '^secrets add-iam-policy-binding lectra-demo-password ' "$GCLOUD_LOG"
-  elif grep -q '^secrets add-iam-policy-binding lectra-demo-password ' "$GCLOUD_LOG"; then
+    grep -q '^secrets add-iam-policy-binding lectra-respondent-password ' "$GCLOUD_LOG"
+  elif grep -q '^secrets add-iam-policy-binding lectra-respondent-password ' "$GCLOUD_LOG"; then
     echo 'FAIL: granted optional demo secret in non-demo mode'; exit 1
   fi
   case "$MODE" in
     first_run)
       grep -q -- '--edition=enterprise' "$GCLOUD_LOG"
       grep -q '^sql users create ' "$GCLOUD_LOG" ;;
-    partial) grep -q '^sql users set-password ' "$GCLOUD_LOG" ;;
+    partial)
+      if grep -q '^sql users set-password ' "$GCLOUD_LOG"; then echo 'FAIL: partial state rotated existing credential'; exit 1; fi ;;
     rerun)
       if grep -Eq '^(secrets create|sql users (create|set-password)) ' "$GCLOUD_LOG"; then
         echo 'FAIL: rerun replaced existing credentials'; exit 1
       fi ;;
   esac
+  if [ "$MODE" != partial ]; then
+    grep -q -- '--no-storage-auto-increase' "$GCLOUD_LOG"
+    if [ "$MODE" != job-fail ]; then
+    grep -q -- 'APP_ORIGIN=https://lectra-123456789012.asia-southeast1.run.app,TRUST_PROXY=1' "$GCLOUD_LOG"
+    grep '^run deploy ' "$GCLOUD_LOG" | grep -q -- '--max 3 --max-instances 3'
+    grep -q -- 'SESSION_SECRET=lectra-session-secret:latest' "$GCLOUD_LOG"
+    fi
+    grep -q -- 'ALLOW_PRODUCTION_DATABASE=lectra,ALLOW_CLOUD_SQL_INSTANCE=stub-gcp-project:asia-southeast1:lectra-pg' "$GCLOUD_LOG"
+    grep '^run jobs deploy lectra-migrate ' "$GCLOUD_LOG" | grep -q 'db:migrate:production'
+    grep '^run jobs deploy lectra-migrate ' "$GCLOUD_LOG" | grep -q -- '--tasks 1 --parallelism 1 --max-retries 0'
+    if grep '^run jobs deploy lectra-migrate ' "$GCLOUD_LOG" | grep -q 'db:seed'; then echo 'FAIL: ordinary migration seeds'; exit 1; fi
+    if [ "$MODE" = demo ]; then
+      grep '^run jobs deploy lectra-bootstrap ' "$GCLOUD_LOG" | grep -q 'SEED_PRODUCTION_DEMO=lectra'
+      grep '^run jobs deploy lectra-bootstrap ' "$GCLOUD_LOG" | grep -q 'SEED_OWNER_PASSWORD=lectra-owner-password:latest'
+    elif grep -q '^run jobs deploy lectra-bootstrap ' "$GCLOUD_LOG"; then echo 'FAIL: non-demo run seeds'; exit 1; fi
+  fi
   if [ -f "$TEST_STATE_DIR/sql-pass" ]; then
     db_pass="$(cat "$TEST_STATE_DIR/sql-pass")"
     db_url="$(cat "$TEST_STATE_DIR/payload-lectra-database-url")"

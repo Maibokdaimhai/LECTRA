@@ -1,0 +1,49 @@
+Controlled baseline reproduction, not original historical TDD: new tests against pre-change guard. Expected EP5-S01 failure.
+
+ RUN  v5.1.0 /Users/meng/.codex/worktrees/review-pr38/LECTRA
+
+ ❯ apps/api/tests/unit/production-database.test.ts (15 tests | 2 failed) 5ms
+   × EP5-S01: an explicitly selected Cloud SQL socket resolves consistently for pg and the migration URL 1ms
+   × EP5-S02: refuses non-socket target before connecting 1ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 13 passed (15)
+   Start at  23:57:07
+   Duration  111ms (import 51%, transform 33%, tests 11%, worker 5%)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/api/tests/unit/production-database.test.ts > EP5-S01: an explicitly selected Cloud SQL socket resolves consistently for pg and the migration URL
+Error: Production database operation requires an explicit matching target and production mode.
+ ❯ refuse scripts/production-database-config.ts:3:32
+      1| // Explicit, forward-only operator commands. Never imported by the app…
+      2| export function productionTarget(environment: NodeJS.ProcessEnv, actio…
+      3|   const refuse = () => { throw new Error('Production database operatio…
+       |                                ^
+      4|   if (environment.NODE_ENV !== 'production' || !['migrate', 'seed'].in…
+      5|   let url: URL;
+ ❯ productionTarget scripts/production-database-config.ts:11:62
+ ❯ apps/api/tests/unit/production-database.test.ts:28:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  apps/api/tests/unit/production-database.test.ts > EP5-S02: refuses non-socket target before connecting
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ apps/api/tests/unit/production-database.test.ts:46:101
+     44| ])('EP5-S02: refuses %s before connecting', (_label, instance, query) …
+     45|   expect(() => productionTarget({ ...valid, ALLOW_CLOUD_SQL_INSTANCE: …
+     46|     DATABASE_URL: `${valid.DATABASE_URL.replace('127.0.0.1', 'localhos…
+       |                                                                                                     ^
+     47| });
+     48|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

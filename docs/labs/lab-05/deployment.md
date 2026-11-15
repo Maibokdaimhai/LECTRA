@@ -95,3 +95,7 @@ Do not replace committed evidence with your reproduction output. Use `--evidence
 ## Later episode records
 
 Episode 3 adds locally verified API/web and unified Docker images, named-volume persistence and packaged browser evidence. Actual image IDs/architecture are recorded in its evidence, not substituted for a deployed release SHA. No GCP service URL, cloud region/resource inventory, deployed release SHA or CI/CD execution is claimed yet. Record actual values as Episodes 4–8 are performed: PR CI/required checks, reviewed cloud resource plan and first deployment, identity federation/merge gate, automatic deployment/smoke, cloud persistence through restart/redeploy, and rollback. Review commands with the human operator before changing cloud billing, IAM or databases. Keep real secret values out of this file.
+
+## Episode 5 preparation and user-run deployment
+
+[Episode 5 operator runbook](episode-5-first-deployment.md) maps guide §§5.0–5.8 to LECTRA, including exact socket/origin/session configuration, separate migration/bootstrap and all actual cloud evidence to collect. [Preparation evidence](evidence/episode-5/README.md) distinguishes local execution from cloud results. The user reserves all GCP/Cloud Shell operations for themselves; the agent performs local adaptation/tests only. Issue #59 remains open until the user's actual deployment and acceptance evidence exist.

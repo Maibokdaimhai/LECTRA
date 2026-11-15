@@ -1,0 +1,52 @@
+==================================================================
+LECTRA Cloud Run Deployment
+Project : example-gcp-project
+Region  : asia-southeast1
+Demo    : true
+Dry Run : 1
+==================================================================
+[DRY_RUN] gcloud services enable run.googleapis.com sqladmin.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com secretmanager.googleapis.com iam.googleapis.com --project example-gcp-project 
+[DRY_RUN] gcloud artifacts repositories describe lectra --location asia-southeast1 --project example-gcp-project 
+[DRY_RUN] gcloud artifacts repositories create lectra --repository-format=docker --location asia-southeast1 --description=LECTRA\ container\ repository --project example-gcp-project 
+[DRY_RUN] gcloud sql instances describe lectra-pg --project example-gcp-project 
+[DRY_RUN] gcloud sql instances create lectra-pg --database-version=POSTGRES_17 --edition=enterprise --tier=db-f1-micro --region=asia-southeast1 --storage-size=10GB --storage-type=SSD --backup-start-time=03:00 --no-storage-auto-increase --project example-gcp-project 
+[DRY_RUN] gcloud sql instances patch lectra-pg --no-storage-auto-increase --project example-gcp-project --quiet 
+[DRY_RUN] gcloud sql databases describe lectra --instance=lectra-pg --project example-gcp-project 
+[DRY_RUN] gcloud sql databases create lectra --instance=lectra-pg --project example-gcp-project 
+[DRY_RUN] gcloud iam service-accounts describe lectra-runner@example-gcp-project.iam.gserviceaccount.com --project example-gcp-project 
+[DRY_RUN] gcloud iam service-accounts create lectra-runner --display-name=LECTRA\ Cloud\ Run\ Service\ Account --project example-gcp-project 
+[DRY_RUN] gcloud projects add-iam-policy-binding example-gcp-project --member=serviceAccount:lectra-runner@example-gcp-project.iam.gserviceaccount.com --role=roles/cloudsql.client --condition=None --quiet 
+[DRY_RUN] gcloud secrets describe lectra-database-url --project example-gcp-project 
+[DRY_RUN] gcloud sql users list --instance=lectra-pg --project example-gcp-project --format=value\(name\) 
+[DRY_RUN] gcloud sql users create lectra --instance=lectra-pg --password=<REDACTED> --project example-gcp-project 
+[DRY_RUN] gcloud secrets create lectra-database-url --replication-policy=automatic --project example-gcp-project 
+[DRY_RUN] gcloud secrets versions add lectra-database-url --data-file=- --project example-gcp-project 
+[DRY_RUN] gcloud secrets describe lectra-session-secret --project example-gcp-project 
+[DRY_RUN] gcloud secrets create lectra-session-secret --replication-policy=automatic --project example-gcp-project 
+[DRY_RUN] gcloud secrets versions add lectra-session-secret --data-file=- --project example-gcp-project 
+[DRY_RUN] gcloud secrets describe lectra-owner-password --project example-gcp-project 
+[DRY_RUN] gcloud secrets create lectra-owner-password --replication-policy=automatic --project example-gcp-project 
+[DRY_RUN] gcloud secrets versions add lectra-owner-password --data-file=- --project example-gcp-project 
+[DRY_RUN] gcloud secrets describe lectra-respondent-password --project example-gcp-project 
+[DRY_RUN] gcloud secrets create lectra-respondent-password --replication-policy=automatic --project example-gcp-project 
+[DRY_RUN] gcloud secrets versions add lectra-respondent-password --data-file=- --project example-gcp-project 
+[DRY_RUN] gcloud secrets add-iam-policy-binding lectra-database-url --member=serviceAccount:lectra-runner@example-gcp-project.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor --project example-gcp-project --quiet 
+[DRY_RUN] gcloud secrets add-iam-policy-binding lectra-session-secret --member=serviceAccount:lectra-runner@example-gcp-project.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor --project example-gcp-project --quiet 
+[DRY_RUN] gcloud secrets add-iam-policy-binding lectra-owner-password --member=serviceAccount:lectra-runner@example-gcp-project.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor --project example-gcp-project --quiet 
+[DRY_RUN] gcloud secrets add-iam-policy-binding lectra-respondent-password --member=serviceAccount:lectra-runner@example-gcp-project.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor --project example-gcp-project --quiet 
+[DRY_RUN] gcloud builds submit --tag asia-southeast1-docker.pkg.dev/example-gcp-project/lectra/lectra:\<REVIEWED_MAIN_SHA\> --project example-gcp-project 
+[DRY_RUN] gcloud run jobs deploy lectra-migrate --image asia-southeast1-docker.pkg.dev/example-gcp-project/lectra/lectra:\<REVIEWED_MAIN_SHA\> --region asia-southeast1 --service-account lectra-runner@example-gcp-project.iam.gserviceaccount.com --set-cloudsql-instances example-gcp-project:asia-southeast1:lectra-pg --set-secrets DATABASE_URL=lectra-database-url:latest --set-env-vars NODE_ENV=production\,TZ=UTC\,ALLOW_PRODUCTION_DATABASE=lectra\,ALLOW_CLOUD_SQL_INSTANCE=example-gcp-project:asia-southeast1:lectra-pg --command sh --args -c\,npm\ run\ db:migrate:production --max-retries 0 --task-timeout 300s --project example-gcp-project 
+[DRY_RUN] gcloud run jobs execute lectra-migrate --region asia-southeast1 --wait --project example-gcp-project 
+[DRY_RUN] gcloud run jobs deploy lectra-bootstrap --image asia-southeast1-docker.pkg.dev/example-gcp-project/lectra/lectra:\<REVIEWED_MAIN_SHA\> --region asia-southeast1 --service-account lectra-runner@example-gcp-project.iam.gserviceaccount.com --set-cloudsql-instances example-gcp-project:asia-southeast1:lectra-pg --set-secrets DATABASE_URL=lectra-database-url:latest\,SEED_OWNER_PASSWORD=lectra-owner-password:latest\,SEED_RESPONDENT_PASSWORD=lectra-respondent-password:latest --set-env-vars NODE_ENV=production\,TZ=UTC\,ALLOW_PRODUCTION_DATABASE=lectra\,ALLOW_CLOUD_SQL_INSTANCE=example-gcp-project:asia-southeast1:lectra-pg\,SEED_PRODUCTION_DEMO=lectra --command sh --args -c\,npm\ run\ db:seed:production --max-retries 0 --task-timeout 300s --project example-gcp-project 
+[DRY_RUN] gcloud run jobs execute lectra-bootstrap --region asia-southeast1 --wait --project example-gcp-project 
+[DRY_RUN] gcloud run deploy lectra --image asia-southeast1-docker.pkg.dev/example-gcp-project/lectra/lectra:\<REVIEWED_MAIN_SHA\> --region asia-southeast1 --platform managed --allow-unauthenticated --service-account lectra-runner@example-gcp-project.iam.gserviceaccount.com --add-cloudsql-instances example-gcp-project:asia-southeast1:lectra-pg --set-secrets DATABASE_URL=lectra-database-url:latest\,SESSION_SECRET=lectra-session-secret:latest --set-env-vars NODE_ENV=production\,TZ=UTC\,APP_ORIGIN=https://lectra-123456789012.asia-southeast1.run.app\,TRUST_PROXY=1 --min-instances 0 --max-instances 3 --memory 512Mi --cpu 1 --port 3001 --project example-gcp-project 
+
+==================================================================
+Deployment Completed!
+Service URL    : https://lectra-123456789012.asia-southeast1.run.app
+Health Check   : https://lectra-123456789012.asia-southeast1.run.app/api/health
+Readiness Check: https://lectra-123456789012.asia-southeast1.run.app/api/ready
+Image: asia-southeast1-docker.pkg.dev/example-gcp-project/lectra/lectra:<REVIEWED_MAIN_SHA>
+Source commit: <REVIEWED_MAIN_SHA>
+Synthetic accounts: owner.1@example.test and respondent.11@example.test; role passwords in lectra-owner-password / lectra-respondent-password; never print in evidence.
+==================================================================

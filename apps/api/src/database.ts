@@ -1,10 +1,11 @@
 import { PrismaPg } from '@prisma/adapter-pg';
+import { createConnectionPool } from './connection-pool.js';
 import { PrismaClient } from './generated/prisma/client.js';
 
-// Explicit construction only: importing the module opens no application pool.
-// Session-store pools must use the same UTC setting and be closed separately by #17.
+// External pool ownership is explicit so $disconnect closes this bounded pool.
+export function createDatabaseAdapter(connectionString: string) {
+  return new PrismaPg(createConnectionPool(connectionString, 'prisma'), { disposeExternalPool: true });
+}
 export function createDatabase(connectionString: string) {
-  return new PrismaClient({ adapter: new PrismaPg({
-    connectionString, options: '-c timezone=UTC', connectionTimeoutMillis: 3000
-  }) });
+  return new PrismaClient({ adapter: createDatabaseAdapter(connectionString) });
 }
