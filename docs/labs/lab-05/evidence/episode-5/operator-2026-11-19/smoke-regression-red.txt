@@ -1,0 +1,34 @@
+Baseline implementation: fb087dd00401c073d8401498281e6ea475dfdaac
+Command: python3 -m unittest discover -s deploy/tests -p test_smoke.py
+Executed in an isolated temporary copy with the new regression test.
+PASS /api/health
+PASS /api/health
+PASS /api/ready
+PASS /
+PASS cookie login, authenticated identity and context read
+PASS logout
+PASS /api/health
+PASS /api/ready
+PASS /
+PASS logout
+PASS /api/health
+PASS /api/ready
+PASS /
+SKIP optional authenticated smoke: no credentials configured
+......F.
+======================================================================
+FAIL: test_transport_accepts_html_for_root_and_json_for_api (test_smoke.SmokeTests.test_transport_accepts_html_for_root_and_json_for_api) (path='/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/var/folders/zw/td63sypn2fz4z5h9p0rc_lpw0000gn/T/lectra-smoke-red-zexyrhwl/deploy/tests/test_smoke.py", line 38, in test_transport_accepts_html_for_root_and_json_for_api
+    self.assertEqual(opened.call_args.args[0].get_header('Accept'), expected)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'application/json' != 'text/html'
+- application/json
++ text/html
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.022s
+
+FAILED (failures=1)

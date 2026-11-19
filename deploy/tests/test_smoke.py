@@ -27,6 +27,16 @@ class FakeClient:
 
 
 class SmokeTests(unittest.TestCase):
+    def test_transport_accepts_html_for_root_and_json_for_api(self):
+        client = smoke.SessionClient('https://demo.example.test')
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b'<html></html>'
+        with patch.object(client.opener, 'open', return_value=response) as opened:
+            for path, expected in [('/', 'text/html'), ('/api/health', 'application/json')]:
+                with self.subTest(path=path):
+                    client.request(path)
+                    self.assertEqual(opened.call_args.args[0].get_header('Accept'), expected)
+
     @patch.dict(os.environ, {}, clear=True)
     def test_public_checks_without_optional_credentials(self):
         client = FakeClient()

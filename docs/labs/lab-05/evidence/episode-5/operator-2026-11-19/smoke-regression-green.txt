@@ -1,0 +1,19 @@
+..............
+----------------------------------------------------------------------
+Ran 14 tests in 0.776s
+
+OK
+PASS /api/health
+PASS /api/health
+PASS /api/ready
+PASS /
+PASS cookie login, authenticated identity and context read
+PASS logout
+PASS /api/health
+PASS /api/ready
+PASS /
+PASS logout
+PASS /api/health
+PASS /api/ready
+PASS /
+SKIP optional authenticated smoke: no credentials configured
