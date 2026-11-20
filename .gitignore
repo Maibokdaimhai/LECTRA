@@ -13,3 +13,6 @@ apps/api/src/generated/prisma/
 *.tsbuildinfo
 .DS_Store
 output/pdf/
+
+# Ephemeral WIF credentials created by google-github-actions/auth.
+gha-creds-*.json

@@ -99,3 +99,8 @@ Episode 3 adds locally verified API/web and unified Docker images, named-volume 
 ## Episode 5 preparation and user-run deployment
 
 [Episode 5 operator runbook](episode-5-first-deployment.md) maps guide §§5.0–5.8 to LECTRA, including exact socket/origin/session configuration, separate migration/bootstrap and all actual cloud evidence to collect. [Preparation evidence](evidence/episode-5/README.md) distinguishes local execution from cloud results. The user reserves all GCP/Cloud Shell operations for themselves; the agent performs local adaptation/tests only. Issue #59 remains open until the user's actual deployment and acceptance evidence exist.
+
+
+## Episode 7 automatic deployment preparation
+
+[Issue #65](https://github.com/Maibokdaimhai/LECTRA/issues/65) tracks the [Episode 7 workflow, user-controlled release steps and screenshot checklist](episode-7-auto-deploy.md). It adapts the starter workflow to LECTRA and enables release.sh only for the reviewed main workflow context. This supersedes the earlier Episode 4 offline-only description **for release.sh only**; teardown remains offline-only. Episode 6 GitHub configuration/gate evidence is in [Issue #63](https://github.com/Maibokdaimhai/LECTRA/issues/63#issuecomment-7038598779). The Episode 5 user-operated deployment evidence is in [Issue #59](https://github.com/Maibokdaimhai/LECTRA/issues/59#issuecomment-7037313901). Historical preparation statements above describe their original stage, not new cloud verification. Episode 7 remains incomplete until two genuine merge-triggered releases and matching operator cloud evidence exist. The agent does not execute cloud operations or merge/dispatch deployment workflows.

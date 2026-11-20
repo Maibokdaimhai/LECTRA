@@ -36,12 +36,10 @@
 # ==============================================================================
 set -euo pipefail
 
-# Episode 4: prepared template, NOT a reviewed live LECTRA cloud deployment.
-# Cloud SQL transport, APP_ORIGIN/session secrets and bootstrap policy are
-# finalized with the human operator in Episode 5. Only preview/stub use is enabled.
+# Live release is allowed only in the reviewed main GitHub deployment workflow.
+# Local verification uses marked command stubs; DRY_RUN is not a live bypass.
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/offline_guard.sh"
-require_offline_execution STUB_ONLY
-
+require_release_execution
 
 # ------------------------------------------------------------------------------
 # 1. Read and validate inputs (fail before any GCP call)
@@ -51,6 +49,11 @@ require_offline_execution STUB_ONLY
 SERVICE_NAME="${SERVICE_NAME:-lectra}"
 MIGRATE_JOB_NAME="${MIGRATE_JOB_NAME:-lectra-migrate}"
 ROLLBACK="${ROLLBACK:-false}"
+[[ "$PROJECT_ID" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]] || { echo 'Invalid project ID.' >&2; exit 1; }
+[[ "$REGION" =~ ^[a-z]+-[a-z]+[0-9]+$ ]] || { echo 'Invalid region.' >&2; exit 1; }
+for name in "$SERVICE_NAME" "$MIGRATE_JOB_NAME"; do
+  [[ "$name" =~ ^[a-z][a-z0-9-]{0,61}[a-z0-9]$ ]] || { echo 'Invalid resource name.' >&2; exit 1; }
+done
 [[ "$IMAGE_TAG" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid image tag.' >&2; exit 1; }
 [[ "$ROLLBACK" == true || "$ROLLBACK" == false ]] || { echo 'Invalid rollback mode.' >&2; exit 1; }
 
@@ -61,7 +64,9 @@ ROLLBACK="${ROLLBACK:-false}"
 IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/lectra/lectra:$IMAGE_TAG"
 # Resolve to a digest so the job and service run the exact same immutable image.
 DIGEST_IMAGE="$(gcloud artifacts docker images describe "$IMAGE" --project="$PROJECT_ID" --format='value(image_summary.fully_qualified_digest)')"
-[[ "$DIGEST_IMAGE" == "$REGION-docker.pkg.dev/$PROJECT_ID/lectra/lectra@sha256:"* ]] || { echo 'Image digest not found.' >&2; exit 1; }
+DIGEST_PREFIX="$REGION-docker.pkg.dev/$PROJECT_ID/lectra/lectra@sha256:"
+DIGEST_VALUE="${DIGEST_IMAGE#"$DIGEST_PREFIX"}"
+[[ "$DIGEST_IMAGE" == "$DIGEST_PREFIX$DIGEST_VALUE" && "$DIGEST_VALUE" =~ ^[0-9a-f]{64}$ ]] || { echo 'Image digest not found.' >&2; exit 1; }
 
 # ------------------------------------------------------------------------------
 # 3. Database migration (normal release only; `--wait` blocks until it finishes)
@@ -85,6 +90,7 @@ gcloud run services update-traffic "$SERVICE_NAME" --to-latest --project="$PROJE
 # 5. Report the URL (and hand it to the next workflow steps via GITHUB_ENV)
 # ------------------------------------------------------------------------------
 SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')"
+[[ "$SERVICE_URL" =~ ^https://[a-z0-9][a-z0-9.-]*[.]run[.]app$ ]] || { echo 'Invalid service URL.' >&2; exit 1; }
 echo "Service URL: $SERVICE_URL"
 if [[ -n "${GITHUB_ENV:-}" ]]; then
   printf 'SERVICE_URL=%s\nDEPLOYED_IMAGE=%s\n' "$SERVICE_URL" "$DIGEST_IMAGE" >> "$GITHUB_ENV"
