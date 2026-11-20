@@ -36,7 +36,7 @@ class SessionClient:
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
 
     def request(self, path, payload=None, csrf=None):
-        headers = {'Accept': 'application/json'}
+        headers = {'Accept': 'text/html' if path == '/' else 'application/json'}
         if payload is not None:
             headers.update({'Content-Type': 'application/json', 'Origin': self.base})
             if csrf:

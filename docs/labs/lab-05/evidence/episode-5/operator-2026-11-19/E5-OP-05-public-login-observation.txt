@@ -1,0 +1,22 @@
+Captured at: 2026-11-19T16:21:12.152Z
+URL: https://lectra-251142553134.asia-southeast1.run.app/
+Browser tab: 11, Title: "LECTRA", URL: "https://lectra-251142553134.asia-southeast1.run.app/".
+0 AXWebArea LECTRA, URL: lectra-251142553134.asia-southeast1.run.app/
+	1 container
+		2 text LECTURE FEEDBACK
+		3 heading LECTRA, Value: 1
+			4 text LECTRA
+		5 text Service connection ready.
+		6 heading Log in, Value: 2
+			7 text Log in
+		8 text Use your privately supplied LECTRA account.
+		9 container
+			10 text Email
+			11 text field (settable) Email
+			12 text Password
+			13 text field (settable) Password
+			14 button Log in
+		15 button Check session / reconnect
+
+The focused UI element is 0 AXWebArea LECTRA, URL: lectra-251142553134.asia-southeast1.run.app/
+Scope: public login page rendered inside the ChatGPT in-app browser without Google sign-in. No credentials entered; authenticated login/logout are not yet verified. Screenshot captures page content; canonical URL is recorded in this observation.
