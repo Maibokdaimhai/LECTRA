@@ -89,7 +89,10 @@ gcloud run services update-traffic "$SERVICE_NAME" --to-latest --project="$PROJE
 # ------------------------------------------------------------------------------
 # 5. Report the URL (and hand it to the next workflow steps via GITHUB_ENV)
 # ------------------------------------------------------------------------------
-SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')"
+# status.url can be a hashed alias, which is not the exact Origin accepted by
+# LECTRA login/CSRF. Read the retained APP_ORIGIN without logging the descriptor.
+SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --project="$PROJECT_ID" --region="$REGION" --format=json |
+  python3 "$(dirname "${BASH_SOURCE[0]}")/service_origin.py")"
 [[ "$SERVICE_URL" =~ ^https://[a-z0-9][a-z0-9.-]*[.]run[.]app$ ]] || { echo 'Invalid service URL.' >&2; exit 1; }
 echo "Service URL: $SERVICE_URL"
 if [[ -n "${GITHUB_ENV:-}" ]]; then

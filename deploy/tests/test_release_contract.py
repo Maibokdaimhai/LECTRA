@@ -1,4 +1,5 @@
 """Release sequencing and fail-closed gates; every gcloud invocation is a local stub."""
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -11,7 +12,7 @@ DIGEST = 'asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:' + '
 
 
 class ReleaseContractTests(unittest.TestCase):
-    def run_release(self, failure='', digest=DIGEST, url='https://lectra.example.run.app', **extra):
+    def run_release(self, failure='', digest=DIGEST, url='https://lectra.example.run.app', descriptor=None, **extra):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             cloud = root / 'gcloud'
@@ -24,7 +25,9 @@ case "$*" in
  'run jobs execute '*) [[ "$TEST_FAILURE" != migrate ]] ;;
  'run services update-traffic '*) [[ "$TEST_FAILURE" != traffic ]] ;;
  'run services update '*) [[ "$TEST_FAILURE" != service ]] ;;
- 'run services describe '*) printf '%s\\n' "$TEST_URL" ;;
+ 'run services describe '*)
+   if [[ "$*" == *--format=json* ]]; then printf '%s\\n' "$TEST_DESCRIPTOR";
+   else printf '%s\\n' 'https://lectra-hashed-as.a.run.app'; fi ;;
  *) exit 99 ;;
 esac
 ''')
@@ -34,6 +37,9 @@ esac
                    'REGION': 'asia-southeast1', 'IMAGE_TAG': SHA, 'ROLLBACK': 'false',
                    'SERVICE_NAME': 'lectra', 'MIGRATE_JOB_NAME': 'lectra-migrate',
                    'TEST_FAILURE': failure, 'TEST_DIGEST': digest, 'TEST_URL': url,
+                   'TEST_DESCRIPTOR': json.dumps(descriptor if descriptor is not None else {
+                       'status': {'url': 'https://lectra-hashed-as.a.run.app'},
+                       'spec': {'template': {'spec': {'containers': [{'env': [{'name': 'APP_ORIGIN', 'value': url}]}]}}}}),
                    'CALL_LOG': str(root / 'calls'), 'GITHUB_ENV': str(root / 'env'), **extra}
             result = subprocess.run(['bash', str(ROOT / 'deploy/release.sh')], env=env,
                                     capture_output=True, text=True)
@@ -53,6 +59,24 @@ esac
             self.assertIn('--image=' + DIGEST, c)
         self.assertIn('DEPLOYED_IMAGE=' + DIGEST, output)
         self.assertNotRegex('\n'.join(calls), r'users |secrets |seed|--set-env|--set-secrets|--service-account')
+
+    def test_configured_login_origin_is_exported_not_hashed_service_alias(self):
+        origin = 'https://lectra-123456789012.asia-southeast1.run.app'
+        result, _, output = self.run_release(url=origin)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('SERVICE_URL=' + origin + '\n', output)
+        self.assertNotIn('lectra-hashed', output)
+
+    def test_missing_or_duplicate_origin_is_rejected_without_alias_fallback(self):
+        for env in [[], [{'name': 'APP_ORIGIN', 'valueFrom': {'secretKeyRef': {'name': 'not-used'}}}],
+                    [{'name': 'APP_ORIGIN', 'value': 'https://one.run.app'},
+                     {'name': 'APP_ORIGIN', 'value': 'https://two.run.app'}]]:
+            with self.subTest(env=env):
+                descriptor = {'status': {'url': 'https://lectra-hashed-as.a.run.app'},
+                              'spec': {'template': {'spec': {'containers': [{'env': env}]}}}}
+                result, _, output = self.run_release(descriptor=descriptor)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(output, '')
 
     def test_invalid_or_foreign_digest_prevents_mutation(self):
         for digest in ['', DIGEST[:-1], DIGEST + 'x', DIGEST.replace('/release-test/', '/other/'), DIGEST + '\nINJECT=value']:
