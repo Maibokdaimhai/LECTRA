@@ -29,17 +29,17 @@ echo "$*" >> "$CALL_LOG"
 case "$*" in
   'artifacts docker images describe '*)
     [[ "${FAIL_AT:-}" != image ]] || exit 1
-    echo 'asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:abcdef' ;;
+    echo 'asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' ;;
   'run jobs execute '*) [[ "${FAIL_AT:-}" != migration ]] || exit 1 ;;
-  'run services describe '*) echo 'https://demo.example.test' ;;
+  'run services describe '*) echo 'https://lectra.example.run.app' ;;
 esac
 STUB
 chmod +x "$TASK_TMP/gcloud"
 export ROLLBACK=false
 bash "$ROOT/deploy/release.sh"
 grep -q 'run jobs execute .*--wait' "$CALL_LOG"
-grep -q 'run services update .*@sha256:abcdef' "$CALL_LOG"
-grep -q 'SERVICE_URL=https://demo.example.test' "$GITHUB_ENV"
+grep -q 'run services update .*@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' "$CALL_LOG"
+grep -q 'SERVICE_URL=https://lectra.example.run.app' "$GITHUB_ENV"
 echo 'PASS normal release uses digest and waits for migration'
 
 : > "$CALL_LOG"
