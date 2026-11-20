@@ -32,3 +32,26 @@ require_first_deployment_execution() {
     exit 2
   fi
 }
+
+# Episode 7: only the reviewed main deployment workflow may release live.
+# This is an accidental-execution guard; cloud authorization is still WIF/IAM.
+require_release_execution() {
+  local stub_dir="${LECTRA_OFFLINE_STUB_DIR:-}"
+  if [[ -n "$stub_dir" && -d "$stub_dir" && "$(command -v gcloud || true)" == "$stub_dir/gcloud" ]] &&
+     grep -q '^# LECTRA_OFFLINE_TEST_STUB$' "$stub_dir/gcloud"; then return; fi
+  if [[ "${GITHUB_ACTIONS:-}" != true || "${GITHUB_REPOSITORY:-}" != Maibokdaimhai/LECTRA ||
+        "${GITHUB_REF:-}" != refs/heads/main ||
+        "${GITHUB_WORKFLOW_REF:-}" != Maibokdaimhai/LECTRA/.github/workflows/deploy.yml@refs/heads/main ||
+        "${GITHUB_EVENT_NAME:-}" != push && "${GITHUB_EVENT_NAME:-}" != workflow_dispatch ||
+        -z "${PROJECT_ID:-}" || "${ALLOW_LIVE_GCP_PROJECT:-}" != "$PROJECT_ID" ]]; then
+    echo 'Release: live cloud execution is disabled outside the reviewed main Deploy demo workflow.' >&2
+    exit 2
+  fi
+  if [[ "${DRY_RUN:-0}" != 0 || "${GITHUB_WORKSPACE:-}" != "$PWD" ||
+        "$(git rev-parse --show-toplevel)" != "$PWD" ||
+        "$(git rev-parse HEAD)" != "${GITHUB_SHA:-}" ||
+        -n "$(git status --porcelain)" ]]; then
+    echo 'Release requires the clean exact workflow checkout; dry-run is not implemented.' >&2
+    exit 2
+  fi
+}

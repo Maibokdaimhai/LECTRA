@@ -1,0 +1,4 @@
+actionlint 1.7.12; shellcheck integration disabled (not installed).
+Command: actionlint -shellcheck= .github/workflows/deploy.yml .github/workflows/ci-docker.yml
+Exit: 0
+Diagnostics: (none)

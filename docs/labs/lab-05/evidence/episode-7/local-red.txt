@@ -1,0 +1,113 @@
+FFFFFFFFFF....
+======================================================================
+FAIL: test_invalid_inputs_fail_before_any_cloud_call (test_release_contract.ReleaseContractTests.test_invalid_inputs_fail_before_any_cloud_call) (extra={'PROJECT_ID': 'bad\nproject'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 94, in test_invalid_inputs_fail_before_any_cloud_call
+    self.assertEqual(calls, [])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Lists differ: ['artifacts docker images describe asia-so[168 chars]st)'] != []
+
+First list contains 3 additional elements.
+First extra element 0:
+'artifacts docker images describe asia-southeast1-docker.pkg.dev/bad'
+
++ []
+- ['artifacts docker images describe asia-southeast1-docker.pkg.dev/bad',
+-  'project/lectra/lectra:1111111111111111111111111111111111111111 --project=bad',
+-  'project --format=value(image_summary.fully_qualified_digest)']
+
+======================================================================
+FAIL: test_invalid_inputs_fail_before_any_cloud_call (test_release_contract.ReleaseContractTests.test_invalid_inputs_fail_before_any_cloud_call) (extra={'REGION': 'bad/region'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 94, in test_invalid_inputs_fail_before_any_cloud_call
+    self.assertEqual(calls, [])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Lists differ: ['artifacts docker images describe bad/reg[159 chars]st)'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'artifacts docker images describe bad/region-docker.pkg.dev/release-test/lectra/lectra:1111111111111111111111111111111111111111 --project=release-test --format=value(image_summary.fully_qualified_digest)'
+
++ []
+- ['artifacts docker images describe '
+-  'bad/region-docker.pkg.dev/release-test/lectra/lectra:1111111111111111111111111111111111111111 '
+-  '--project=release-test --format=value(image_summary.fully_qualified_digest)']
+
+======================================================================
+FAIL: test_invalid_inputs_fail_before_any_cloud_call (test_release_contract.ReleaseContractTests.test_invalid_inputs_fail_before_any_cloud_call) (extra={'SERVICE_NAME': '--help'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 93, in test_invalid_inputs_fail_before_any_cloud_call
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_inputs_fail_before_any_cloud_call (test_release_contract.ReleaseContractTests.test_invalid_inputs_fail_before_any_cloud_call) (extra={'MIGRATE_JOB_NAME': 'bad job'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 93, in test_invalid_inputs_fail_before_any_cloud_call
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_or_foreign_digest_prevents_mutation (test_release_contract.ReleaseContractTests.test_invalid_or_foreign_digest_prevents_mutation) (digest='asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 61, in test_invalid_or_foreign_digest_prevents_mutation
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_or_foreign_digest_prevents_mutation (test_release_contract.ReleaseContractTests.test_invalid_or_foreign_digest_prevents_mutation) (digest='asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 61, in test_invalid_or_foreign_digest_prevents_mutation
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_or_foreign_digest_prevents_mutation (test_release_contract.ReleaseContractTests.test_invalid_or_foreign_digest_prevents_mutation) (digest='asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nINJECT=value')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 61, in test_invalid_or_foreign_digest_prevents_mutation
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_url_cannot_inject_workflow_environment (test_release_contract.ReleaseContractTests.test_invalid_url_cannot_inject_workflow_environment) (url='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 85, in test_invalid_url_cannot_inject_workflow_environment
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_url_cannot_inject_workflow_environment (test_release_contract.ReleaseContractTests.test_invalid_url_cannot_inject_workflow_environment) (url='http://lectra.example.run.app')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 85, in test_invalid_url_cannot_inject_workflow_environment
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_url_cannot_inject_workflow_environment (test_release_contract.ReleaseContractTests.test_invalid_url_cannot_inject_workflow_environment) (url='https://lectra.example.run.app\nINJECT=value')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 85, in test_invalid_url_cannot_inject_workflow_environment
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+----------------------------------------------------------------------
+Ran 7 tests in 3.126s
+
+FAILED (failures=10)

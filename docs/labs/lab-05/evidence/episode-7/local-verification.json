@@ -1,0 +1,30 @@
+{
+  "recorded_at": "2026-11-20T12:07:47.068250+00:00",
+  "scope": "author-executed offline verification of working-tree source; no live GCP calls",
+  "base_commit": "39f868644ffda1c8f220ef47957408dab986bc4f",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.0",
+  "actionlint": "1.7.12",
+  "shellcheck": "not installed; actionlint integration explicitly disabled",
+  "source_sha256": {
+    ".github/workflows/deploy.yml": "cbdaf1ebe1a2926e02ea6d7b37d33d6673294e6a266ced49ac545509129f752a",
+    ".github/workflows/ci-docker.yml": "99a51b4c7db6dc8c3612b0671b48053919c3e39ed10da893c0c43a10f616fbb3",
+    ".gitignore": "e3f8efadb9cc93029cae2382d8abcc8b4df1da4003489395ca9fee2331982aaa",
+    ".dockerignore": "9cec126a063ec7a7210b17d0f4b8a0fff2c8c5d6ca0186137b448bf783c31fcb",
+    "deploy/release.sh": "024203cf65fa87407d0c45a0a5b1e13f3b90a58cf81a3281584b7b79aedb34cd",
+    "deploy/offline_guard.sh": "ca837d725769ded8b9b10bff8a3d382817bc5712c78d5ed6c6184eb8004e5c53",
+    "deploy/tests/test_release_contract.py": "3a4e3a70fd4c9b100e266bde12f796f4c9b90594437c1ffb644da717b89c09f9",
+    "deploy/tests/test_release_guard.py": "aca3c2a4fd6d72385feb547536ee2f03f70c90cc42c8ee48cb194b556a6b9662",
+    "deploy/tests/test_release_stub.sh": "fcc4766ba8d6661e6853f17afb047dbdd3e9aa46797b87cc69f1f3dcc65d06ec",
+    "deploy/tests/check_offline.sh": "5a48a17cc4dac270a013b608940871280fb27fc06755c962ff5d43421c974a88",
+    "deploy/smoke_test.py": "10d0703dc20e349f5056b3d9a06f7cb73b547e821ba2179445ee497fd9867bea"
+  },
+  "results": {
+    "offline_python_tests": 25,
+    "offline_python_failures": 0,
+    "shell_deploy_scenarios": 6,
+    "shell_release_scenarios": 5,
+    "actionlint_exit": 0
+  },
+  "red_evidence": "7 new release contract tests on original release.sh: 10 failing subcases; path-only sanitization [WORKTREE]. Raw output retained locally. This was a deliberate pre-fix offline check, not a historical release regression result."
+}
