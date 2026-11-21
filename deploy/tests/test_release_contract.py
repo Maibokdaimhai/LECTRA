@@ -51,11 +51,11 @@ esac
         result, calls, output = self.run_release()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
-            ['artifacts', 'docker', 'images'], ['run', 'jobs', 'update'],
-            ['run', 'jobs', 'execute'], ['run', 'services', 'update'],
-            ['run', 'services', 'update-traffic'], ['run', 'services', 'describe']])
-        self.assertIn('--wait', calls[2])
-        for c in [calls[1], calls[3]]:
+            ['artifacts', 'docker', 'images'], ['run', 'services', 'describe'],
+            ['run', 'jobs', 'update'], ['run', 'jobs', 'execute'],
+            ['run', 'services', 'update'], ['run', 'services', 'update-traffic']])
+        self.assertIn('--wait', calls[3])
+        for c in [calls[2], calls[4]]:
             self.assertIn('--image=' + DIGEST, c)
         self.assertIn('DEPLOYED_IMAGE=' + DIGEST, output)
         self.assertNotRegex('\n'.join(calls), r'users |secrets |seed|--set-env|--set-secrets|--service-account')
@@ -67,16 +67,27 @@ esac
         self.assertIn('SERVICE_URL=' + origin + '\n', output)
         self.assertNotIn('lectra-hashed', output)
 
-    def test_missing_or_duplicate_origin_is_rejected_without_alias_fallback(self):
-        for env in [[], [{'name': 'APP_ORIGIN', 'valueFrom': {'secretKeyRef': {'name': 'not-used'}}}],
-                    [{'name': 'APP_ORIGIN', 'value': 'https://one.run.app'},
-                     {'name': 'APP_ORIGIN', 'value': 'https://two.run.app'}]]:
-            with self.subTest(env=env):
-                descriptor = {'status': {'url': 'https://lectra-hashed-as.a.run.app'},
-                              'spec': {'template': {'spec': {'containers': [{'env': env}]}}}}
-                result, _, output = self.run_release(descriptor=descriptor)
-                self.assertNotEqual(result.returncode, 0)
-                self.assertEqual(output, '')
+    def test_invalid_origin_prevents_all_mutations_in_release_and_rollback(self):
+        cases = {
+            'missing': [],
+            'duplicate': [{'name': 'APP_ORIGIN', 'value': 'https://one.run.app'},
+                          {'name': 'APP_ORIGIN', 'value': 'https://two.run.app'}],
+            'malformed': [{'name': 'APP_ORIGIN', 'value': 'https://lectra..example.run.app'}],
+            'secret-only': [{'name': 'APP_ORIGIN', 'valueFrom': {'secretKeyRef': {'name': 'not-used'}}}],
+            'mixed': [{'name': 'APP_ORIGIN', 'value': 'https://lectra.example.run.app',
+                       'valueFrom': {'secretKeyRef': {'name': 'not-used'}}}],
+        }
+        for rollback in ['false', 'true']:
+            for label, env in cases.items():
+                with self.subTest(rollback=rollback, case=label):
+                    descriptor = {'status': {'url': 'https://lectra-hashed-as.a.run.app'},
+                                  'spec': {'template': {'spec': {'containers': [{'env': env}]}}}}
+                    result, calls, output = self.run_release(descriptor=descriptor, ROLLBACK=rollback)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+                        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe']])
+                    self.assertEqual(output, '')
+                    self.assertNotIn('Service URL:', result.stdout)
 
     def test_invalid_or_foreign_digest_prevents_mutation(self):
         for digest in ['', DIGEST[:-1], DIGEST + 'x', DIGEST.replace('/release-test/', '/other/'), DIGEST + '\nINJECT=value']:
@@ -91,7 +102,7 @@ esac
             with self.subTest(failure=failure):
                 result, calls, output = self.run_release(failure=failure)
                 self.assertNotEqual(result.returncode, 0)
-                self.assertFalse(any(c.startswith('run services ') for c in calls))
+                self.assertFalse(any(c.startswith(('run services update ', 'run services update-traffic ')) for c in calls))
                 self.assertEqual(output, '')
 
     def test_service_or_traffic_failure_does_not_report_success(self):
@@ -99,7 +110,7 @@ esac
             with self.subTest(failure=failure):
                 result, calls, output = self.run_release(failure=failure)
                 self.assertNotEqual(result.returncode, 0)
-                self.assertFalse(any(c.startswith('run services describe ') for c in calls))
+                self.assertEqual(sum(c.startswith('run services describe ') for c in calls), 1)
                 self.assertEqual(output, '')
 
     def test_invalid_url_cannot_inject_workflow_environment(self):
@@ -121,6 +132,9 @@ esac
         result, calls, _ = self.run_release(ROLLBACK='true')
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(any(c.startswith('run jobs ') for c in calls))
+        self.assertEqual([c.split(' ')[0:3] for c in calls], [
+            ['artifacts', 'docker', 'images'], ['run', 'services', 'describe'],
+            ['run', 'services', 'update'], ['run', 'services', 'update-traffic']])
 
 
 if __name__ == '__main__':

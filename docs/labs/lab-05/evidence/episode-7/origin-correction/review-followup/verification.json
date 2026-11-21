@@ -1,0 +1,25 @@
+{
+  "recorded_at_utc": "2026-11-21T03:44:10.656041+00:00",
+  "base_commit": "e1e5988d7db60bb775fe4b11a1f5bf1b64fdc2ff",
+  "scope": "Offline marked gcloud stubs only; no live GCP call or workflow dispatch",
+  "source_sha256": {
+    "deploy/release.sh": "43520359709667b081e859b6beacee212cf0e405a80559845617bb8b17c919f9",
+    "deploy/service_origin.py": "bb082cf0b21a738960e9617853a8e9f335244fc1dca522b59ba93de2971840bb",
+    "deploy/tests/test_release_contract.py": "a281bd47a587dfe1c0356a858b3dd9496e3e1628667c9ccee63bee8d3dbf83a4",
+    "deploy/tests/test_service_origin.py": "e0747b4df733437f343b7e44687acbaaec35115ca801dc4c2af43889bda2f724"
+  },
+  "results": {
+    "parser_tests_passed": 3,
+    "release_contract_tests_passed": 9,
+    "full_offline_python_tests_passed": 30,
+    "deploy_shell_scenarios_passed": 6,
+    "release_shell_scenarios_passed": 5,
+    "actionlint": "1.7.12 passed; shellcheck integration disabled"
+  },
+  "red_results": {
+    "parser_tests": 3,
+    "parser_failing_subcases": 6,
+    "release_tests": 9,
+    "release_failing_subcases": 14
+  }
+}
