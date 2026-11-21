@@ -1,0 +1,68 @@
+F..FFF.FFF...
+======================================================================
+FAIL: test_configured_login_origin_is_exported_not_hashed_service_alias (test_release_contract.ReleaseContractTests.test_configured_login_origin_is_exported_not_hashed_service_alias)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 67, in test_configured_login_origin_is_exported_not_hashed_service_alias
+    self.assertIn('SERVICE_URL=' + origin + '\n', output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'SERVICE_URL=https://lectra-123456789012.asia-southeast1.run.app\n' not found in 'SERVICE_URL=https://lectra-hashed-as.a.run.app\nDEPLOYED_IMAGE=asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n'
+
+======================================================================
+FAIL: test_invalid_url_cannot_inject_workflow_environment (test_release_contract.ReleaseContractTests.test_invalid_url_cannot_inject_workflow_environment) (url='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 109, in test_invalid_url_cannot_inject_workflow_environment
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_url_cannot_inject_workflow_environment (test_release_contract.ReleaseContractTests.test_invalid_url_cannot_inject_workflow_environment) (url='http://lectra.example.run.app')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 109, in test_invalid_url_cannot_inject_workflow_environment
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_url_cannot_inject_workflow_environment (test_release_contract.ReleaseContractTests.test_invalid_url_cannot_inject_workflow_environment) (url='https://lectra.example.run.app\nINJECT=value')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 109, in test_invalid_url_cannot_inject_workflow_environment
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_missing_or_duplicate_origin_is_rejected_without_alias_fallback (test_release_contract.ReleaseContractTests.test_missing_or_duplicate_origin_is_rejected_without_alias_fallback) (env=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 78, in test_missing_or_duplicate_origin_is_rejected_without_alias_fallback
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_missing_or_duplicate_origin_is_rejected_without_alias_fallback (test_release_contract.ReleaseContractTests.test_missing_or_duplicate_origin_is_rejected_without_alias_fallback) (env=[{'name': 'APP_ORIGIN', 'valueFrom': {'secretKeyRef': {'name': 'not-used'}}}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 78, in test_missing_or_duplicate_origin_is_rejected_without_alias_fallback
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_missing_or_duplicate_origin_is_rejected_without_alias_fallback (test_release_contract.ReleaseContractTests.test_missing_or_duplicate_origin_is_rejected_without_alias_fallback) (env=[{'name': 'APP_ORIGIN', 'value': 'https://one.run.app'}, {'name': 'APP_ORIGIN', 'value': 'https://two.run.app'}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 78, in test_missing_or_duplicate_origin_is_rejected_without_alias_fallback
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+----------------------------------------------------------------------
+Ran 9 tests in 3.754s
+
+FAILED (failures=7)

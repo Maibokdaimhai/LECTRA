@@ -1,0 +1,61 @@
+PASS: first_run (exit, migration gate, credential handling, secret redaction)
+PASS: rerun (exit, migration gate, credential handling, secret redaction)
+PASS: partial (exit, migration gate, credential handling, secret redaction)
+PASS: job-fail (exit, migration gate, credential handling, secret redaction)
+PASS: demo (exit, migration gate, credential handling, secret redaction)
+PASS: dry run makes no gcloud calls
+Service URL: https://lectra.example.run.app
+PASS normal release uses digest and waits for migration
+Rollback: reuse existing image; skip tests, build, migration and seed.
+Service URL: https://lectra.example.run.app
+PASS rollback reuses image without touching migration job
+PASS image failure blocks service update
+PASS migration failure blocks service update
+Invalid image tag.
+PASS invalid tag rejected before GCP calls
+test_branch_and_clean_main_and_current_remote_are_required (test_first_deployment_guard.FirstDeploymentGuardTests.test_branch_and_clean_main_and_current_remote_are_required) ... ok
+test_exact_clean_main_only_passes_the_guard_not_a_deployment (test_first_deployment_guard.FirstDeploymentGuardTests.test_exact_clean_main_only_passes_the_guard_not_a_deployment) ... ok
+test_explicit_exact_project_confirmation (test_first_deployment_guard.FirstDeploymentGuardTests.test_explicit_exact_project_confirmation) ... ok
+test_live_scripts_are_refused_even_with_unmarked_stub_directory (test_offline_guard.OfflineGuardTests.test_live_scripts_are_refused_even_with_unmarked_stub_directory) ... ok
+test_release_has_no_unimplemented_dry_run_bypass (test_offline_guard.OfflineGuardTests.test_release_has_no_unimplemented_dry_run_bypass) ... ok
+test_supported_previews_make_zero_cloud_calls (test_offline_guard.OfflineGuardTests.test_supported_previews_make_zero_cloud_calls) ... ok
+test_configured_login_origin_is_exported_not_hashed_service_alias (test_release_contract.ReleaseContractTests.test_configured_login_origin_is_exported_not_hashed_service_alias) ... ok
+test_invalid_inputs_fail_before_any_cloud_call (test_release_contract.ReleaseContractTests.test_invalid_inputs_fail_before_any_cloud_call) ... ok
+test_invalid_or_foreign_digest_prevents_mutation (test_release_contract.ReleaseContractTests.test_invalid_or_foreign_digest_prevents_mutation) ... ok
+test_invalid_url_cannot_inject_workflow_environment (test_release_contract.ReleaseContractTests.test_invalid_url_cannot_inject_workflow_environment) ... ok
+test_job_update_and_migration_failures_leave_service_untouched (test_release_contract.ReleaseContractTests.test_job_update_and_migration_failures_leave_service_untouched) ... ok
+test_missing_or_duplicate_origin_is_rejected_without_alias_fallback (test_release_contract.ReleaseContractTests.test_missing_or_duplicate_origin_is_rejected_without_alias_fallback) ... ok
+test_normal_release_orders_digest_migration_service_traffic_and_url (test_release_contract.ReleaseContractTests.test_normal_release_orders_digest_migration_service_traffic_and_url) ... ok
+test_rollback_reuses_image_without_migration_or_seed (test_release_contract.ReleaseContractTests.test_rollback_reuses_image_without_migration_or_seed) ... ok
+test_service_or_traffic_failure_does_not_report_success (test_release_contract.ReleaseContractTests.test_service_or_traffic_failure_does_not_report_success) ... ok
+test_main_manual_dispatch_context_passes_guard_only (test_release_guard.ReleaseGuardTests.test_main_manual_dispatch_context_passes_guard_only) ... ok
+test_reviewed_main_push_context_passes_guard_only (test_release_guard.ReleaseGuardTests.test_reviewed_main_push_context_passes_guard_only) ... ok
+test_untrusted_context_is_refused_before_cloud (test_release_guard.ReleaseGuardTests.test_untrusted_context_is_refused_before_cloud) ... ok
+test_wrong_or_dirty_checkout_and_fake_dry_run_are_refused (test_release_guard.ReleaseGuardTests.test_wrong_or_dirty_checkout_and_fake_dry_run_are_refused) ... ok
+test_bad_readiness_fails_after_bounded_retries (test_smoke.SmokeTests.test_bad_readiness_fails_after_bounded_retries) ... ok
+test_cookie_bootstrap_login_rotation_context_and_logout (test_smoke.SmokeTests.test_cookie_bootstrap_login_rotation_context_and_logout) ... ok
+test_http_transport_sends_origin_and_csrf_not_bearer (test_smoke.SmokeTests.test_http_transport_sends_origin_and_csrf_not_bearer) ... ok
+test_me_failure_still_logs_out_with_current_csrf (test_smoke.SmokeTests.test_me_failure_still_logs_out_with_current_csrf) ... ok
+test_partial_credentials_fail_before_network (test_smoke.SmokeTests.test_partial_credentials_fail_before_network) ... ok
+test_public_checks_without_optional_credentials (test_smoke.SmokeTests.test_public_checks_without_optional_credentials) ... ok
+test_transport_accepts_html_for_root_and_json_for_api (test_smoke.SmokeTests.test_transport_accepts_html_for_root_and_json_for_api) ... ok
+test_unsafe_target_is_rejected (test_smoke.SmokeTests.test_unsafe_target_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 5.104s
+
+OK
+PASS /api/health
+PASS /api/health
+PASS /api/ready
+PASS /
+PASS cookie login, authenticated identity and context read
+PASS logout
+PASS /api/health
+PASS /api/ready
+PASS /
+PASS logout
+PASS /api/health
+PASS /api/ready
+PASS /
+SKIP optional authenticated smoke: no credentials configured

@@ -1,0 +1,275 @@
+...FFFFFFFFFF..FFFF
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='false', case='missing')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 87, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[35 chars]n', 'jobs', 'update'], ['run', 'jobs', 'execut[102 chars]be']] != [['ar[35 chars]n', 'services', 'describe']]
+
+First differing element 1:
+['run', 'jobs', 'update']
+['run', 'services', 'describe']
+
+First list contains 4 additional elements.
+First extra element 2:
+['run', 'jobs', 'execute']
+
++ [['artifacts', 'docker', 'images'], ['run', 'services', 'describe']]
+- [['artifacts', 'docker', 'images'],
+-  ['run', 'jobs', 'update'],
+-  ['run', 'jobs', 'execute'],
+-  ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='false', case='duplicate')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 87, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[35 chars]n', 'jobs', 'update'], ['run', 'jobs', 'execut[102 chars]be']] != [['ar[35 chars]n', 'services', 'describe']]
+
+First differing element 1:
+['run', 'jobs', 'update']
+['run', 'services', 'describe']
+
+First list contains 4 additional elements.
+First extra element 2:
+['run', 'jobs', 'execute']
+
++ [['artifacts', 'docker', 'images'], ['run', 'services', 'describe']]
+- [['artifacts', 'docker', 'images'],
+-  ['run', 'jobs', 'update'],
+-  ['run', 'jobs', 'execute'],
+-  ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='false', case='malformed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 86, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='false', case='secret-only')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 87, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[35 chars]n', 'jobs', 'update'], ['run', 'jobs', 'execut[102 chars]be']] != [['ar[35 chars]n', 'services', 'describe']]
+
+First differing element 1:
+['run', 'jobs', 'update']
+['run', 'services', 'describe']
+
+First list contains 4 additional elements.
+First extra element 2:
+['run', 'jobs', 'execute']
+
++ [['artifacts', 'docker', 'images'], ['run', 'services', 'describe']]
+- [['artifacts', 'docker', 'images'],
+-  ['run', 'jobs', 'update'],
+-  ['run', 'jobs', 'execute'],
+-  ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='false', case='mixed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 86, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='true', case='missing')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 87, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[47 chars]s', 'update'], ['run', 'services', 'update-tra[35 chars]be']] != [['ar[47 chars]s', 'describe']]
+
+First differing element 1:
+['run', 'services', 'update']
+['run', 'services', 'describe']
+
+First list contains 2 additional elements.
+First extra element 2:
+['run', 'services', 'update-traffic']
+
++ [['artifacts', 'docker', 'images'], ['run', 'services', 'describe']]
+- [['artifacts', 'docker', 'images'],
+-  ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='true', case='duplicate')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 87, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[47 chars]s', 'update'], ['run', 'services', 'update-tra[35 chars]be']] != [['ar[47 chars]s', 'describe']]
+
+First differing element 1:
+['run', 'services', 'update']
+['run', 'services', 'describe']
+
+First list contains 2 additional elements.
+First extra element 2:
+['run', 'services', 'update-traffic']
+
++ [['artifacts', 'docker', 'images'], ['run', 'services', 'describe']]
+- [['artifacts', 'docker', 'images'],
+-  ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='true', case='malformed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 86, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='true', case='secret-only')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 87, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[47 chars]s', 'update'], ['run', 'services', 'update-tra[35 chars]be']] != [['ar[47 chars]s', 'describe']]
+
+First differing element 1:
+['run', 'services', 'update']
+['run', 'services', 'describe']
+
+First list contains 2 additional elements.
+First extra element 2:
+['run', 'services', 'update-traffic']
+
++ [['artifacts', 'docker', 'images'], ['run', 'services', 'describe']]
+- [['artifacts', 'docker', 'images'],
+-  ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_invalid_origin_prevents_all_mutations_in_release_and_rollback (test_release_contract.ReleaseContractTests.test_invalid_origin_prevents_all_mutations_in_release_and_rollback) (rollback='true', case='mixed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 86, in test_invalid_origin_prevents_all_mutations_in_release_and_rollback
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_normal_release_orders_digest_migration_service_traffic_and_url (test_release_contract.ReleaseContractTests.test_normal_release_orders_digest_migration_service_traffic_and_url)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 53, in test_normal_release_orders_digest_migration_service_traffic_and_url
+    self.assertEqual([c.split(' --')[0].split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe'],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['run', 'jobs', 'update'], ['run', 'jobs', 'execute'],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['run', 'services', 'update'], ['run', 'services', 'update-traffic']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[35 chars]n', 'jobs', 'update'], ['run', 'jobs', 'execut[102 chars]be']] != [['ar[35 chars]n', 'services', 'describe'], ['run', 'jobs', '[102 chars]ic']]
+
+First differing element 1:
+['run', 'jobs', 'update']
+['run', 'services', 'describe']
+
+  [['artifacts', 'docker', 'images'],
++  ['run', 'services', 'describe'],
+   ['run', 'jobs', 'update'],
+   ['run', 'jobs', 'execute'],
+   ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+?                                       ^
+
++  ['run', 'services', 'update-traffic']]
+?                                       ^
+
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_rollback_reuses_image_without_migration_or_seed (test_release_contract.ReleaseContractTests.test_rollback_reuses_image_without_migration_or_seed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 135, in test_rollback_reuses_image_without_migration_or_seed
+    self.assertEqual([c.split(' ')[0:3] for c in calls], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['artifacts', 'docker', 'images'], ['run', 'services', 'describe'],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ['run', 'services', 'update'], ['run', 'services', 'update-traffic']])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [['ar[47 chars]s', 'update'], ['run', 'services', 'update-tra[35 chars]be']] != [['ar[47 chars]s', 'describe'], ['run', 'services', 'update'][35 chars]ic']]
+
+First differing element 1:
+['run', 'services', 'update']
+['run', 'services', 'describe']
+
+  [['artifacts', 'docker', 'images'],
++  ['run', 'services', 'describe'],
+   ['run', 'services', 'update'],
+-  ['run', 'services', 'update-traffic'],
+?                                       ^
+
++  ['run', 'services', 'update-traffic']]
+?                                       ^
+
+-  ['run', 'services', 'describe']]
+
+======================================================================
+FAIL: test_service_or_traffic_failure_does_not_report_success (test_release_contract.ReleaseContractTests.test_service_or_traffic_failure_does_not_report_success) (failure='service')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 113, in test_service_or_traffic_failure_does_not_report_success
+    self.assertEqual(sum(c.startswith('run services describe ') for c in calls), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_service_or_traffic_failure_does_not_report_success (test_release_contract.ReleaseContractTests.test_service_or_traffic_failure_does_not_report_success) (failure='traffic')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_release_contract.py", line 113, in test_service_or_traffic_failure_does_not_report_success
+    self.assertEqual(sum(c.startswith('run services describe ') for c in calls), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 9 tests in 4.367s
+
+FAILED (failures=14)
