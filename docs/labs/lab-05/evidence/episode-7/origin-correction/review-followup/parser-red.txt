@@ -1,0 +1,59 @@
+FFFF.FF
+======================================================================
+FAIL: test_invalid_dns_labels_and_non_origin_urls_are_rejected (test_service_origin.ServiceOriginTests.test_invalid_dns_labels_and_non_origin_urls_are_rejected) (host='lectra..example.run.app')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_service_origin.py", line 26, in test_invalid_dns_labels_and_non_origin_urls_are_rejected
+    with self.subTest(host=host), self.assertRaises(ValueError):
+                                  ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_dns_labels_and_non_origin_urls_are_rejected (test_service_origin.ServiceOriginTests.test_invalid_dns_labels_and_non_origin_urls_are_rejected) (host='lectra-.run.app')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_service_origin.py", line 26, in test_invalid_dns_labels_and_non_origin_urls_are_rejected
+    with self.subTest(host=host), self.assertRaises(ValueError):
+                                  ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_dns_labels_and_non_origin_urls_are_rejected (test_service_origin.ServiceOriginTests.test_invalid_dns_labels_and_non_origin_urls_are_rejected) (host='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.run.app')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_service_origin.py", line 26, in test_invalid_dns_labels_and_non_origin_urls_are_rejected
+    with self.subTest(host=host), self.assertRaises(ValueError):
+                                  ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_dns_labels_and_non_origin_urls_are_rejected (test_service_origin.ServiceOriginTests.test_invalid_dns_labels_and_non_origin_urls_are_rejected) (host='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.run.app')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_service_origin.py", line 26, in test_invalid_dns_labels_and_non_origin_urls_are_rejected
+    with self.subTest(host=host), self.assertRaises(ValueError):
+                                  ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_unambiguous_literal_only_entry_required (test_service_origin.ServiceOriginTests.test_unambiguous_literal_only_entry_required) (entry={'name': 'APP_ORIGIN', 'value': 'https://lectra.run.app', 'valueFrom': {}})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_service_origin.py", line 39, in test_unambiguous_literal_only_entry_required
+    with self.subTest(entry=entry), self.assertRaises(ValueError):
+                                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_unambiguous_literal_only_entry_required (test_service_origin.ServiceOriginTests.test_unambiguous_literal_only_entry_required) (entry={'name': 'APP_ORIGIN', 'value': 'https://lectra.run.app', 'valueFrom': None})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "[WORKTREE]/deploy/tests/test_service_origin.py", line 39, in test_unambiguous_literal_only_entry_required
+    with self.subTest(entry=entry), self.assertRaises(ValueError):
+                                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=6)

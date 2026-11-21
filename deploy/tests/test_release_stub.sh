@@ -31,7 +31,7 @@ case "$*" in
     [[ "${FAIL_AT:-}" != image ]] || exit 1
     echo 'asia-southeast1-docker.pkg.dev/release-test/lectra/lectra@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' ;;
   'run jobs execute '*) [[ "${FAIL_AT:-}" != migration ]] || exit 1 ;;
-  'run services describe '*) echo 'https://lectra.example.run.app' ;;
+  'run services describe '*) echo '{"status":{"url":"https://lectra-alias-as.a.run.app"},"spec":{"template":{"spec":{"containers":[{"env":[{"name":"APP_ORIGIN","value":"https://lectra.example.run.app"}]}]}}}}' ;;
 esac
 STUB
 chmod +x "$TASK_TMP/gcloud"
