@@ -166,6 +166,11 @@ jobs:
       #    (all logic lives in deploy/release.sh). Exports SERVICE_URL and
       #    DEPLOYED_IMAGE for the next steps.
       # ------------------------------------------------------------------------
+      - name: Setup Python 3.14
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+
       - name: Verify image, migrate and deploy
         run: bash deploy/release.sh
 
@@ -173,11 +178,6 @@ jobs:
       # 6. Smoke test the live URL
       #    CHANGE ME: Python setup + script if you use another smoke test.
       # ------------------------------------------------------------------------
-      - name: Setup Python 3.14
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: "3.14"
-
       - name: Smoke test public URL
         id: smoke
         env:

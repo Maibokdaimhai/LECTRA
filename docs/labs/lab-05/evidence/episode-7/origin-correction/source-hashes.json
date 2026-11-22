@@ -1,0 +1,7 @@
+{
+  "deploy/service_origin.py": "ce0ff098fd626ef84a21213143fbf8b8bf19bc14a9deb0c3566c05c1aaf36ea1",
+  "deploy/release.sh": "c68f9e244c3fd04cf27164728a8f4ee31638be918b68b6ca65bd398236f88f45",
+  "deploy/tests/test_release_contract.py": "a45626522294ae6b61f14c9e08f7da16af2dfdbc9de8b50e7162fc17319c8260",
+  "deploy/tests/test_release_stub.sh": "7dca3ca0126b005142c98bfa7ac0873039c8626ba04c9f0b30b1e42819e14cc4",
+  ".github/workflows/deploy.yml": "76968a58fb79bea4aa314d98e1c7582042e1393f71f092fe7ebc7daca71f8c2e"
+}
