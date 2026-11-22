@@ -300,7 +300,7 @@ function App() {
             setBusy(false);
         }
     }
-    return <main><header className="brand"><div><p className="eyebrow">LECTURE FEEDBACK</p><h1>LECTRA</h1></div><p role="status">{health}</p></header>
+    return <main><header className="brand"><div><p className="eyebrow">POST-LECTURE FEEDBACK</p><h1>LECTRA</h1></div><p role="status">{health}</p></header>
     <ErrorBox message={error}/>
     {loading && <p role="status">Checking your session…</p>}
     {!verified && !pendingLogout && <button disabled={loading} onClick={() => void bootstrap()}>Check session / reconnect</button>}
