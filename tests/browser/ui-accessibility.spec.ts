@@ -85,6 +85,29 @@ test('UI-F02: rejected Draft fields have stable linked errors without exposing s
   await expect(title).toHaveValue('x'.repeat(121)); expect(await title.getAttribute('id')).toBe(titleId);
   expect(f.mutations()).toBe(1); await verifyLayout(page, info);
 });
+test('UAT-04 issue #70: an explicit saved-status check reports no submission and keeps the answers in progress', async ({ page }) => {
+  const f = await fixture(page, true, 2);
+  f.response('invalid');
+  const draftRating = page.getByRole('group', { name: 'Middle (required)' }).getByRole('radio', { name: '5', exact: true });
+  const status = page.getByText('No submission was recorded for your account.', { exact: true });
+  const checkSaved = page.getByRole('button', { name: 'Check saved status', exact: true });
+  await expect(status).toHaveCount(0);
+  await draftRating.check();
+  await keyActivate(page, page.getByRole('button', { name: 'Submit feedback', exact: true }));
+  await expect(page.getByRole('alert')).toBeVisible();
+  await keyActivate(page, checkSaved);
+  await expect(status).toBeVisible();
+  await expect(status).toHaveAttribute('role', 'status');
+  await expect(draftRating).toBeChecked();
+  expect(f.mutations()).toBe(1);
+
+  f.response('invalid', true);
+  await keyActivate(page, checkSaved);
+  await expect(page.getByRole('alert')).toBeVisible();
+  await expect(status).toHaveCount(0);
+  await expect(draftRating).toBeChecked();
+});
+
 test('UI-F02: required rating links to its retained input', async ({ page }, info) => {
   const f = await fixture(page, true, 1); f.response('invalid');
   await keyActivate(page, page.getByRole('button', { name: 'Submit feedback', exact: true }));
