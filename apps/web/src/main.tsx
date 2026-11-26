@@ -1,6 +1,6 @@
 import { StrictMode, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
-import { draftFieldIssues, responseFieldIssues, type DraftField, type FieldIssue } from './ui-validation';
+import { draftFieldIssues, responseFieldIssues, writtenAnswerLimit, writtenAnswerTotal, writtenSubmissionLimit, type DraftField, type FieldIssue } from './ui-validation';
 import './theme.css';
 type User = {
     id: string;
@@ -548,7 +548,8 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
     const [validation, setValidation] = useState(false), [errorAttempt, setErrorAttempt] = useState(0);
     const [savedStatusChecked, setSavedStatusChecked] = useState(false);
     const target = (index: number) => `${formId}-${survey.questions[index]!.id}-${survey.questions[index]!.type === 'RATING' ? 'rating-1' : 'text'}`;
-    const fields = validation ? responseFieldIssues(survey.questions, values, target) : [];
+    const totalTarget = formId + '-written-total';
+    const fields = validation ? responseFieldIssues(survey.questions, values, target, totalTarget) : [];
     useLayoutEffect(() => { if (submission?.submitted && focusConfirmation.current) { confirmation.current?.focus(); focusConfirmation.current = false; } }, [submission?.submitted]);
     const lifecycleNeedsCheck = useRef(false);
     useEffect(() => { navigationBlocked(busy || unknownOutcome || checking || Object.keys(values).length > 0); return () => navigationBlocked(false); }, [busy, unknownOutcome, checking, values, navigationBlocked]);
@@ -592,7 +593,7 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
         }
         catch (e) {
             setError(formReason(e)); setErrorAttempt(n => n + 1);
-            if (e instanceof ApiError && e.status === 422 && responseFieldIssues(survey.questions, values, target).length) setValidation(true);
+            if (e instanceof ApiError && e.status === 422 && responseFieldIssues(survey.questions, values, target, totalTarget).length) setValidation(true);
             if (e instanceof ApiError && e.status === 409 && e.code === 'INVALID_STATE')
                 lifecycleNeedsCheck.current = true;
             if (!(e instanceof ApiError) || e.status >= 500 || e.status === 409) {
@@ -613,7 +614,14 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
         return <section><h3 ref={confirmation} tabIndex={-1}>Submission received</h3><p>Your saved answers are read-only.</p>{submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{a.value}</p></div>)}</section>;
     if (survey.status === 'CLOSED')
         return <><ErrorBox message={error}/><p>{unknownOutcome ? 'This survey is closed. Check saved status to confirm whether your submission was recorded.' : 'This survey is closed. No submission was recorded for your account.'}</p>{unknownOutcome && <button disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button>}</>;
-    return <form onSubmit={e => void submit(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map((q, index) => <fieldset key={q.id!} {...fieldAttributes(target(index), fields)}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input id={`${formId}-${q.id}-rating-${score}`} {...fieldAttributes(target(index), fields)} type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea id={target(index)} {...fieldAttributes(target(index), fields)} value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/2000 characters</small></>}<FieldError id={target(index)} fields={fields}/></fieldset>)}</fieldset><button disabled={busy || checking || unknownOutcome}>{busy ? 'Submitting…' : 'Submit feedback'}</button><button type="button" className="secondary" disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button>
+    return <form onSubmit={e => void submit(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map((q, index) => <fieldset key={q.id!} {...fieldAttributes(target(index), fields)}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input id={`${formId}-${q.id}-rating-${score}`} {...fieldAttributes(target(index), fields)} type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea id={target(index)} {...fieldAttributes(target(index), fields)} value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/{writtenAnswerLimit} characters</small></>}<FieldError id={target(index)} fields={fields}/></fieldset>)}</fieldset>
+      {survey.questions.some(question => question.type === 'TEXT') && <>
+        <p id={totalTarget} tabIndex={-1} {...fieldAttributes(totalTarget, fields)}>
+          Written answers total: {writtenAnswerTotal(survey.questions, values)}/{writtenSubmissionLimit} characters
+        </p>
+        <FieldError id={totalTarget} fields={fields}/>
+      </>}
+      <button disabled={busy || checking || unknownOutcome}>{busy ? 'Submitting…' : 'Submit feedback'}</button><button type="button" className="secondary" disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button>
       <div role="status">{savedStatusChecked && 'No submission was recorded for your account.'}</div>
     </form>;
 }
