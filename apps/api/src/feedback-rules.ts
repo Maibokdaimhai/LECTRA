@@ -42,6 +42,9 @@ export function parseAnswerEnvelope(value: unknown) {
     if (!parsed.success) fail(422, 'INVALID_REQUEST');
     return parsed.data!;
 }
+const writtenAnswerLimit = 1000;
+const writtenSubmissionLimit = 3000;
+
 export function parseAnswers(value: unknown, questions: StoredQuestion[]) {
     const entries = parseAnswerEnvelope(value).answers;
     const seen = new Set<string>();
@@ -49,7 +52,8 @@ export function parseAnswers(value: unknown, questions: StoredQuestion[]) {
         questionId: string;
         value: string | number;
     }[] = [];
-    for (const entry of entries) {
+    let writtenTotal = 0;
+    for (const [index, entry] of entries.entries()) {
         const q = questions.find(q => q.id === entry.questionId);
         if (!q || seen.has(entry.questionId))
             fail(422, 'INVALID_ANSWERS');
@@ -59,16 +63,23 @@ export function parseAnswers(value: unknown, questions: StoredQuestion[]) {
                 fail(422, 'INVALID_ANSWERS');
         }
         else {
-            if (typeof entry.value !== 'string' || !wellFormed(entry.value) || entry.value.includes('\0') || [...entry.value].length > 2000)
-                fail(422, 'INVALID_ANSWERS');
-            if (typeof entry.value === 'string' && !entry.value.trim()) {
+            const value = entry.value;
+            if (typeof value !== 'string' || !wellFormed(value) || value.includes('\0'))
+                return fail(422, 'INVALID_ANSWERS');
+            const length = [...value].length;
+            if (length > writtenAnswerLimit)
+                fail(422, 'INVALID_ANSWERS', `Use at most ${writtenAnswerLimit} characters.`, `answers[${index}].value`);
+            if (!value.trim()) {
                 if (q!.required)
                     fail(422, 'INVALID_ANSWERS');
                 continue;
             }
+            writtenTotal += length;
         }
         answers.push(entry);
     }
+    if (writtenTotal > writtenSubmissionLimit)
+        fail(422, 'INVALID_ANSWERS', `Use at most ${writtenSubmissionLimit} characters across written answers.`, '_form');
     if (!answers.length || questions.some(q => q.required && !answers.some(a => a.questionId === q.id)))
         fail(422, 'INVALID_ANSWERS');
     return answers.sort((a, b) => questions.find(q => q.id === a.questionId)!.position - questions.find(q => q.id === b.questionId)!.position);

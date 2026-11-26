@@ -288,7 +288,7 @@ it('F-03: one-survey uniqueness, stable definitions/revisions, foreign owner rej
 });
 it('F-04: required/type/Unicode/association boundaries reject without any partial response', async () => {
     const student = await login('respondent.11@example.test');
-    for (const answers of [[], [{ questionId: ratingId, value: 0 }], [{ questionId: ratingId, value: '5' }], [{ questionId: textId, value: 'x' }], [{ questionId: ratingId, value: 5 }, { questionId: textId, value: 'x'.repeat(2001) }], [{ questionId: fixtureId(501), value: 5 }], [{ questionId: ratingId, value: 5 }, { questionId: ratingId, value: 4 }]]) {
+    for (const answers of [[], [{ questionId: ratingId, value: 0 }], [{ questionId: ratingId, value: '5' }], [{ questionId: textId, value: 'x' }], [{ questionId: ratingId, value: 5 }, { questionId: textId, value: 'x'.repeat(1001) }], [{ questionId: fixtureId(501), value: 5 }], [{ questionId: ratingId, value: 5 }, { questionId: ratingId, value: 4 }]]) {
         await mutation(student, 'post', `/api/surveys/${surveyId}/responses`, { answers }).expect(422);
     }
     expect((await pool.query('SELECT count(*)::int AS n FROM "Participation" WHERE "surveyId"=$1', [surveyId])).rows[0].n).toBe(0);
@@ -661,15 +661,57 @@ it('INT22-05: real UTF-8 and surrogate-escaped text enforce code-point boundarie
             return escaped ? json.replace(/[\u007f-\uffff]/g, c => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`) : json;
         };
         const post = (raw: string) => student.agent.post(`/api/surveys/${f.id}/responses`).set('Origin', origin).set('X-CSRF-Token', student.token).set('Content-Type', 'application/json').send(raw);
-        for (const invalid of ['😀'.repeat(2001), '\ud800', '\0']) {
-            expect((await post(encode(invalid)).expect(422)).body.error.code).toBe('INVALID_ANSWERS');
+        for (const invalid of ['😀'.repeat(1001), '\ud800', '\0']) {
+            const denied = await post(encode(invalid)).expect(422);
+            expect(denied.body.error.code).toBe('INVALID_ANSWERS');
+            if ([...invalid].length > 1000) expect(denied.body.error.target).toBe('answers[1].value');
             expect(await responseRows(f.id)).toEqual({ participation: 0, bundles: 0, answers: 0 });
         }
-        const valid = ' 😀'.repeat(999) + '😀\n'; // Exactly 2,000 code points, retain leading whitespace/newline.
-        expect([...valid].length).toBe(2000);
+        const valid = ' 😀'.repeat(499) + '😀\n'; // Exactly 1,000 code points, retain leading whitespace/newline.
+        expect([...valid].length).toBe(1000);
         await post(encode(valid)).expect(201);
         expect((await student.agent.get(`/api/surveys/${f.id}/my-submission`).expect(200)).body.data.answers[1].value).toBe(valid);
     }
+});
+it('F-04 #76 enforces the written total atomically on fresh published surveys', async () => {
+    const owner = await login(), student = await login('respondent.11@example.test');
+    const text = (position: number) => ({ id: null, prompt: 'Comment ' + position, type: 'TEXT', required: position === 1, ratingScale: null });
+    for (const finalText of ['dd', 'd']) {
+        const f = await integrationDraft(owner, [1, 2, 3, 4, 5].map(text));
+        await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+        const values = [5, '😀'.repeat(1000), 'b'.repeat(1000), 'c'.repeat(999), finalText, ' '.repeat(1000)];
+        const answers = f.questions.map((q, i) => ({ questionId: q.id, value: values[i] }));
+        const response = mutation(student, 'post', `/api/surveys/${f.id}/responses`, { answers });
+        if (finalText === 'dd') {
+            expect((await response.expect(422)).body.error).toMatchObject({ code: 'INVALID_ANSWERS', target: '_form' });
+            expect(await responseRows(f.id)).toEqual({ participation: 0, bundles: 0, answers: 0 });
+        } else {
+            await response.expect(201);
+            expect(await responseRows(f.id)).toEqual({ participation: 1, bundles: 1, answers: 5 });
+            const readback = await student.agent.get(`/api/surveys/${f.id}/my-submission`).expect(200);
+            expect(readback.body.data.answers).toEqual(answers.slice(0, 5));
+        }
+    }
+});
+it('F-04 #76 preserves authorized readback for legacy written submissions above the new limits', async () => {
+    const owner = await login(), student = await login('respondent.11@example.test');
+    const f = await integrationDraft(owner, ['A', 'B', 'C'].map(prompt => ({ id: null, prompt, type: 'TEXT', required: false, ratingScale: null })));
+    await mutation(owner, 'post', `/api/surveys/${f.id}/publish`, { expectedRevision: 2 }).expect(200);
+    const studentId = fixtureId(11);
+    const values = ['😀'.repeat(1500), 'b'.repeat(1200), 'c'.repeat(600)];
+    await pool.query('INSERT INTO "Participation" VALUES ($1,$2)', [f.id, studentId]);
+    const bundle = (await pool.query('INSERT INTO "ResponseBundle" (id,"surveyId","identifiedStudentId") VALUES ($1,$2,$3) RETURNING id', [fixtureId(7601), f.id, studentId])).rows[0].id;
+    await pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue") VALUES ($1,$2,$3,5)', [bundle, f.questions[0]!.id, f.id]);
+    for (const [i, value] of values.entries()) {
+        await pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","textValue") VALUES ($1,$2,$3,$4)', [bundle, f.questions[i + 1]!.id, f.id, value]);
+    }
+    const own = await student.agent.get(`/api/surveys/${f.id}/my-submission`).expect(200);
+    expect(own.body.data.answers.map((answer: { value: unknown }) => answer.value)).toEqual([5, ...values]);
+    const beforeClose = await owner.agent.get(`/api/surveys/${f.id}/results`).expect(200);
+    expect(beforeClose.body.data.questions).toBeUndefined();
+    await mutation(owner, 'post', `/api/surveys/${f.id}/close`, {}).expect(200);
+    const closed = await owner.agent.get(`/api/surveys/${f.id}/results`).expect(200);
+    expect(closed.body.data.questions.slice(1).map((question: { comments: string[] }) => question.comments)).toEqual(values.map(value => [value]));
 });
 it('INT22-06: role, same-Course foreign ownership and actor spoofing never expose or mutate response data', async () => {
     const owner = await login(), foreign = await login('owner.2@example.test'), a = await login('respondent.11@example.test'), b = await login('respondent.12@example.test');
