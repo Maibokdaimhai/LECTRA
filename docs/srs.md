@@ -1,5 +1,7 @@
 # LECTRA — Software Requirements Specification
 
+Lab 7 revision 1 (2026-11-27 ICT), BR-07. [Issue #76](https://github.com/Maibokdaimhai/LECTRA/issues/76) and [Songwit’s contract review](https://github.com/Maibokdaimhai/LECTRA/issues/76#issuecomment-7200533920). Historical version notes below refer to their original scope.
+
 Version: 0.4 (2026-11-06). Status: consolidated planning draft with source-qualified review recommendations; not an approved or implemented baseline.
 Related issue: [#1](https://github.com/Maibokdaimhai/LECTRA/issues/1).
 
@@ -92,7 +94,7 @@ Attendance, grades, homework, LMS workflows, university integrations, registrati
 | BR-04 | Valid transitions are Draft → Published → Closed. No reopening is supported. Respondents cannot discover Draft content. | I + T |
 | BR-05 | Only Published surveys accept responses. Publication requires 1–10 valid questions including at least one rating or single-choice question, a nonblank title, and at least one eligible student. | I + T |
 | BR-06 | Each eligible student can submit at most once per survey, including concurrent requests. A rejected duplicate creates no second response. | I + T |
-| BR-07 | Required answers must be present; required text must contain non-whitespace content. Ratings are integers 1–5. Text is at most 2,000 Unicode code points. Unknown, duplicate or wrong-survey question IDs and wrong-type answers are rejected. A submission must contain at least one nonempty valid answer even if all questions are optional. | I + T |
+| BR-07 | Required answers must be present; required text must contain non-whitespace content. Ratings are integers 1–5. Each newly submitted written answer is limited to 1,000 Unicode code points before blank normalization. Per submission, nonblank written answers may total at most 3,000 code points, including surrounding spaces and newlines. Ratings and omitted or normalized optional blank answers add zero. Previously stored answers remain available through authorized readback. Unknown, duplicate or wrong-survey question IDs and wrong-type answers are rejected. A submission must contain at least one nonempty valid answer even if all questions are optional. | I + T |
 | BR-08 | A response is atomic: either participation and all valid answers commit, or no part is retained. | T |
 | BR-09 | Question structure/order, required flags, eligibility and privacy mode are immutable after publication. A new evaluation requires a new survey for another lecture or an explicit future approved scope change. | T |
 | BR-10 | Submitted answers cannot be edited, withdrawn or resubmitted in the baseline. Drafts may be deleted; Published/Closed surveys and submitted responses are not hard-deleted through the application. | T |
@@ -112,7 +114,7 @@ Attendance, grades, homework, LMS workflows, university integrations, registrati
 
 Optional blank text is normalized to no answer; omitted optional questions are excluded from that question's answered denominator. Omit unanswered optional fields rather than submitting a fabricated score or empty typed value. The response count counts submitted students, not answer rows. Draft titles are limited to 120 and question prompts to 500 Unicode code points. Single-choice has 2–6 nonblank, distinct option labels of up to 120 code points and exactly one selected option when answered. A survey requires at least one rating or single-choice question to support a numeric/count summary. Survey limits and privacy thresholds are team choices, not instructor-specified values.
 
-F-04 request sizing must accommodate bounded escaped JSON as well as UTF-8: at most ten answers, 2,000 Unicode code points per text answer and a proposed 256 KiB encoded-body ceiling. Ten texts encoded as surrogate-pair escapes require up to 240,000 bytes before a bounded envelope. Enforce decoded answer/count limits independently and reject oversized bodies before persistence. Arbitrarily padded or unusually escaped JSON can still exceed the transport limit; the baseline does not promise to accept every serialization of the same values. Issue #5 finalizes the exact envelope, parser settings and boundary cases (BASE-03).
+F-04 enforces decoded per-answer and aggregate text limits independently of the 256 KiB (262,144 bytes) encoded HTTP body ceiling. Oversized bodies and invalid decoded answers are rejected before persistence. The serializer and envelope assumptions are specified in BASE-03 and the F-04 SDS.
 
 ### State and workflow boundaries
 

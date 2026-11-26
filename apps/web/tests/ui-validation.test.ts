@@ -21,10 +21,18 @@ describe('safe field validation', () => {
     expect(responseFieldIssues([rating], { rating: 1 }, () => 'rating-input')).toEqual([]);
     expect(responseFieldIssues([{ ...rating, required: false }, text], { text: 'Comment' }, String)).toEqual([]);
   });
+  it('targets #76 aggregate overflow at the total and counts optional blank as zero', () => {
+    const questions = ['a', 'b', 'c', 'd', 'blank'].map(id => ({ ...text, id, required: id !== 'blank' }));
+    const values = { a: '😀'.repeat(1000), b: 'b'.repeat(1000), c: 'c'.repeat(999), d: 'd', blank: ' '.repeat(1000) };
+    expect(responseFieldIssues(questions, values, String)).toEqual([]);
+    expect(responseFieldIssues(questions, { ...values, d: 'dd' }, String)).toEqual([
+      { target: '_form', message: 'Use at most 3000 characters across written answers.' },
+    ]);
+  });
   it('checks TEXT raw limits before blank normalization and preserves Unicode boundaries', () => {
-    expect(responseFieldIssues([text], { text: '😀'.repeat(2000) }, String)).toEqual([]);
-    expect(responseFieldIssues([text], { text: '😀'.repeat(2001) }, String)[0]?.message).toContain('2000');
-    expect(responseFieldIssues([{ ...text, required: false }], { text: ' '.repeat(2001) }, String)[0]?.message).toContain('2000');
+    expect(responseFieldIssues([text], { text: '😀'.repeat(1000) }, String)).toEqual([]);
+    expect(responseFieldIssues([text], { text: '😀'.repeat(1001) }, String)[0]?.message).toMatch(/^Question 1: Use at most 1000 characters[.]$/);
+    expect(responseFieldIssues([{ ...text, required: false }], { text: ' '.repeat(1001) }, String)[0]?.message).toMatch(/^Question 1: Use at most 1000 characters[.]$/);
     expect(responseFieldIssues([text], { text: '  ' }, String)[0]?.message).toContain('nonblank');
     expect(responseFieldIssues([{ ...text, required: false }], {}, String)[0]?.message).toContain('at least one');
     expect(responseFieldIssues([text], { text: '\uD800' }, String)[0]?.message).toContain('unsupported');

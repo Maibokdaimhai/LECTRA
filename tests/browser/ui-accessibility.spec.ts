@@ -2,7 +2,7 @@ import { test as base, expect, type Page } from '@playwright/test';
 import { keyActivate, keyFill, zoomPage, verifyLayout } from './support/ui-keyboard.js';
 const test = base.extend({ page: zoomPage });
 const scale = { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means clearer' };
-const questions = ['First', 'Middle', 'Last'].map((prompt, i) => ({ id: `q${i + 1}`, position: i + 1, prompt, type: 'RATING', required: true, ratingScale: scale }));
+const questions = ['First', 'Middle', 'Last', 'Fourth'].map((prompt, i) => ({ id: `q${i + 1}`, position: i + 1, prompt, type: 'RATING', required: true, ratingScale: scale }));
 async function fixture(page: Page, respondent = false, count = 3, textQuestion = false) {
   let stored = { id: 'survey', lectureId: 'lecture', title: 'Keyboard fixture', status: respondent ? 'PUBLISHED' : 'DRAFT', mode: 'IDENTIFIED', definitionRevision: 1,
     context: { course: { code: 'CPE334' }, section: { sectionCode: 'A' }, lecture: { title: 'Lecture', lectureDate: '2026-11-12' } }, privacyDisclosure: 'Identified fixture.', questions: questions.slice(0, count).map(q => ({ ...q, type: textQuestion ? 'TEXT' : q.type, ratingScale: textQuestion ? null : q.ratingScale })) };
@@ -141,14 +141,36 @@ test('UI-F02: required and overlong written answers retain values and link to th
   await keyActivate(page, page.getByRole('button', { name: 'Submit feedback', exact: true }));
   await expect(page.getByRole('alert').getByRole('link')).toContainText('nonblank');
   await keyActivate(page, page.getByRole('alert').getByRole('link')); await expect(answer).toBeFocused();
-  await keyFill(page, answer, 'ก'.repeat(2001));
+  await keyFill(page, answer, 'ก'.repeat(1001));
   await keyActivate(page, page.getByRole('button', { name: 'Submit feedback', exact: true }));
   await expect(page.getByRole('alert')).toBeFocused();
-  await expect(page.getByRole('alert').getByRole('link')).toContainText('2000');
+  await expect(page.getByRole('alert').getByRole('link')).toContainText('1000');
   await keyActivate(page, page.getByRole('alert').getByRole('link')); await expect(answer).toBeFocused();
-  await expect(answer).toHaveValue('ก'.repeat(2001)); expect(await answer.getAttribute('id')).toBe(id);
+  await expect(answer).toHaveValue('ก'.repeat(1001)); expect(await answer.getAttribute('id')).toBe(id);
   await expect(answer).toHaveAttribute('aria-invalid', 'true');
   await keyFill(page, answer, 'แก้ไข English');
   await expect(answer).not.toHaveAttribute('aria-invalid', 'true');
   expect(f.mutations()).toBe(2); await verifyLayout(page, info);
+});
+
+test('F-04 #76: written total updates, links the overflow, and keeps input for retry', async ({ page }, info) => {
+  const f = await fixture(page, true, 4, true);
+  f.response('invalid');
+  const fields = page.getByRole('textbox', { name: /Written answer for/ });
+  const values = ['😀'.repeat(1000), 'b'.repeat(1000), 'c'.repeat(999), 'dd'];
+  for (const [i, value] of values.entries()) await keyFill(page, fields.nth(i), value);
+  const total = page.getByText(/Written answers total:/, { exact: false });
+  await expect(total).toHaveText('Written answers total: 3001/3000 characters');
+  await keyActivate(page, page.getByRole('button', { name: 'Submit feedback', exact: true }));
+  const link = page.getByRole('alert').getByRole('link', { name: 'Use at most 3000 characters across written answers.' });
+  await keyActivate(page, link);
+  await expect(total).toBeFocused();
+  for (const [i, value] of values.entries()) await expect(fields.nth(i)).toHaveValue(value);
+  await keyFill(page, fields.nth(3), 'd');
+  await expect(total).toHaveText('Written answers total: 3000/3000 characters');
+  f.response('ok');
+  await keyActivate(page, page.getByRole('button', { name: 'Submit feedback', exact: true }));
+  await expect(page.getByRole('heading', { name: 'Submission received', exact: true })).toBeFocused();
+  expect(f.mutations()).toBe(2);
+  await verifyLayout(page, info);
 });

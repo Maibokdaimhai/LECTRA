@@ -21,7 +21,18 @@ export function draftFieldIssues(title: string, questions: readonly QuestionFiel
   else if (publishing && !questions.some(q => q.type === 'RATING')) issues.push({ target: targets.question(0, 'type'), message: 'Include at least one rating question before publishing.' });
   return issues;
 }
-export function responseFieldIssues(questions: readonly QuestionFields[], values: Record<string, string | number>, target: (index: number) => string): FieldIssue[] {
+export const writtenAnswerLimit = 1000;
+export const writtenSubmissionLimit = 3000;
+
+export function writtenAnswerTotal(questions: readonly QuestionFields[], values: Record<string, string | number>): number {
+  return questions.reduce((total, question) => {
+    const value = values[question.id ?? ''];
+    return question.type === 'TEXT' && typeof value === 'string' && value.trim()
+      ? total + [...value].length
+      : total;
+  }, 0);
+}
+export function responseFieldIssues(questions: readonly QuestionFields[], values: Record<string, string | number>, target: (index: number) => string, totalTarget = '_form'): FieldIssue[] {
   const issues: FieldIssue[] = [];
   questions.forEach((q, index) => {
     const value = values[q.id ?? ''];
@@ -29,9 +40,12 @@ export function responseFieldIssues(questions: readonly QuestionFields[], values
     if (q.type === 'RATING') {
       if ((value === undefined && q.required) || (value !== undefined && (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 5))) problem = 'Choose a rating from 1 to 5.';
     } else if (value === undefined) { if (q.required) problem = 'Enter a nonblank answer.'; }
-    else problem = typeof value === 'string' ? textProblem(value, 2000, q.required) : 'Enter a written answer.';
+    else problem = typeof value === 'string' ? textProblem(value, writtenAnswerLimit, q.required) : 'Enter a written answer.';
     if (problem) issues.push({ target: target(index), message: `Question ${index + 1}: ${problem}` });
   });
+  if (writtenAnswerTotal(questions, values) > writtenSubmissionLimit) {
+    issues.push({ target: totalTarget, message: `Use at most ${writtenSubmissionLimit} characters across written answers.` });
+  }
   if (!issues.length && questions.length && !Object.values(values).some(v => typeof v === 'number' || v.trim())) issues.push({ target: target(0), message: 'Provide at least one answer before submitting.' });
   return issues;
 }

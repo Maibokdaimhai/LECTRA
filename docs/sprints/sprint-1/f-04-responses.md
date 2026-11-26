@@ -1,5 +1,7 @@
 # F-04 - Identified Response Submission and Own Retrieval Contract
 
+Lab 7 revision 1 (2026-11-27 ICT), F-04 validation and readback. [Issue #76](https://github.com/Maibokdaimhai/LECTRA/issues/76) and [Songwit’s contract review](https://github.com/Maibokdaimhai/LECTRA/issues/76#issuecomment-7200533920). Historical version notes below refer to their original scope.
+
 Version 0.1, 2026-11-07. Proposed under [#13](https://github.com/Maibokdaimhai/LECTRA/issues/13), implementation [#20](https://github.com/Maibokdaimhai/LECTRA/issues/20), shared Part E [#5](https://github.com/Maibokdaimhai/LECTRA/issues/5). Lead Maibokdaimhai; planned opposite-member reviewer R1NNE0. Contract and [STS](f-04-responses-sts.md) are drafts; no response implementation, human approval or executed F-04 tests are claimed.
 
 Baseline staging `090a5288ac57085d7d7107744d976c31ffd8192d`, including merged F-01/shared, [F-02](f-02-context-discovery.md), [F-03](f-03-survey-authoring.md) and [F-05](f-05-results.md). Sources: [SRS](../../srs.md), [shared conventions](shared-contract.md), [Product DoD](product-dod.md). Instructor outcomes are real validated/persistent eligible responses, duplicate/unpublished/Closed rejection, own/cross-user access, preimplementation AC/STS/DoD and actual verification. Exact wire shapes, error precedence, routes and limits below are team designs, not teacher-prescribed protocols.
@@ -47,14 +49,14 @@ Outer JSON is an object with only answers. Each entry has only questionId and va
 | Stored question | Accepted value / normalization |
 | --- | --- |
 | RATING | Number, integer 1-5; required question must occur. Optional omitted means no answer; no implicit zero or first radio selection. |
-| TEXT | String <=2,000 Unicode code points before normalization; reject unpaired UTF-16 surrogates and U+0000 before SQL. Required value must contain non-whitespace content using String.trim() only for the blank check. Preserve the nonblank original text, including surrounding spaces/newlines/composition, for own readback and F-05 comments. |
-| Optional blank TEXT | If within input limits but trim() is empty, normalize to no stored answer. An over-limit blank string still violates the decoded limit. Omission is preferred. |
+| TEXT | For a new submission, count each provided string as raw Unicode code points before blank normalization. Reject over 1,000, unpaired UTF-16 surrogates and U+0000. Across nonblank written answers reject over 3,000 code points before persistence. Count surrounding spaces/newlines in nonblank text and preserve valid originals for own readback and F-05 comments. Ratings add zero. |
+| Optional blank TEXT | A supplied blank with more than 1,000 code points violates the per-answer limit. A bounded optional blank normalizes to no stored answer and contributes zero to the total. Required blank rejects. |
 | Unknown/duplicate/wrong-survey question | 422 INVALID_ANSWERS with safe indexed field reason; never reveal another survey's question content/existence. |
 | Required and whole-response completeness | Validate every required frozen question; at least one nonempty valid answer after normalization, even if all questions are optional. Empty array or all optional blanks rejected. |
 
 Transport: maximum **262,144 encoded bytes**, no smaller global parser in front of this route, application/json with optional UTF-8 charset, no compressed content. Measure streamed bytes regardless of Content-Length; 262,145 is 413 BODY_TOO_LARGE; unsupported encoding/type is 415 UNSUPPORTED_CONTENT. Byte and decoded limits are independent. Malformed JSON is 400 MALFORMED_JSON. Raw body/validation input is not logged or echoed in errors.
 
-BASE-03 envelope bounds: fixed keys, at most ten 36-character UUIDs, no arbitrary metadata. Ten maximum supplementary-character text strings using surrogate escapes consume 240,000 bytes; an 8,192-byte envelope reserve gives 248,192 <262,144. That is a conservative transport fixture; S1 publication still requires at least one rating, so ten TEXT questions do not become publishable. A maximum valid questionnaire (one rating plus nine 2,000-code-point texts) must also fit UTF-8 and escaped forms. Arbitrary padded/expanded serializations beyond the cap are not promised acceptance. The reserve is a fixture/serializer bound, not a custom raw-JSON substring parser. Runtime boundary tests remain planned.
+BASE-03 envelope bounds: fixed keys, at most ten 36-character UUIDs, no arbitrary metadata. At most ten supplied text entries fit a conservative bound of 120,000 escaped bytes before the 8,192-byte envelope reserve; the aggregate saved text is bounded by 36,000 escaped bytes. The maximum supported valid questionnaire must fit in UTF-8 and escaped forms. The 262,144-byte body ceiling is independent of decoded validation. Publication still requires at least one rating. Arbitrarily padded or expanded input remains subject to the body ceiling. Preserve the database CHECK at 2,000 per existing answer; the new limits are applied to new submissions only.
 
 ## 4. Authoritative transaction, concurrency and recovery
 
@@ -98,6 +100,7 @@ Use `{ "error": { "code": "CODE", "message": "safe text" } }`; optional fields u
 | 405 METHOD_NOT_ALLOWED | Unsupported method after shared checks; Allow header, no write. |
 | 409 INVALID_STATE / MODE_NOT_SUPPORTED / RESPONSE_ALREADY_SUBMITTED | State/mode/duplicate in documented order; no partial or second response. |
 | 422 INVALID_REQUEST / INVALID_ANSWERS | Syntactic/schema/unknown keys/UUID versus question/type/required/range/Unicode/completeness failure; safe fields. |
+| 422 INVALID_ANSWERS with error.target | Written answer above 1,000 maps to `answers[i].value`, where i is the zero-based array index in the request. Written total above 3,000 maps to `_form`. Use fixed safe messages and never echo input. Other validation errors may omit the target. |
 | 400 MALFORMED_JSON / 413 BODY_TOO_LARGE / 415 UNSUPPORTED_CONTENT | Transport/parser failure before persistence; no body echo. |
 | 503 AUTH_SERVICE_UNAVAILABLE | Shared session/trusted User store unavailable before domain handling; no fallback. |
 | 503 SERVICE_UNAVAILABLE / 500 INTERNAL_ERROR | Domain DB/lock failure or unexpected/integrity failure. Known failures roll back; uncertain commit outcome uses own-status recovery rather than fabricated success/rollback. |
@@ -114,7 +117,7 @@ All cases in the [STS](f-04-responses-sts.md) are Planned / Not run; the #15 too
 | --- | --- | --- |
 | AC-F04-01 | Eligible Published identified survey renders F-03 frozen definitions/disclosure and current own status, without creating another definition API. | TEST-F04-H01, E01 |
 | AC-F04-02 | Required/optional ratings are strict integers 1-5, with no default/coercion/optional zero; missing required rejects. | TEST-F04-U01, I02, I03, E02 |
-| AC-F04-03 | Text preserves valid nonblank content, enforces code-point/blank/NUL/surrogate rules and normalizes bounded optional blank to absence. | TEST-F04-U02, I04, E02 |
+| AC-F04-03 | Enforce 1,000 per supplied TEXT and 3,000 across nonblank TEXT in new submissions, measured in raw Unicode code points. Reject either overflow, required blanks, NUL and unpaired surrogates before writing. Bounded optional blanks normalize to absence and contribute zero to the aggregate. Preserve valid originals and legacy readback. | TEST-F04-U02, I04, E02 |
 | AC-F04-04 | Unknown/duplicate/wrong-survey IDs, wrong type and empty normalized response reject without partial persistence. | TEST-F04-U03, U05, I05, I06 |
 | AC-F04-05 | 256 KiB byte/compression/parser and decoded limits are independent; supported UTF-8/escaped maximum fits and oversized request writes nothing. | TEST-F04-I07 |
 | AC-F04-06 | Actor is server-resolved; guest/wrong-role/spoofed identity cannot submit/read for another account. | TEST-F04-I08, I17 |
@@ -128,7 +131,7 @@ All cases in the [STS](f-04-responses-sts.md) are Planned / Not run; the #15 too
 | AC-F04-14 | Frozen definitions/required flags/scale are consumed without update; no response edit/delete/reopen operation exists. | TEST-F04-H01, I18 |
 | AC-F04-15 | Own false/true status and persisted identified answers survive closure/logout-login/restart; consistent read does not fabricate integrity recovery. | TEST-F04-I16, E01 |
 | AC-F04-16 | Other-student lookup, forged query/body identity and owner respondent-linked access are denied without leakage. | TEST-F04-I17, I21 |
-| AC-F04-17 | UI pending/confirmation/readonly states reflect real API outcomes; no duplicate UI POST or premature success. | TEST-F04-E01, E02 |
+| AC-F04-17 | UI state reflects real API outcomes. Show per-answer raw usage out of 1,000 and aggregate nonblank usage out of 3,000. A 422 retains editable values; the error summary links per-answer errors to the associated textarea and aggregate errors to the shared counter. Use safe generic fallback for other invalid answers. No duplicate UI POST or premature success. | TEST-F04-E01, E02 |
 | AC-F04-18 | Ambiguous acknowledgement queries own persisted status before deliberate retry; no automatic response resend. | TEST-F04-I20, E03 |
 | AC-F04-19 | Auth/Origin/CSRF/method/schema/state errors match exact codes/precedence with no database/internal/input exposure. | TEST-F04-U04, I10, I18, I20 |
 | AC-F04-20 | Private response data is absent from caches/storage/logs/other-user payloads; expiry/logout removes stale client content. | TEST-F04-I21, E04 |
