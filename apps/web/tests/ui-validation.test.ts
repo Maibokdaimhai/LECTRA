@@ -31,8 +31,8 @@ describe('safe field validation', () => {
   });
   it('checks TEXT raw limits before blank normalization and preserves Unicode boundaries', () => {
     expect(responseFieldIssues([text], { text: '😀'.repeat(1000) }, String)).toEqual([]);
-    expect(responseFieldIssues([text], { text: '😀'.repeat(1001) }, String)[0]?.message).toContain('1000');
-    expect(responseFieldIssues([{ ...text, required: false }], { text: ' '.repeat(1001) }, String)[0]?.message).toContain('1000');
+    expect(responseFieldIssues([text], { text: '😀'.repeat(1001) }, String)[0]?.message).toMatch(/^Question 1: Use at most 1000 characters[.]$/);
+    expect(responseFieldIssues([{ ...text, required: false }], { text: ' '.repeat(1001) }, String)[0]?.message).toMatch(/^Question 1: Use at most 1000 characters[.]$/);
     expect(responseFieldIssues([text], { text: '  ' }, String)[0]?.message).toContain('nonblank');
     expect(responseFieldIssues([{ ...text, required: false }], {}, String)[0]?.message).toContain('at least one');
     expect(responseFieldIssues([text], { text: '\uD800' }, String)[0]?.message).toContain('unsupported');
