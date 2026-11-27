@@ -326,7 +326,7 @@ function Selector({ path, label, api, onSelect, beforeChange = () => true }: {
     useEffect(() => { let current = true; setData(null); setError(''); api<Collection>(`${path}${path.includes('?') ? '&' : '?'}offset=${offset}`).then(d => { if (current)
         setData(d); }).catch(e => { if (current)
         setError(reason(e)); }); return () => { current = false; }; }, [path, offset, api]);
-    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { if (!beforeChange()) return; setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{i.code ?? i.sectionCode ?? i.title}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button disabled={offset === 0} onClick={() => { if (!beforeChange()) return; setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button disabled={offset + 20 >= data.pagination.total} onClick={() => { if (!beforeChange()) return; setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
+    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { if (!beforeChange()) return; setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{i.code ?? i.sectionCode ?? i.title}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button type="button" disabled={offset === 0} onClick={() => { if (!beforeChange()) return; setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button type="button" disabled={offset + 20 >= data.pagination.total} onClick={() => { if (!beforeChange()) return; setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
 }
 function Workspace({ user, api }: {
     user: User;
@@ -370,19 +370,70 @@ function Workspace({ user, api }: {
       {lecture && !selected && <button onClick={() => void create()} disabled={busy || createUncertain}>{busy ? 'Creating…' : 'Create draft'}</button>}
       {createUncertain && <><p>Creation outcome needs checking before another create attempt.</p><button disabled={busy} onClick={() => void checkCreated()}>Check persisted lecture</button></>}
     </section>}
-    {!selected && <SurveyList key={revision} api={api} select={setSelected}/>}
+    {!selected && <SurveyList key={revision} api={api} select={setSelected} owner={user.role === 'OWNER'}/>}
     {selected && <><button className="secondary" onClick={() => { if (!beforeNavigate()) return; setSelected(''); setLecture(null); setRevision(r => r + 1); }}>Back to survey list</button><SurveyDetail key={selected} id={selected} api={api} owner={user.role === 'OWNER'} navigationBlocked={setNavigationBlocked} deleted={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}/></>}
   </>;
 }
-function SurveyList({ api, select }: {
+function SurveyHistoryFilters({ api, apply }: {
+    api: Api;
+    apply: (filters: URLSearchParams) => void;
+}) {
+    const [course, setCourse] = useState<Item | null>(null);
+    const [section, setSection] = useState<Item | null>(null);
+    return <form onSubmit={event => {
+        event.preventDefault();
+        const fields = new FormData(event.currentTarget);
+        const filters = new URLSearchParams();
+        for (const key of ['dateFrom', 'dateTo', 'status']) {
+            const value = fields.get(key);
+            if (typeof value === 'string' && value)
+                filters.set(key, value);
+        }
+        if (course) filters.set('courseId', course.id);
+        if (section) filters.set('sectionId', section.id);
+        apply(filters);
+    }}>
+        <div className="selectors">
+            <Selector label="History course" path="/api/courses" api={api} onSelect={item => { setCourse(item); setSection(null); }}/>
+            {course && <Selector key={course.id} label="History section" path={`/api/sections?courseId=${course.id}`} api={api} onSelect={setSection}/>}
+            <label>Lecture date from<input name="dateFrom" type="date"/></label>
+            <label>Lecture date to<input name="dateTo" type="date"/></label>
+            <label>Survey state<select name="status"><option value="">Any state</option><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="CLOSED">Closed</option></select></label>
+        </div>
+        <button type="submit">Apply filters</button>
+    </form>;
+}
+function SurveyList({ api, select, owner }: {
     api: Api;
     select: (id: string) => void;
+    owner: boolean;
 }) {
     const [data, setData] = useState<Collection | null>(null), [offset, setOffset] = useState(0), [error, setError] = useState(''), [refresh, setRefresh] = useState(0);
-    useEffect(() => { let active = true; setData(null); api<Collection>(`/api/surveys?offset=${offset}`).then(d => { if (active)
-        setData(d); }).catch(e => { if (active)
-        setError(reason(e)); }); return () => { active = false; }; }, [api, offset, refresh]);
-    return <section className="card"><h3>Surveys</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh surveys</button>{!data && !error && <p role="status">Loading surveys…</p>}{data && !data.items.length && <p>No surveys available.</p>}
+    const [filterPanel, setFilterPanel] = useState<'unopened' | 'open' | 'closed'>('unopened');
+    const [filterQuery, setFilterQuery] = useState('');
+    const [filterForm, setFilterForm] = useState(0);
+    function apply(filters: URLSearchParams) {
+        setError('');
+        setOffset(0);
+        setFilterQuery(filters.toString());
+    }
+    useEffect(() => {
+        let active = true;
+        setData(null);
+        const params = new URLSearchParams(filterQuery);
+        params.set('offset', String(offset));
+        api<Collection>(`/api/surveys?${params}`).then(d => {
+            if (active) setData(d);
+        }).catch(e => { if (active) setError(reason(e)); });
+        return () => { active = false; };
+    }, [api, offset, refresh, filterQuery]);
+    return <section className="card"><h3>Surveys</h3><ErrorBox message={error}/>
+    {owner && <div>
+        <button type="button" className="secondary" aria-expanded={filterPanel === 'open'} onClick={() => setFilterPanel(panel => panel === 'open' ? 'closed' : 'open')}>History filters</button>
+        {filterPanel !== 'unopened' && <div hidden={filterPanel !== 'open'}><SurveyHistoryFilters key={filterForm} api={api} apply={apply}/></div>}
+        {filterQuery && <button type="button" className="secondary" onClick={() => { apply(new URLSearchParams()); setFilterForm(form => form + 1); }}>Clear history filters</button>}
+    </div>}
+    <button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh surveys</button>{!data && !error && <p role="status">Loading surveys…</p>}{data && !data.items.length && <p>{filterQuery ? 'No surveys match the filters.' : 'No surveys available.'}</p>}
     <ul className="survey-list">{data?.items.map(s => <li key={s.id}><div><strong>{s.title || 'Untitled draft'}</strong><p>{s.course?.code} · {s.course?.title} · Section {s.section?.sectionCode} · {s.lecture?.title} · {s.lecture?.lectureDate} · {s.mode} · {s.status}{s.participation ? ` · ${s.participation.submitted ? 'Submitted' : 'Not submitted'}` : ''}</p></div><button onClick={() => select(s.id)}>Open survey</button></li>)}</ul>
     {data && <div className="actions"><button disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - 20))}>Previous page</button><span>{data.pagination.total} surveys</span><button disabled={offset + 20 >= data.pagination.total} onClick={() => setOffset(offset + 20)}>Next page</button></div>}
   </section>;

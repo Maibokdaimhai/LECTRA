@@ -82,3 +82,36 @@ test('B23-02 real invalid then keyboard login and one StrictMode bootstrap', asy
   await expect(page.getByRole('button', { name: 'Log out', exact: true })).toBeVisible();
   expect((await read(page, '/api/auth/me')).user.role).toBe('OWNER');
 });
+
+test('TEST-F09-E01: owner filters persisted history by context, day and state', async ({ page, data }, info) => {
+  await signIn(page);
+  const title = `History ${info.project.name}`;
+  const saved = await createSurvey(page, await data.lecture(), title);
+  await confirmAction(page, 'Close survey');
+  await expect(page.getByText('CLOSED', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Back to survey list', exact: true }).click();
+  const filters = page.getByRole('button', { name: 'History filters', exact: true });
+  await filters.focus();
+  await page.keyboard.press('Enter');
+  await page.getByLabel('History course', { exact: true }).selectOption({ label: 'SYN-CPE334' });
+  await page.getByLabel('History section', { exact: true }).selectOption({ label: 'A' });
+  await page.getByLabel('Lecture date from', { exact: true }).fill('2026-11-10');
+  await page.getByLabel('Lecture date to', { exact: true }).fill('2026-11-10');
+  await page.getByLabel('Survey state', { exact: true }).selectOption('CLOSED');
+  const applied = page.waitForResponse(r => new URL(r.url()).searchParams.get('status') === 'CLOSED');
+  await page.getByRole('button', { name: 'Apply filters', exact: true }).click();
+  const response = await applied;
+  expect(response.status()).toBe(200);
+  expect((await response.json()).data.items.map((survey: { id: string }) => survey.id)).toEqual([saved.id]);
+  await expect(page.getByText(title, { exact: true })).toBeVisible();
+  await expect(page.getByText('Synthetic Draft', { exact: true })).toHaveCount(0);
+  await screenshot(page, info, 'f09-filtered-persisted-history');
+
+  await page.getByLabel('Lecture date from', { exact: true }).fill('2026-11-11');
+  await page.getByLabel('Lecture date to', { exact: true }).fill('2026-11-11');
+  await page.getByRole('button', { name: 'Apply filters', exact: true }).click();
+  await expect(page.getByText('No surveys match the filters.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Clear history filters', exact: true }).click();
+  await expect(page.getByText('Synthetic Draft', { exact: true })).toBeVisible();
+  await expect(page.getByText(title, { exact: true })).toBeVisible();
+});
