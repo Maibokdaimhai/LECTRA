@@ -97,7 +97,7 @@ test('TEST-F09-E01: owner filters persisted history by context, day and state', 
   await page.getByLabel('History section', { exact: true }).selectOption({ label: 'A' });
   await page.getByLabel('Lecture date from', { exact: true }).fill('2026-11-10');
   await page.getByLabel('Lecture date to', { exact: true }).fill('2026-11-10');
-  await page.getByLabel('Survey state', { exact: true }).selectOption('CLOSED');
+  await page.getByRole('combobox', { name: 'Survey state', exact: true }).selectOption('CLOSED');
   const applied = page.waitForResponse(r => new URL(r.url()).searchParams.get('status') === 'CLOSED');
   await page.getByRole('button', { name: 'Apply filters', exact: true }).click();
   const response = await applied;
