@@ -24,11 +24,10 @@ beforeAll(async () => {
   expect((await pool.query("SELECT tablename FROM pg_tables WHERE schemaname='public'")).rowCount).toBe(0);
   execFileSync(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], { env: { ...process.env, DATABASE_URL: options.testUrl }, stdio: 'pipe' });
   await seedSyntheticDatabase({ ...options, seedName: expected, ownerPassword: password, respondentPassword: password });
-  expect((await pool.query(`SELECT enumlabel FROM pg_enum JOIN pg_type ON pg_type.oid=enumtypid WHERE typname='SurveyMode' ORDER BY enumsortorder`)).rows.map(r => r.enumlabel)).toEqual(['IDENTIFIED']);
-  // Only this NEW disposable database is widened to construct the exact ANONYMOUS
-  // fixture named in F-05 section 3 / TEST-F05-I02 and F-04 TEST-F04-I10.
-  // Autocommit before use; never a repository migration or enabled anonymous feature.
-  await pool.query(`ALTER TYPE "SurveyMode" ADD VALUE 'ANONYMOUS'`);
+  expect((await pool.query(`SELECT enumlabel FROM pg_enum JOIN pg_type ON pg_type.oid=enumtypid WHERE typname='SurveyMode' ORDER BY enumsortorder`)).rows.map(r => r.enumlabel)).toEqual(['IDENTIFIED', 'ANONYMOUS']);
+  // Retain the unknown-mode safety regression without treating the new supported mode as unknown.
+  // This enum value exists only in the disposable test database.
+  await pool.query(`ALTER TYPE "SurveyMode" ADD VALUE 'FUTURE_MODE'`);
 });
 beforeEach(() => { app = createApp(config); });
 afterEach(async () => { await app.locals.close(); });
@@ -55,7 +54,7 @@ async function published(owner: Client) {
 }
 const sentinel = 'Synthetic unsupported-mode readback sentinel';
 const payload = (d: any) => ({ answers: [{ questionId: d.questions[0].id, value: 4 }, { questionId: d.questions[1].id, value: sentinel }] });
-async function mode(id: string, value: 'IDENTIFIED' | 'ANONYMOUS') {
+async function mode(id: string, value: 'IDENTIFIED' | 'FUTURE_MODE') {
   expect((await pool.query('UPDATE "Survey" SET mode=$2::"SurveyMode" WHERE id=$1 RETURNING mode', [id, value])).rows[0].mode).toBe(value);
 }
 async function persisted(id: string) {
@@ -71,14 +70,14 @@ function denial(response: request.Response, code: string, status = 409) {
   expect(JSON.stringify(response.body)).not.toContain(sentinel);
 }
 
-it('PR46-I01 / AC-F04-22 / TEST-F04-I10: ANONYMOUS duplicate POST rejects mode before duplicate without writes', async () => {
+it('PR46-I01 / AC-F04-22 / TEST-F04-I10: FUTURE_MODE duplicate POST rejects mode before duplicate without writes', async () => {
   const owner = await login(), student = await login('respondent.11@example.test'), other = await login('respondent.12@example.test');
   const d = await published(owner), body = payload(d), path = `/api/surveys/${d.id}/responses`;
   await mutate(student, path, body).expect(201);
   expect((await mutate(student, path, body).expect(409)).body.error.code).toBe('RESPONSE_ALREADY_SUBMITTED');
   const before = await persisted(d.id);
   expect(before.participation).toHaveLength(1); expect(before.bundles).toHaveLength(1); expect(before.answers).toHaveLength(2);
-  await mode(d.id, 'ANONYMOUS');
+  await mode(d.id, 'FUTURE_MODE');
   try {
     denial(await mutate(student, path, body), 'MODE_NOT_SUPPORTED');
     denial(await mutate(other, path, body), 'MODE_NOT_SUPPORTED');
@@ -92,7 +91,7 @@ it('PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before m
   const before = (await pool.query('SELECT to_jsonb(s) AS row FROM "Survey" s WHERE id=$1', [d.id])).rows[0].row;
   denial(await owner.agent.get(path), 'RESULTS_NOT_AVAILABLE');
   expect((await pool.query('SELECT to_jsonb(s) AS row FROM "Survey" s WHERE id=$1', [d.id])).rows[0].row).toEqual(before);
-  await mode(d.id, 'ANONYMOUS');
+  await mode(d.id, 'FUTURE_MODE');
   try {
     denial(await owner.agent.get(path), 'RESULTS_NOT_AVAILABLE');
     denial(await foreign.agent.get(path), 'NOT_FOUND', 404);
@@ -101,14 +100,14 @@ it('PR46-I02 / AC-F05-01 / TEST-F05-I02: own Draft results reject state before m
   } finally { await mode(d.id, 'IDENTIFIED'); }
 });
 
-it('PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed results reject without count or text fallback', async () => {
+it('PR46-I03 / AC-F05-21 / TEST-F05-I02: own FUTURE_MODE Published and Closed results reject without count or text fallback', async () => {
   const owner = await login(), student = await login('respondent.11@example.test'), d = await published(owner);
   await mutate(student, `/api/surveys/${d.id}/responses`, payload(d)).expect(201);
   const before = await persisted(d.id), path = `/api/surveys/${d.id}/results`;
   expect(Object.keys((await owner.agent.get(path).expect(200)).body.data).sort()).toEqual(['responseCount', 'survey']);
   for (const state of ['PUBLISHED', 'CLOSED']) {
     if (state === 'CLOSED') await mutate(owner, `/api/surveys/${d.id}/close`, {}).expect(200);
-    await mode(d.id, 'ANONYMOUS');
+    await mode(d.id, 'FUTURE_MODE');
     try {
       denial(await owner.agent.get(path), 'MODE_NOT_SUPPORTED');
       expect(await persisted(d.id)).toEqual(before);
@@ -118,11 +117,11 @@ it('PR46-I03 / AC-F05-21 / TEST-F05-I02: own ANONYMOUS Published and Closed resu
   expect(normal.responseCount).toBe(1); expect(normal.questions[1].comments).toEqual([sentinel]);
 });
 
-it.each(['PUBLISHED', 'CLOSED'] as const)('PR46-I04-%s / AC-F04-22 / TEST-F04-I10: ANONYMOUS own readback rejects without identified-answer fallback', async state => {
+it.each(['PUBLISHED', 'CLOSED'] as const)('PR46-I04-%s / AC-F04-22 / TEST-F04-I10: FUTURE_MODE own readback rejects without identified-answer fallback', async state => {
   const owner = await login(), student = await login('respondent.11@example.test'), other = await login('respondent.12@example.test'), ineligible = await login('respondent.13@example.test'), d = await published(owner);
   await mutate(student, `/api/surveys/${d.id}/responses`, payload(d)).expect(201);
   if (state === 'CLOSED') await mutate(owner, `/api/surveys/${d.id}/close`, {}).expect(200);
-  const before = await persisted(d.id); await mode(d.id, 'ANONYMOUS');
+  const before = await persisted(d.id); await mode(d.id, 'FUTURE_MODE');
   try {
     const response = await student.agent.get(`/api/surveys/${d.id}/my-submission`);
     expect.soft(response.status).toBe(409);

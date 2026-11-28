@@ -82,3 +82,36 @@ test('B23-02 real invalid then keyboard login and one StrictMode bootstrap', asy
   await expect(page.getByRole('button', { name: 'Log out', exact: true })).toBeVisible();
   expect((await read(page, '/api/auth/me')).user.role).toBe('OWNER');
 });
+
+test('TEST-F06-E01/E02: anonymous submission shows status and owner sees a suppressed rating', async ({ page, data }, info) => {
+  const title = `Anonymous ${info.project.name}`;
+  await signIn(page);
+  const draft = await createSurvey(page, await data.lecture(), title, false);
+  await page.getByRole('combobox', { name: 'Privacy mode', exact: true }).selectOption('ANONYMOUS');
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText('Remove written questions');
+  await page.getByRole('button', { name: 'Remove question 2', exact: true }).click();
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  await expect(page.getByText('Saved revision 3.', { exact: true })).toBeVisible();
+  await confirmAction(page, 'Publish survey');
+  await expect(page.getByRole('button', { name: 'Close survey', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+
+  await signIn(page, 'respondent.11@example.test');
+  await openSurvey(page, title);
+  await expect(page.getByText(/anonymous to the instructor/i)).toBeVisible();
+  await expect(page.getByRole('textbox', { name: /Written answer/ })).toHaveCount(0);
+  await page.getByRole('radio', { name: '4', exact: true }).check();
+  await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+  await expect(page.getByText('Your participation is saved. Anonymous answers cannot be reopened.')).toBeVisible();
+  expect(await read(page, `/api/surveys/${draft.id}/my-submission`)).toEqual({ surveyId: draft.id, submitted: true });
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+
+  await signIn(page);
+  await openSurvey(page, title);
+  await confirmAction(page, 'Close survey');
+  await expect(page.getByText('Responses: 1', { exact: true })).toBeVisible();
+  await expect(page.getByText('Not enough anonymous data.', { exact: true })).toBeVisible();
+  await expect(page.getByRole('table')).toHaveCount(0);
+  await screenshot(page, info, 'f06-anonymous-suppression');
+});

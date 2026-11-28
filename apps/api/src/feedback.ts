@@ -3,9 +3,10 @@ import type { Pool, PoolClient } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { authenticated, role, csrf } from './auth.js';
 import { exact, fail, uuid, HttpError } from './http.js';
-import { mean, parseAnswers, parseAnswerEnvelope, parseDefinition, validatePublication } from './feedback-rules.js';
+import { canReleaseAnonymousQuestion, mean, parseAnswers, parseAnswerEnvelope, parseDefinition, validatePublication } from './feedback-rules.js';
 type Row = Record<string, any>;
 const disclosure = 'This survey is identified. Your answers remain linked to your account in storage. The survey owner sees summaries and unlabelled written feedback after closing, without your account identifier. Your written content may still identify you. Small groups can also make summaries identifiable.';
+const anonymousDisclosure = 'This survey is anonymous to the instructor. Your account records eligibility and whether you submitted. Your answers are stored separately, and you can reopen only your submission status. This survey does not collect written feedback. Results are subject to disclosure thresholds. External knowledge, patterns or privileged infrastructure access may still allow inference.';
 const scale = (q: Row) => q.type === 'TEXT' ? null : ({ min: q.ratingMin, max: q.ratingMax, minLabel: q.ratingMinLabel, maxLabel: q.ratingMaxLabel, interpretation: q.scaleInterpretation });
 const questionView = (q: Row) => ({ id: q.id, position: q.position, prompt: q.prompt, type: q.type, required: q.required, ratingScale: scale(q) });
 const courseView = (r: Row) => ({ id: r.courseId, code: r.courseCode, title: r.courseTitle });
@@ -67,7 +68,7 @@ async function scope(db: PoolClient, req: Request, lock = false) {
 }
 async function questions(db: PoolClient, id: string) { return (await db.query('SELECT * FROM "Question" WHERE "surveyId"=$1 ORDER BY position', [id])).rows; }
 async function definitionView(db: PoolClient, row: Row, owner: boolean) {
-    const base = { id: row.id, lectureId: row.lectureId, title: row.title, status: row.status, mode: row.mode, context: context(row), questions: (await questions(db, row.id)).map(questionView), privacyDisclosure: disclosure };
+    const base = { id: row.id, lectureId: row.lectureId, title: row.title, status: row.status, mode: row.mode, context: context(row), questions: (await questions(db, row.id)).map(questionView), privacyDisclosure: row.mode === 'ANONYMOUS' ? anonymousDisclosure : disclosure };
     return owner ? { ...base, definitionRevision: row.definitionRevision, publishedAt: row.publishedAt?.toISOString() ?? null, closedAt: row.closedAt?.toISOString() ?? null } : base;
 }
 const revision = (value: unknown) => { exact(value, ['expectedRevision'], 'INVALID_REQUEST'); const n = (value as {
@@ -174,11 +175,14 @@ export function setupFeedback(app: Express, pool: Pool) {
             const row = await scope(db, req, true);
             state(row, 'DRAFT');
             sameRevision(row, input.expectedRevision);
+            const mode = input.mode ?? row.mode;
+            if (mode === 'ANONYMOUS' && input.questions.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_DEFINITION', 'Remove written questions before switching to anonymous.');
             const old = await questions(db, row.id);
             if (input.questions.some(q => q.id && !old.some(x => x.id === q.id)))
                 fail(422, 'INVALID_DEFINITION');
             const existing = old.map(({ id, ...q }) => ({ id, prompt: q.prompt, type: q.type, required: q.required, ratingScale: scale(q) }));
-            if (row.title === input.title && JSON.stringify(existing) === JSON.stringify(input.questions))
+            if (row.title === input.title && row.mode === mode && JSON.stringify(existing) === JSON.stringify(input.questions))
                 return definitionView(db, row, true);
             const retained = input.questions.flatMap(q => q.id ? [q.id] : []);
             await db.query('DELETE FROM "Question" WHERE "surveyId"=$1 AND NOT (id=ANY($2::uuid[]))', [row.id, retained]);
@@ -189,8 +193,9 @@ export function setupFeedback(app: Express, pool: Pool) {
                 await db.query(`INSERT INTO "Question" (id,"surveyId",position,prompt,type,required,"ratingMin","ratingMax","ratingMinLabel","ratingMaxLabel","scaleInterpretation") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,prompt=EXCLUDED.prompt,type=EXCLUDED.type,required=EXCLUDED.required,"ratingMin"=EXCLUDED."ratingMin","ratingMax"=EXCLUDED."ratingMax","ratingMinLabel"=EXCLUDED."ratingMinLabel","ratingMaxLabel"=EXCLUDED."ratingMaxLabel","scaleInterpretation"=EXCLUDED."scaleInterpretation"`, [id, row.id, index + 1, q.prompt, q.type, q.required, s?.min ?? null, s?.max ?? null, s?.minLabel ?? null, s?.maxLabel ?? null, s?.interpretation ?? null]);
             }
             row.title = input.title;
+            row.mode = mode;
             row.definitionRevision++;
-            await db.query('UPDATE "Survey" SET title=$2,"definitionRevision"=$3 WHERE id=$1', [row.id, row.title, row.definitionRevision]);
+            await db.query('UPDATE "Survey" SET title=$2,"definitionRevision"=$3,mode=$4 WHERE id=$1', [row.id, row.title, row.definitionRevision, mode]);
             return definitionView(db, row, true);
         });
         res.json({ data });
@@ -204,6 +209,8 @@ export function setupFeedback(app: Express, pool: Pool) {
             state(row, 'DRAFT');
             sameRevision(row, rev);
             const qs = (await questions(db, row.id)).map(questionView);
+            if (row.mode === 'ANONYMOUS' && qs.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_DEFINITION', 'Anonymous surveys cannot contain written questions.');
             validatePublication({ title: row.title, questions: qs });
             // Validate and insert from one materialized statement snapshot. Concurrent membership
             // edits cannot change the set between validation and the eligibility insertion.
@@ -235,17 +242,22 @@ export function setupFeedback(app: Express, pool: Pool) {
         const data = await transaction(pool, async (db) => {
             const row = await scope(db, req, true);
             state(row, 'PUBLISHED');
-            if (row.mode !== 'IDENTIFIED')
+            if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
                 fail(409, 'MODE_NOT_SUPPORTED');
             if ((await db.query('SELECT 1 FROM "Participation" WHERE "surveyId"=$1 AND "studentId"=$2', [row.id, req.actor!.userId])).rowCount)
                 fail(409, 'RESPONSE_ALREADY_SUBMITTED');
-            const answers = parseAnswers(req.body, await questions(db, row.id));
+            const storedQuestions = await questions(db, row.id);
+            const anonymous = row.mode === 'ANONYMOUS';
+            if (anonymous && storedQuestions.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_ANSWERS');
+            const answers = parseAnswers(req.body, storedQuestions);
             const bundle = randomUUID();
             await db.query('INSERT INTO "Participation" VALUES ($1,$2)', [row.id, req.actor!.userId]);
-            await db.query('INSERT INTO "ResponseBundle" (id,"surveyId","identifiedStudentId") VALUES ($1,$2,$3)', [bundle, row.id, req.actor!.userId]);
+            await db.query('INSERT INTO "ResponseBundle" (id,"surveyId","identifiedStudentId") VALUES ($1,$2,$3)', [bundle, row.id, anonymous ? null : req.actor!.userId]);
             for (const a of answers)
                 await db.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue","textValue") VALUES ($1,$2,$3,$4,$5)', [bundle, a.questionId, row.id, typeof a.value === 'number' ? a.value : null, typeof a.value === 'string' ? a.value : null]);
-            return { surveyId: row.id, submitted: true, answers };
+            const status = { surveyId: row.id, submitted: true };
+            return anonymous ? status : { ...status, answers };
         });
         res.status(201).json({ data });
     });
@@ -253,9 +265,11 @@ export function setupFeedback(app: Express, pool: Pool) {
         query(req, []);
         const data = await transaction(pool, async (db) => {
             const row = await scope(db, req);
-            if (row.mode !== 'IDENTIFIED')
+            if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
                 fail(409, 'MODE_NOT_SUPPORTED');
             const submitted = Boolean((await db.query('SELECT 1 FROM "Participation" WHERE "surveyId"=$1 AND "studentId"=$2', [row.id, req.actor!.userId])).rowCount);
+            if (row.mode === 'ANONYMOUS')
+                return { surveyId: row.id, submitted };
             const bundles = (await db.query('SELECT id FROM "ResponseBundle" WHERE "surveyId"=$1 AND "identifiedStudentId"=$2', [row.id, req.actor!.userId])).rows;
             if (submitted !== (bundles.length === 1))
                 fail(500, 'INTERNAL_ERROR');
@@ -272,7 +286,7 @@ export function setupFeedback(app: Express, pool: Pool) {
             const row = await scope(db, req);
             if (row.status === 'DRAFT')
                 fail(409, 'RESULTS_NOT_AVAILABLE');
-            if (row.mode !== 'IDENTIFIED')
+            if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
                 fail(409, 'MODE_NOT_SUPPORTED');
             const survey = { id: row.id, title: row.title, status: row.status, mode: row.mode, context: context(row) };
             const responseCount = Number((await db.query('SELECT count(*) AS n FROM "Participation" WHERE "surveyId"=$1', [row.id])).rows[0].n);
@@ -280,6 +294,8 @@ export function setupFeedback(app: Express, pool: Pool) {
                 return { survey, responseCount };
             const result = [];
             for (const q of await questions(db, row.id)) {
+                if (row.mode === 'ANONYMOUS' && q.type === 'TEXT')
+                    continue;
                 const { id, ...base } = questionView(q);
                 const answers = (await db.query('SELECT "ratingValue","textValue" FROM "Answer" WHERE "surveyId"=$1 AND "questionId"=$2 ORDER BY "textValue" COLLATE "C"', [row.id, q.id])).rows;
                 if (answers.length > responseCount || (q.type === 'RATING' && (q.ratingMin !== 1 || q.ratingMax !== 5 || answers.some(a => !Number.isInteger(a.ratingValue) || a.ratingValue < 1 || a.ratingValue > 5 || a.textValue !== null))) || (q.type === 'TEXT' && answers.some(a => a.ratingValue !== null || typeof a.textValue !== 'string' || !a.textValue.trim())))
@@ -288,7 +304,11 @@ export function setupFeedback(app: Express, pool: Pool) {
                     result.push({ questionId: id, ...base, comments: answers.flatMap(a => typeof a.textValue === 'string' && a.textValue.trim() ? [a.textValue] : []) });
                 else {
                     const scores = answers.map(a => Number(a.ratingValue));
-                    result.push({ questionId: id, ...base, answeredCount: scores.length, distribution: [1, 2, 3, 4, 5].map(score => ({ score, count: scores.filter(x => x === score).length })), mean: mean(scores) });
+                    const distribution = [1, 2, 3, 4, 5].map(score => ({ score, count: scores.filter(x => x === score).length }));
+                    const visible = row.mode === 'IDENTIFIED' || canReleaseAnonymousQuestion(distribution.map(bin => bin.count));
+                    result.push(visible
+                        ? { questionId: id, ...base, answeredCount: scores.length, distribution, mean: mean(scores) }
+                        : { questionId: id, ...base, suppressed: true });
                 }
             }
             return { survey, responseCount, questions: result };
