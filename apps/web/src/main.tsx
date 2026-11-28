@@ -419,7 +419,7 @@ function DraftCreation({ api, busy, create }: { api: Api; busy: boolean; create:
         setError(''); setStarter(null); setSurvey(null); setSourceId('');
         setPanel(current => current === next ? null : next);
     }
-    return <fieldset disabled={busy}><legend>Draft creation</legend>
+    return <fieldset className="draft-creation" disabled={busy}><legend>Draft creation</legend>
         <div className="actions">
             <button onClick={() => create()}>Create draft</button>
             <button onClick={() => open('starter')} aria-expanded={panel === 'starter'}>Preview Starter Questionnaire</button>
