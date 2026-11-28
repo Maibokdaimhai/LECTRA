@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { test, expect, signIn, createSurvey, openSurvey, confirmAction, read, screenshot } from './support/real-app.js';
 
 test('B23-01 real owner → student → closed results, persisted reload/relogin and validation', async ({ page, data }, info) => {
@@ -81,4 +82,204 @@ test('B23-02 real invalid then keyboard login and one StrictMode bootstrap', asy
   await page.getByLabel('Password', { exact: true }).press('Enter');
   await expect(page.getByRole('button', { name: 'Log out', exact: true })).toBeVisible();
   expect((await read(page, '/api/auth/me')).user.role).toBe('OWNER');
+});
+
+test('TEST-F06-E01/E02: anonymous submission shows status and owner sees a suppressed rating', async ({ page, data }, info) => {
+  const title = `Anonymous ${info.project.name}`;
+  await signIn(page);
+  const draft = await createSurvey(page, await data.lecture(), title, false);
+  await page.getByRole('combobox', { name: 'Privacy mode', exact: true }).selectOption('ANONYMOUS');
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText('Remove written questions');
+  await page.getByRole('button', { name: 'Remove question 2', exact: true }).click();
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  await expect(page.getByText('Saved revision 3.', { exact: true })).toBeVisible();
+  await confirmAction(page, 'Publish survey');
+  await expect(page.getByRole('button', { name: 'Close survey', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+
+  await signIn(page, 'respondent.11@example.test');
+  await openSurvey(page, title);
+  await expect(page.getByText(/anonymous to the instructor/i)).toBeVisible();
+  await expect(page.getByRole('textbox', { name: /Written answer/ })).toHaveCount(0);
+  await page.getByRole('radio', { name: '4', exact: true }).check();
+  await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+  await expect(page.getByText('Your participation is saved. Anonymous answers cannot be reopened.')).toBeVisible();
+  expect(await read(page, `/api/surveys/${draft.id}/my-submission`)).toEqual({ surveyId: draft.id, submitted: true });
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+
+  await signIn(page);
+  await openSurvey(page, title);
+  await confirmAction(page, 'Close survey');
+  await expect(page.getByText('Responses: 1', { exact: true })).toBeVisible();
+  await expect(page.getByText('Not enough anonymous data.', { exact: true })).toBeVisible();
+  await expect(page.getByRole('table')).toHaveCount(0);
+  await screenshot(page, info, 'f06-anonymous-suppression');
+});
+
+test('TEST-F09-E01: owner filters persisted history by context, day and state', async ({ page, data }, info) => {
+  await signIn(page);
+  const title = `History ${info.project.name}`;
+  const saved = await createSurvey(page, await data.lecture(), title);
+  await confirmAction(page, 'Close survey');
+  await expect(page.getByText('CLOSED', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Back to survey list', exact: true }).click();
+  const filters = page.getByRole('button', { name: 'History filters', exact: true });
+  await filters.focus();
+  await page.keyboard.press('Enter');
+  await page.getByLabel('History course', { exact: true }).selectOption({ label: 'SYN-CPE334' });
+  await page.getByLabel('History section', { exact: true }).selectOption({ label: 'A' });
+  await page.getByLabel('Lecture date from', { exact: true }).fill('2026-11-10');
+  await page.getByLabel('Lecture date to', { exact: true }).fill('2026-11-10');
+  await page.getByRole('combobox', { name: 'Survey state', exact: true }).selectOption('CLOSED');
+  const applied = page.waitForResponse(r => new URL(r.url()).searchParams.get('status') === 'CLOSED');
+  await page.getByRole('button', { name: 'Apply filters', exact: true }).click();
+  const response = await applied;
+  expect(response.status()).toBe(200);
+  expect((await response.json()).data.items.map((survey: { id: string }) => survey.id)).toEqual([saved.id]);
+  await expect(page.getByText(title, { exact: true })).toBeVisible();
+  await expect(page.getByText('Synthetic Draft', { exact: true })).toHaveCount(0);
+  await screenshot(page, info, 'f09-filtered-persisted-history');
+
+  await page.getByLabel('Lecture date from', { exact: true }).fill('2026-11-11');
+  await page.getByLabel('Lecture date to', { exact: true }).fill('2026-11-11');
+  await page.getByRole('button', { name: 'Apply filters', exact: true }).click();
+  await expect(page.getByText('No surveys match the filters.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Clear history filters', exact: true }).click();
+  await expect(page.getByText('Synthetic Draft', { exact: true })).toBeVisible();
+  await expect(page.getByText(title, { exact: true })).toBeVisible();
+});
+
+test('TEST-F07-E02: author, submit and read back an identified single-choice answer', async ({ page, data }, info) => {
+  const title = `Single choice ${info.project.name}`;
+  await signIn(page);
+  const draft = await createSurvey(page, await data.lecture(), title, false);
+  await page.getByRole('button', { name: 'Remove question 2', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Question type', exact: true }).selectOption('SINGLE_CHOICE');
+  await page.getByLabel('Option 1', { exact: true }).fill('Transactions');
+  await page.getByLabel('Option 2', { exact: true }).fill('Testing');
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  await expect(page.getByText('Saved revision 3.', { exact: true })).toBeVisible();
+  await confirmAction(page, 'Publish survey');
+  await expect(page.getByRole('button', { name: 'Close survey', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+  await signIn(page, 'respondent.11@example.test');
+  await openSurvey(page, title);
+  await page.getByRole('radio', { name: 'Testing', exact: true }).check();
+  await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Submission received', exact: true })).toBeVisible();
+  await expect(page.getByText('Testing', { exact: true })).toBeVisible();
+  expect((await read(page, `/api/surveys/${draft.id}/my-submission`)).answers).toHaveLength(1);
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+  await signIn(page);
+  await openSurvey(page, title);
+  await confirmAction(page, 'Close survey');
+  const results = page.getByRole('table', { name: 'Option distribution for Understanding', exact: true });
+  await expect(results.getByRole('row', { name: 'Testing 1', exact: true })).toBeVisible();
+  await expect(page.getByText('Mean:', { exact: false })).toHaveCount(0);
+  await screenshot(page, info, 'f07-single-choice-persisted');
+});
+
+test('TEST-F07-E01/E03/E05: preview the Starter, save an anonymous subset and reopen', async ({ page, data }, info) => {
+  const lecture = await data.lecture();
+  const title = `Starter subset ${info.project.name}`;
+  await signIn(page);
+  await page.getByLabel('Course', { exact: true }).selectOption({ label: lecture.courseCode });
+  await page.getByLabel('Section', { exact: true }).selectOption({ label: lecture.sectionCode });
+  await page.getByLabel('Lecture', { exact: true }).selectOption(lecture.id);
+  await page.getByRole('button', { name: 'Preview Starter Questionnaire', exact: true }).click();
+  const preview = page.getByRole('region', { name: 'Starter preview', exact: true });
+  await expect(preview).toContainText('lecture-feedback · Version 1');
+  await expect(preview).toContainText('General Suggestions · Optional');
+  await expect(preview).toContainText('Remove General Suggestions');
+  await expect(preview.getByRole('listitem')).toHaveCount(4);
+  await screenshot(page, info, 'f07-starter-preview');
+  await preview.getByRole('button', { name: 'Use Starter Questionnaire', exact: true }).click();
+  await expect(page.getByRole('group', { name: 'Question 4', exact: true })).toBeVisible();
+  await page.getByLabel('Survey title', { exact: true }).fill(title);
+  await page.getByRole('button', { name: 'Remove question 4', exact: true }).click();
+  await page.getByLabel('Privacy mode', { exact: true }).selectOption('ANONYMOUS');
+  await page.getByLabel('Eligibility', { exact: true }).selectOption('subset');
+  await page.getByLabel('Synthetic Respondent 11', { exact: true }).check();
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  await expect(page.getByText('Saved revision 2.', { exact: true })).toBeVisible();
+  await page.reload();
+  await openSurvey(page, title);
+  await expect(page.getByLabel('Privacy mode', { exact: true })).toHaveValue('ANONYMOUS');
+  await expect(page.getByLabel('Synthetic Respondent 11', { exact: true })).toBeChecked();
+  await expect(page.getByLabel('Synthetic Respondent 12', { exact: true })).not.toBeChecked();
+  await expect(page.getByRole('group', { name: 'Question 4', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('group', { name: 'Question 3', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await screenshot(page, info, 'f07-persisted-subset');
+  await confirmAction(page, 'Publish survey');
+  await expect(page.getByRole('button', { name: 'Close survey', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+  await signIn(page, 'respondent.12@example.test');
+  await expect(page.getByRole('button', { name: 'Refresh surveys', exact: true })).toBeVisible();
+  await expect(page.getByText(/surveys available|[0-9]+ surveys/).last()).toBeVisible();
+  await expect(page.getByText(title, { exact: true })).toHaveCount(0);
+});
+
+test('TEST-F07-E04: copy a saved definition, correct invalid options and reorder by keyboard', async ({ page, data }, info) => {
+  const title = `Copy source ${info.project.name}`;
+  await signIn(page);
+  const original = await createSurvey(page, await data.lecture(), title, false);
+  const target = await data.lecture();
+  await page.getByRole('button', { name: 'Back to survey list', exact: true }).click();
+  await page.getByLabel('Course', { exact: true }).selectOption({ label: target.courseCode });
+  await page.getByLabel('Section', { exact: true }).selectOption({ label: target.sectionCode });
+  await page.getByLabel('Lecture', { exact: true }).selectOption(target.id);
+  await page.getByRole('button', { name: 'Copy a survey', exact: true }).click();
+  await page.getByLabel('Source survey', { exact: true }).selectOption(original.id);
+  const created = page.waitForResponse(r => new URL(r.url()).pathname === '/api/surveys' && r.request().method() === 'POST');
+  await page.getByRole('button', { name: 'Copy as identified draft', exact: true }).click();
+  const copy = (await (await created).json()).data;
+  expect(copy.id).not.toEqual(original.id);
+  const first = page.getByRole('group', { name: 'Question 1', exact: true });
+  await first.getByRole('combobox', { name: 'Question type', exact: true }).selectOption('SINGLE_CHOICE');
+  await first.getByLabel('Option 1', { exact: true }).fill('Review');
+  await first.getByLabel('Option 2', { exact: true }).fill(' review ');
+  await page.getByRole('button', { name: 'Save draft', exact: true }).press('Enter');
+  await expect(page.getByRole('alert')).toBeFocused();
+  await first.getByLabel('Option 2', { exact: true }).fill('Examples');
+  await first.getByRole('button', { name: 'Move option 2 up', exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Move question 2 up', exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Save draft', exact: true }).press('Enter');
+  await expect(page.getByText('Saved revision 2.', { exact: true })).toBeVisible();
+  const saved = await read(page, `/api/surveys/${copy.id}`);
+  expect(saved.questions.map((q: { type: string }) => q.type)).toEqual(['TEXT', 'SINGLE_CHOICE']);
+  expect(saved.questions[1].options.map((option: { label: string }) => option.label)).toEqual(['Examples', 'Review']);
+  expect((await read(page, `/api/surveys/${original.id}`)).questions).toEqual(original.questions);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+
+test('TEST-F08-E01: download Closed UTF-8 aggregate CSV with keyboard and handle session expiry', async ({ page, data }, info) => {
+  const title = `ผลสรุป CSV ${info.project.name}`;
+  await signIn(page);
+  const definition = await createSurvey(page, await data.lecture(), title);
+  const url = `/api/surveys/${definition.id}/results.csv`;
+  const button = page.getByRole('button', { name: 'Download CSV', exact: true });
+  await expect(button).toHaveCount(0);
+  await confirmAction(page, 'Close survey');
+  await expect(button).toBeVisible();
+  const downloaded = page.waitForEvent('download');
+  await button.press('Enter');
+  const file = await downloaded;
+  expect(file.suggestedFilename()).toBe('survey-results.csv');
+  const csv = await readFile(await file.path(), 'utf8');
+  expect(csv.startsWith('\uFEFFformat_version,')).toBe(true);
+  expect(csv).toContain(title);
+  expect(csv).toContain('"Understanding","RATING","NO_DATA",0,,,,\r\n');
+  expect(csv).not.toContain('Next time');
+  await file.saveAs(info.outputPath('survey-results.csv'));
+  await page.route(url, route => route.fulfill({
+    status: 401,
+    contentType: 'application/json',
+    body: JSON.stringify({ error: { code: 'SESSION_EXPIRED' } }),
+  }));
+  await button.press('Enter');
+  await expect(page.getByRole('alert')).toContainText('Your session ended');
+  await expect(button).toHaveCount(0);
 });

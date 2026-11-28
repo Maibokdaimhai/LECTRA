@@ -842,3 +842,332 @@ it('INT22-11: scoped pagination retains totals/order at default, final and beyon
         expect((await owner.agent.get(`/api/surveys?${query}`).expect(422)).body.error.code).toBe('VALIDATION_FAILED');
     }
 });
+
+it('TEST-F06-I01/I02/I03/I04R: anonymous ratings preserve private status and suppress unsafe results', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const other = await login('respondent.12@example.test');
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'Anonymous ratings','2026-11-20',6006) RETURNING id`, [fixtureId(201)])).rows[0].id;
+    const { id } = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = `/api/surveys/${id}`;
+    const rating = {
+        id: null, type: 'RATING', prompt: 'Understanding', required: true,
+        ratingScale: { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means clearer' },
+    };
+    const text = { id: null, type: 'TEXT', prompt: 'Written note', required: false, ratingScale: null };
+    const draft = { expectedRevision: 1, title: 'Anonymous ratings', mode: 'ANONYMOUS', questions: [rating] };
+    await mutation(owner, 'patch', path, { ...draft, questions: [rating, text] }).expect(422);
+    const saved = (await mutation(owner, 'patch', path, draft).expect(200)).body.data;
+    expect(saved).toMatchObject({ mode: 'ANONYMOUS', definitionRevision: 2 });
+    expect(saved.privacyDisclosure).toMatch(/inference|infer/i);
+    await mutation(owner, 'post', `${path}/publish`, { expectedRevision: 2 }).expect(200);
+    await mutation(owner, 'patch', path, { ...draft, expectedRevision: 2, mode: 'IDENTIFIED' }).expect(409);
+    const questionId = saved.questions[0].id;
+    const response = { answers: [{ questionId, value: 4 }] };
+    expect((await student.agent.get(`${path}/my-submission`).expect(200)).body.data).toEqual({ surveyId: id, submitted: false });
+    await mutation(student, 'post', `${path}/responses`, { answers: [{ questionId, value: 'Text' }] }).expect(422);
+    const attempts = await Promise.all([
+        mutation(student, 'post', `${path}/responses`, response),
+        mutation(student, 'post', `${path}/responses`, response),
+    ]);
+    expect(attempts.map(r => r.status).sort()).toEqual([201, 409]);
+    expect(attempts.find(r => r.status === 201)!.body.data).toEqual({ surveyId: id, submitted: true });
+    expect((await other.agent.get(`${path}/my-submission`).expect(200)).body.data).toEqual({ surveyId: id, submitted: false });
+    expect((await pool.query('SELECT "identifiedStudentId" FROM "ResponseBundle" WHERE "surveyId"=$1', [id])).rows)
+        .toEqual([{ identifiedStudentId: null }]);
+    const live = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(live.responseCount).toBe(1);
+    expect(live).not.toHaveProperty('questions');
+    await mutation(owner, 'post', `${path}/close`, {}).expect(200);
+    const signedInAgain = await login('respondent.11@example.test');
+    expect((await signedInAgain.agent.get(`${path}/my-submission`).expect(200)).body.data).toEqual({ surveyId: id, submitted: true });
+    const closed = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(closed.responseCount).toBe(1);
+    expect(closed.questions[0]).toMatchObject({ questionId, suppressed: true });
+    for (const key of ['answeredCount', 'mean', 'distribution', 'comments'])
+        expect(closed.questions[0]).not.toHaveProperty(key);
+    await student.agent.get(`${path}/results`).expect(403);
+    const foreign = await login('owner.2@example.test');
+    await foreign.agent.get(`${path}/results`).expect(404);
+});
+
+it.each(['RATING', 'SINGLE_CHOICE'] as const)('TEST-F06-I04R/I04C: each %s question crosses 4/5 and sparse 2/3 independently of ten submissions', async type => {
+    const offset = type === 'RATING' ? 0 : 100;
+    const owner = await login();
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'Anonymous privacy boundaries','2026-11-20',$2) RETURNING id`, [fixtureId(201), 6007 + offset])).rows[0].id;
+    const { id } = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = `/api/surveys/${id}`;
+    const cases = [[4, 0], [5, 0], [3, 2], [4, 2], [3, 3]];
+    const draft = {
+        expectedRevision: 1, title: 'Anonymous privacy boundaries', mode: 'ANONYMOUS',
+        questions: cases.map((_, i) => ({
+            id: null, type, prompt: `Threshold case ${i + 1}`, required: false,
+            ratingScale: type === 'RATING' ? { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means higher understanding' } : null,
+            ...(type === 'SINGLE_CHOICE' ? { options: [{ id: null, label: 'First' }, { id: null, label: 'Second' }] } : {}),
+        })),
+    };
+    const saved = (await mutation(owner, 'patch', path, draft).expect(200)).body.data;
+    await mutation(owner, 'post', `${path}/publish`, { expectedRevision: 2 }).expect(200);
+    const students = [11, 12];
+    for (let i = 0; i < 8; i++) {
+        students.push(6201 + offset + i);
+        await pool.query('INSERT INTO "User" (id,email,"passwordHash",role,"displayName") VALUES ($1,$2,$3,\'RESPONDENT\',$4)',
+            [fixtureId(6201 + offset + i), `threshold.${offset}.${i}@example.test`, 'fixture-only', 'Threshold fixture']);
+        await pool.query('INSERT INTO "SurveyEligibility" ("surveyId","studentId") VALUES ($1,$2)', [id, fixtureId(6201 + offset + i)]);
+    }
+    await expect(pool.query('INSERT INTO "ResponseBundle" ("surveyId","identifiedStudentId") VALUES ($1,$2)', [id, fixtureId(11)]))
+        .rejects.toMatchObject({ code: '23514' });
+    await expect(pool.query('UPDATE "Survey" SET mode=\'IDENTIFIED\' WHERE id=$1', [id]))
+        .rejects.toMatchObject({ code: '23514' });
+    for (const [index, student] of students.entries()) {
+        const studentId = fixtureId(student);
+        const bundleId = fixtureId(6301 + offset + index);
+        await pool.query('INSERT INTO "Participation" VALUES ($1,$2)', [id, studentId]);
+        await pool.query('INSERT INTO "ResponseBundle" (id,"surveyId") VALUES ($1,$2)', [bundleId, id]);
+        for (const [question, [low, high]] of cases.entries()) {
+            const score = index < low! ? 1 : index < low! + high! ? 5 : null;
+            if (score !== null) {
+                const definition = saved.questions[question];
+                const chosen = type === 'SINGLE_CHOICE' ? definition.options[score === 1 ? 0 : 1].id : null;
+                await pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue","optionId") VALUES ($1,$2,$3,$4,$5)',
+                    [bundleId, definition.id, id, chosen ? null : score, chosen]);
+            }
+        }
+    }
+    await expect(pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","textValue") VALUES ($1,$2,$3,$4)',
+        [fixtureId(6310 + offset), saved.questions[0].id, id, 'Private text']))
+        .rejects.toMatchObject({ code: '23514' });
+    const published = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(published.responseCount).toBe(10);
+    expect(published).not.toHaveProperty('questions');
+    await mutation(owner, 'post', `${path}/close`, {}).expect(200);
+    const closed = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(closed.responseCount).toBe(10);
+    for (const i of [0, 2, 3]) {
+        expect(closed.questions[i]).toHaveProperty('suppressed', true);
+        for (const key of ['answeredCount', 'distribution', 'mean'])
+            expect(closed.questions[i]).not.toHaveProperty(key);
+    }
+    expect(closed.questions[1]).toMatchObject({ answeredCount: 5 });
+    expect(closed.questions[4]).toMatchObject({ answeredCount: 6 });
+    if (type === 'RATING') {
+        expect(closed.questions[1].mean).toBe('1.00');
+        expect(closed.questions[4].mean).toBe('3.00');
+    } else {
+        expect(closed.questions[1]).not.toHaveProperty('mean');
+        expect(closed.questions[4]).not.toHaveProperty('mean');
+    }
+    expect(closed.questions[4].distribution.map((bin: { count: number }) => bin.count))
+        .toEqual(type === 'RATING' ? [3, 0, 0, 0, 3] : [3, 3]);
+    // TEST-F08-I03: Check both privacy paths against the same stored distributions.
+    const csv = (await owner.agent.get(path + '/results.csv').expect(200)).text.split('\r\n');
+    for (const i of [0, 2, 3]) {
+        const hidden = csv.filter((line: string) => line.includes(`"${closed.questions[i].questionId}"`));
+        expect(hidden).toHaveLength(1);
+        expect(hidden[0]).toMatch(/,"SUPPRESSED",,,,,$/);
+    }
+    for (const i of [1, 4]) {
+        const visible = csv.filter((line: string) => line.includes(`"${closed.questions[i].questionId}"`));
+        expect(visible).toHaveLength(type === 'RATING' ? 5 : 2);
+        expect(visible.map((line: string) => Number(line.split(',').at(-1))))
+            .toEqual(closed.questions[i].distribution.map((bin: { count: number }) => bin.count));
+        expect(visible.every((line: string) => line.includes(`"RELEASED",${closed.questions[i].answeredCount},`))).toBe(true);
+    }
+});
+
+it('TEST-F07-I03: publish a single-choice-only survey, persist a selected option, and close with option counts', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'Single choice fixture','2026-11-21',7007) RETURNING id`, [fixtureId(201)])).rows[0].id;
+    const { id } = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = `/api/surveys/${id}`;
+    const question = {
+        id: null, type: 'SINGLE_CHOICE', prompt: 'Which topic was the clearest?', required: true, ratingScale: null,
+        options: [{ id: null, label: 'Transactions' }, { id: null, label: 'Testing' }],
+    };
+    const draft = { expectedRevision: 1, title: 'Single choice fixture', questions: [question] };
+    for (const invalid of [
+        [{ id: null, label: 'Only option' }],
+        [{ id: null, label: 'Same' }, { id: null, label: ' same ' }],
+        Array.from({ length: 7 }, (_, i) => ({ id: null, label: `Option ${i}` })),
+    ]) {
+        await mutation(owner, 'patch', path, { ...draft, questions: [{ ...question, options: invalid }] }).expect(422);
+    }
+    const saved = (await mutation(owner, 'patch', path, draft).expect(200)).body.data;
+    const persisted = saved.questions[0];
+    expect(persisted.options.map((option: { label: string }) => option.label)).toEqual(['Transactions', 'Testing']);
+    expect(new Set(persisted.options.map((option: { id: string }) => option.id)).size).toBe(2);
+    await mutation(owner, 'post', `${path}/publish`, { expectedRevision: 2 }).expect(200);
+    await mutation(student, 'post', `${path}/responses`,
+        { answers: [{ questionId: persisted.id, value: fixtureId(9999) }] }).expect(422);
+    const answers = [{ questionId: persisted.id, value: persisted.options[1].id }];
+    await mutation(student, 'post', `${path}/responses`, { answers }).expect(201);
+    expect((await student.agent.get(`${path}/my-submission`).expect(200)).body.data.answers).toEqual(answers);
+    await mutation(owner, 'post', `${path}/close`, {}).expect(200);
+    const summary = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(summary.questions[0]).not.toHaveProperty('mean');
+    expect(summary.questions[0].distribution).toEqual([
+        { optionId: persisted.options[0].id, label: 'Transactions', count: 0 },
+        { optionId: persisted.options[1].id, label: 'Testing', count: 1 },
+    ]);
+});
+
+it('TEST-F07-I01/I02/I04/I05/I06: preview, copy and publish independent Draft definitions', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const otherStudent = await login('respondent.12@example.test');
+    const foreignOwner = await login('owner.2@example.test');
+    const starterPath = '/api/survey-starters/lecture-feedback/1';
+    await student.agent.get(starterPath).expect(403);
+    const starter = (await owner.agent.get(starterPath).expect(200)).body.data;
+    expect(starter.questions.map((q: { type: string; required: boolean }) => [q.type, q.required])).toEqual([
+        ['RATING', true], ['RATING', true], ['RATING', false], ['TEXT', false],
+    ]);
+    const lectures = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        SELECT $1,'Draft tools fixture','2026-11-22',n FROM generate_series(7101,7103) AS n RETURNING id`,
+    [fixtureId(201)])).rows;
+    const create = (actor: typeof owner, data: object) => mutation(actor, 'post', '/api/surveys', data);
+    const starterInput = { lectureId: lectures[0].id, source: { starterKey: 'lecture-feedback', version: 1 } };
+    await create(owner, { ...starterInput, mode: 'ANONYMOUS' }).expect(422);
+    await create(foreignOwner, starterInput).expect(404);
+    const original = (await create(owner, starterInput).expect(201)).body.data;
+    expect(original.questions[0].metricVersion).toBe('content-clarity@1');
+    const source = { surveyId: original.id, expectedRevision: original.definitionRevision };
+    const copyInput = { lectureId: lectures[1].id, source };
+    await create(owner, { ...copyInput, source: { ...source, expectedRevision: 99 } }).expect(409);
+    await mutation(student, 'post', '/api/surveys', copyInput).expect(403);
+    await mutation(foreignOwner, 'post', '/api/surveys', {
+        ...copyInput, lectureId: fixtureId(303),
+    }).expect(404);
+    const membersPath = '/api/sections/' + fixtureId(201) + '/members';
+    await student.agent.get(membersPath).expect(403);
+    await foreignOwner.agent.get(membersPath).expect(404);
+    expect((await owner.agent.get(membersPath).expect(200)).body.data.items[0]).toHaveProperty('displayName');
+    const attempts = await Promise.all([create(owner, copyInput), create(owner, copyInput)]);
+    expect(attempts.map(r => r.status).sort()).toEqual([201, 409]);
+    const draft = attempts.find(r => r.status === 201)!.body.data;
+    const path = '/api/surveys/' + draft.id;
+    expect(draft.questions.map((q: { id: string }) => q.id)).not.toEqual(original.questions.map((q: { id: string }) => q.id));
+    expect(draft.draftStudentIds).toBeNull();
+    const selection = [fixtureId(11)];
+    const questions = draft.questions.slice(0, 3).map(({ position, metricVersion, templateSource, ...q }: Record<string, unknown>) => q);
+    const update = { expectedRevision: 1, title: 'Subset survey', mode: 'ANONYMOUS', questions };
+    await mutation(owner, 'patch', path, { ...update, draftStudentIds: [...selection, ...selection] }).expect(422);
+    await mutation(owner, 'patch', path, { ...update, draftStudentIds: [fixtureId(9999)] }).expect(422);
+    const interpretation = questions[0].ratingScale.interpretation;
+    const edited = (await mutation(owner, 'patch', path, { ...update, draftStudentIds: selection,
+        questions: [{ ...questions[0], ratingScale: { ...questions[0].ratingScale, interpretation: 'Changed interpretation' } },
+            ...questions.slice(1)] }).expect(200)).body.data;
+    expect(edited.questions[0].metricVersion).toBeNull();
+    expect(edited.questions[0].templateSource).toEqual(original.questions[0].templateSource);
+    expect(edited.questions[1].metricVersion).toBe(original.questions[1].metricVersion);
+    const restored = (await mutation(owner, 'patch', path, { ...update, expectedRevision: 2, questions: [
+        { ...questions[0], ratingScale: { ...questions[0].ratingScale, interpretation } }, ...questions.slice(1),
+    ] }).expect(200)).body.data;
+    expect(restored.questions[0].metricVersion).toBeNull();
+    await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), selection[0]]);
+    try { await mutation(owner, 'post', path + '/publish', { expectedRevision: 3 }).expect(422); }
+    finally { await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), selection[0]]); }
+    await mutation(owner, 'post', path + '/publish', { expectedRevision: 3 }).expect(200);
+    await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), selection[0]]);
+    try {
+        const studentView = (await student.agent.get(path).expect(200)).body.data;
+        expect(studentView).not.toHaveProperty('draftStudentIds');
+        expect(studentView.questions[0]).not.toHaveProperty('templateSource');
+        await otherStudent.agent.get(path).expect(404);
+    } finally { await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), selection[0]]); }
+    expect((await owner.agent.get('/api/surveys/' + original.id).expect(200)).body.data.questions).toEqual(original.questions);
+});
+
+it('TEST-F08-I01/I02: only a Closed owner can export the scoped aggregate CSV v1', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const other = await login('owner.2@example.test');
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'CSV lecture','2026-11-24',8101) RETURNING id`, [fixtureId(201)])).rows[0].id;
+    const created = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = '/api/surveys/' + created.id;
+    const csv = path + '/results.csv';
+    await request(app).get(csv).expect(401);
+    await student.agent.get(csv).expect(403);
+    await other.agent.get(csv).expect(404);
+    await owner.agent.get(csv + '?fields=hidden').expect(422);
+    await owner.agent.get(csv).expect(409);
+    const scale = { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means clearer' };
+    const saved = (await mutation(owner, 'patch', path, {
+        expectedRevision: 1, title: '=1+1 ผลทดสอบ', questions: [
+            { id: null, prompt: 'คำถาม, "หนึ่ง"', type: 'RATING', required: true, ratingScale: scale },
+            { id: null, prompt: 'Skipped', type: 'RATING', required: false, ratingScale: scale },
+            { id: null, prompt: 'Choose', type: 'SINGLE_CHOICE', required: false, ratingScale: null,
+                options: [{ id: null, label: '@Thai ตัวอย่าง' }, { id: null, label: 'Other' }] },
+            { id: null, prompt: 'Private comment', type: 'TEXT', required: false, ratingScale: null },
+        ],
+    }).expect(200)).body.data;
+    await mutation(owner, 'post', path + '/publish', { expectedRevision: 2 }).expect(200);
+    await owner.agent.get(csv).expect(409);
+    await mutation(student, 'post', path + '/responses', { answers: [
+        { questionId: saved.questions[0].id, value: 4 },
+        { questionId: saved.questions[2].id, value: saved.questions[2].options[0].id },
+        { questionId: saved.questions[3].id, value: 'comment-marker-that-must-stay-private' },
+    ] }).expect(201);
+    await mutation(owner, 'post', path + '/close', {}).expect(200);
+    const result = await owner.agent.get(csv).expect(200)
+        .expect('Content-Type', /text\/csv; charset=utf-8/i)
+        .expect('Content-Disposition', 'attachment; filename="survey-results.csv"')
+        .expect('Cache-Control', 'no-store');
+    expect(result.text.startsWith('\uFEFFformat_version,course_code,section_code,term,lecture_title,lecture_date,survey_id,survey_title,survey_mode,question_id,question_category,question_prompt,question_type,result_status,answered_count,mean,rating_score,option_label,bin_count\r\n')).toBe(true);
+    expect(result.text).toContain(`"${created.id}","'=1+1 ผลทดสอบ","IDENTIFIED"`);
+    expect(result.text).toContain('"คำถาม, ""หนึ่ง""","RATING","RELEASED",1,4.00,4,,1\r\n');
+    expect(result.text).toContain('"Skipped","RATING","NO_DATA",0,,,,\r\n');
+    expect(result.text).toContain('"Choose","SINGLE_CHOICE","RELEASED",1,,,"\'@Thai ตัวอย่าง",1\r\n');
+    expect(result.text).not.toMatch(/comment-marker|Private comment|respondent\.11|studentId|bundleId/);
+});
+
+it('TEST-F09-I01: combine owned history filters with inclusive dates and scoped pagination', async () => {
+    const owner = await login();
+    const fixtures = [
+        [fixtureId(201), fixtureId(1), 'History early', '2026-10-17', 7001],
+        [fixtureId(201), fixtureId(1), 'History first', '2026-10-18', 7002],
+        [fixtureId(201), fixtureId(1), 'History second', '2026-10-18', 7003],
+        [fixtureId(202), fixtureId(2), 'History foreign', '2026-10-18', 7004],
+    ] as const;
+    for (const [sectionId, ownerId, title, date, sequence] of fixtures) {
+        await pool.query(`WITH lecture AS (
+            INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+            VALUES ($1,$2,$3,$4) RETURNING id
+        )
+        INSERT INTO "Survey" ("lectureId","ownerId",title) SELECT id,$5,$2 FROM lecture`,
+        [sectionId, title, date, sequence, ownerId]);
+    }
+    const filters = new URLSearchParams({
+        courseId: fixtureId(101), sectionId: fixtureId(201), status: 'DRAFT',
+        dateFrom: '2026-10-18', dateTo: '2026-10-18', limit: '1',
+    });
+    const first = (await owner.agent.get(`/api/surveys?${filters}`).expect(200)).body.data;
+    expect(first.pagination).toEqual({ total: 2, limit: 1, offset: 0 });
+    expect(first.items).toMatchObject([{ title: 'History second' }]);
+
+    filters.set('offset', '1');
+    const second = (await owner.agent.get(`/api/surveys?${filters}`).expect(200)).body.data;
+    expect(second.pagination).toEqual({ total: 2, limit: 1, offset: 1 });
+    expect(second.items).toMatchObject([{ title: 'History first' }]);
+    filters.set('status', 'CLOSED');
+    const closed = (await owner.agent.get(`/api/surveys?${filters}`).expect(200)).body.data;
+    expect(closed.pagination.total).toBe(0);
+    expect(closed.items).toEqual([]);
+});
+
+it('TEST-F09-I02: reject foreign ownership and invalid history filters without exposing surveys', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    await request(app).get('/api/surveys?status=DRAFT').expect(401);
+    await student.agent.get('/api/surveys?status=DRAFT').expect(422);
+    const foreign = await owner.agent.get(`/api/surveys?sectionId=${fixtureId(202)}`).expect(404);
+    expect(foreign.body.error.code).toBe('NOT_FOUND');
+    for (const invalid of ['dateFrom=2026-02-30', 'dateFrom=2026-12-01&dateTo=2026-11-30', 'status=OTHER', 'status=DRAFT&status=CLOSED']) {
+        expect((await owner.agent.get(`/api/surveys?${invalid}`).expect(422)).body.error.code).toBe('VALIDATION_FAILED');
+    }
+});

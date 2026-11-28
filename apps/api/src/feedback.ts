@@ -1,13 +1,19 @@
 import type { Express, Request } from 'express';
 import type { Pool, PoolClient } from 'pg';
 import { randomUUID } from 'node:crypto';
+import { lectureFeedbackStarter, starterPreview } from './survey-starter.js';
+import { resultsCsv } from './results-csv.js';
 import { authenticated, role, csrf } from './auth.js';
 import { exact, fail, uuid, HttpError } from './http.js';
-import { mean, parseAnswers, parseAnswerEnvelope, parseDefinition, validatePublication } from './feedback-rules.js';
+import { canReleaseAnonymousQuestion, mean, parseAnswers, parseAnswerEnvelope, parseDefinition, parseDraftCreation, validatePublication } from './feedback-rules.js';
 type Row = Record<string, any>;
 const disclosure = 'This survey is identified. Your answers remain linked to your account in storage. The survey owner sees summaries and unlabelled written feedback after closing, without your account identifier. Your written content may still identify you. Small groups can also make summaries identifiable.';
-const scale = (q: Row) => q.type === 'TEXT' ? null : ({ min: q.ratingMin, max: q.ratingMax, minLabel: q.ratingMinLabel, maxLabel: q.ratingMaxLabel, interpretation: q.scaleInterpretation });
-const questionView = (q: Row) => ({ id: q.id, position: q.position, prompt: q.prompt, type: q.type, required: q.required, ratingScale: scale(q) });
+const anonymousDisclosure = 'This survey is anonymous to the instructor. Your account records eligibility and whether you submitted. Your answers are stored separately, and you can reopen only your submission status. This survey does not collect written feedback. Results are subject to disclosure thresholds. External knowledge, patterns or privileged infrastructure access may still allow inference.';
+const scale = (q: Row) => q.type !== 'RATING' ? null : ({ min: q.ratingMin, max: q.ratingMax, minLabel: q.ratingMinLabel, maxLabel: q.ratingMaxLabel, interpretation: q.scaleInterpretation });
+const questionView = (q: Row) => ({ id: q.id, position: q.position, prompt: q.prompt, type: q.type, required: q.required, ratingScale: scale(q), ...(q.type === 'SINGLE_CHOICE' ? { options: q.options } : {}) });
+const ownerQuestionView = (q: Row) => ({
+    ...questionView(q), ...(q.templateSource ? { templateSource: q.templateSource, metricVersion: q.metricVersion } : {}),
+});
 const courseView = (r: Row) => ({ id: r.courseId, code: r.courseCode, title: r.courseTitle });
 const sectionView = (r: Row) => ({ id: r.sectionId, courseId: r.courseId, term: r.term, sectionCode: r.sectionCode });
 const lectureView = (r: Row) => ({ id: r.lectureId, title: r.lectureTitle, lectureDate: typeof r.lectureDate === 'string' ? r.lectureDate : r.lectureDate.toISOString().slice(0, 10), sequence: r.sequence });
@@ -26,6 +32,16 @@ function page(req: Request, allowed: string[] = []) {
     if (!/^[1-9]\d*$/.test(limit) || Number(limit) > 100 || !/^(0|[1-9]\d*)$/.test(offset) || Number(offset) > 10000)
         fail(422, 'VALIDATION_FAILED');
     return { q, limit: Number(limit), offset: Number(offset) };
+}
+function historyDate(value: string | null) {
+    if (value === null)
+        return null;
+    if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) || value.startsWith('0000-'))
+        fail(422, 'VALIDATION_FAILED');
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value)
+        fail(422, 'VALIDATION_FAILED');
+    return value;
 }
 async function transaction<T>(pool: Pool, action: (db: PoolClient) => Promise<T>, read = false): Promise<T> {
     const db = await pool.connect();
@@ -65,10 +81,52 @@ async function scope(db: PoolClient, req: Request, lock = false) {
         fail(404, 'NOT_FOUND');
     return row!;
 }
-async function questions(db: PoolClient, id: string) { return (await db.query('SELECT * FROM "Question" WHERE "surveyId"=$1 ORDER BY position', [id])).rows; }
+async function questions(db: PoolClient, id: string) {
+    return (await db.query(`SELECT q.*, CASE WHEN q.type::text='SINGLE_CHOICE'
+        THEN (SELECT COALESCE(json_agg(json_build_object('id',o.id,'label',o.label) ORDER BY o.position),'[]'::json)
+              FROM "QuestionOption" o WHERE o."questionId"=q.id)
+        END AS options FROM "Question" q WHERE q."surveyId"=$1 ORDER BY q.position`, [id])).rows;
+}
+type DraftQuestion = {
+    id: string | null;
+    prompt: string;
+    type: string;
+    required: boolean;
+    ratingScale: ReturnType<typeof scale>;
+    options?: { id: string | null; label: string }[];
+    templateSource?: { key: string; version: number; position: number } | null;
+    metricVersion?: string | null;
+};
+
+async function writeQuestions(db: PoolClient, surveyId: string, questions: DraftQuestion[]) {
+    for (const [index, q] of questions.entries()) {
+        const id = q.id ?? randomUUID();
+        const s = q.ratingScale;
+        await db.query(`INSERT INTO "Question" (id,"surveyId",position,prompt,type,required,"ratingMin","ratingMax",
+            "ratingMinLabel","ratingMaxLabel","scaleInterpretation","templateSource","metricVersion")
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+            ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,prompt=EXCLUDED.prompt,type=EXCLUDED.type,
+                required=EXCLUDED.required,"ratingMin"=EXCLUDED."ratingMin","ratingMax"=EXCLUDED."ratingMax",
+                "ratingMinLabel"=EXCLUDED."ratingMinLabel","ratingMaxLabel"=EXCLUDED."ratingMaxLabel",
+                "scaleInterpretation"=EXCLUDED."scaleInterpretation","metricVersion"=EXCLUDED."metricVersion"`,
+            [id, surveyId, index + 1, q.prompt, q.type, q.required, s?.min ?? null, s?.max ?? null,
+                s?.minLabel ?? null, s?.maxLabel ?? null, s?.interpretation ?? null, q.templateSource ?? null, q.metricVersion ?? null]);
+        const options = q.options ?? [];
+        const retained = options.flatMap(option => option.id ? [option.id] : []);
+        await db.query('DELETE FROM "QuestionOption" WHERE "questionId"=$1 AND NOT (id=ANY($2::uuid[]))', [id, retained]);
+        if (retained.length)
+            await db.query('UPDATE "QuestionOption" SET position=position+6 WHERE "questionId"=$1', [id]);
+        for (const [position, option] of options.entries()) {
+            await db.query(`INSERT INTO "QuestionOption" (id,"surveyId","questionId",position,label) VALUES ($1,$2,$3,$4,$5)
+                ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,label=EXCLUDED.label`,
+            [option.id ?? randomUUID(), surveyId, id, position + 1, option.label]);
+        }
+    }
+}
+
 async function definitionView(db: PoolClient, row: Row, owner: boolean) {
-    const base = { id: row.id, lectureId: row.lectureId, title: row.title, status: row.status, mode: row.mode, context: context(row), questions: (await questions(db, row.id)).map(questionView), privacyDisclosure: disclosure };
-    return owner ? { ...base, definitionRevision: row.definitionRevision, publishedAt: row.publishedAt?.toISOString() ?? null, closedAt: row.closedAt?.toISOString() ?? null } : base;
+    const base = { id: row.id, lectureId: row.lectureId, title: row.title, status: row.status, mode: row.mode, context: context(row), questions: (await questions(db, row.id)).map(owner ? ownerQuestionView : questionView), privacyDisclosure: row.mode === 'ANONYMOUS' ? anonymousDisclosure : disclosure };
+    return owner ? { ...base, definitionRevision: row.definitionRevision, definitionSource: row.definitionSource, ...(row.status === 'DRAFT' ? { draftStudentIds: row.draftStudentIds } : {}), publishedAt: row.publishedAt?.toISOString() ?? null, closedAt: row.closedAt?.toISOString() ?? null } : base;
 }
 const revision = (value: unknown) => { exact(value, ['expectedRevision'], 'INVALID_REQUEST'); const n = (value as {
     expectedRevision: unknown;
@@ -87,7 +145,7 @@ export function setupFeedback(app: Express, pool: Pool) {
     app.use('/api', (req, res, next) => {
         const path = req.path;
         let methods: string[] | undefined;
-        if (/^\/courses$|^\/sections$|^\/sections\/[^/]+\/lectures$|^\/surveys\/[^/]+\/(results|my-submission)$/.test(path))
+        if (/^\/courses$|^\/sections$|^\/sections\/[^/]+\/(lectures|members)$|^\/survey-starters\/[^/]+\/[^/]+$|^\/surveys\/[^/]+\/(results(?:\.csv)?|my-submission)$/.test(path))
             methods = ['GET'];
         else if (path === '/surveys')
             methods = ['GET', 'POST'];
@@ -135,33 +193,91 @@ export function setupFeedback(app: Express, pool: Pool) {
     });
     app.get('/api/surveys', authenticated, async (req, res) => {
         const owner = req.actor!.role === 'OWNER';
-        const p = page(req, owner ? ['lectureId'] : []);
-        const lecture = p.q.get('lectureId');
-        if (lecture !== null)
-            uuid(lecture);
+        const p = page(req, owner ? ['lectureId', 'courseId', 'sectionId', 'dateFrom', 'dateTo', 'status'] : []);
+        const identifier = (key: string) => p.q.has(key) ? uuid(p.q.get(key)) : null;
+        const lecture = identifier('lectureId'), course = identifier('courseId'), section = identifier('sectionId');
+        const dateFrom = historyDate(p.q.get('dateFrom'));
+        const dateTo = historyDate(p.q.get('dateTo'));
+        const status = p.q.get('status');
+        if ((dateFrom && dateTo && dateFrom > dateTo) || (status !== null && !['DRAFT', 'PUBLISHED', 'CLOSED'].includes(status)))
+            fail(422, 'VALIDATION_FAILED');
         const data = await transaction(pool, async (db) => {
-            if (lecture && !(await db.query('SELECT l.id FROM "Lecture" l JOIN "Section" sec ON sec.id=l."sectionId" WHERE l.id=$1 AND sec."ownerId"=$2', [lecture, req.actor!.userId])).rowCount)
+            const userId = req.actor!.userId;
+            if (lecture && !(await db.query('SELECT l.id FROM "Lecture" l JOIN "Section" sec ON sec.id=l."sectionId" WHERE l.id=$1 AND sec."ownerId"=$2', [lecture, userId])).rowCount)
+                fail(404, 'NOT_FOUND');
+            if (course && !(await db.query('SELECT 1 FROM "Section" WHERE "courseId"=$1 AND "ownerId"=$2', [course, userId])).rowCount)
+                fail(404, 'NOT_FOUND');
+            if (section && !(await db.query('SELECT 1 FROM "Section" WHERE id=$1 AND "ownerId"=$2', [section, userId])).rowCount)
                 fail(404, 'NOT_FOUND');
             const predicate = owner ? 'sec."ownerId"=$1 AND s."ownerId"=sec."ownerId"' : `s.status IN ('PUBLISHED','CLOSED') AND EXISTS (SELECT 1 FROM "SurveyEligibility" e WHERE e."surveyId"=s.id AND e."studentId"=$1)`;
             const select = owner ? joined : joined.replace('SELECT s.*,', `SELECT s.*, EXISTS(SELECT 1 FROM "Participation" p WHERE p."surveyId"=s.id AND p."studentId"=$1) AS submitted,`);
-            const values: unknown[] = [req.actor!.userId];
-            if (lecture)
-                values.push(lecture);
-            const data = await paginated(db, `${select} WHERE ${predicate}${lecture ? ' AND l.id=$2' : ''}`, values, p.limit, p.offset, '"lectureDate" DESC,sequence DESC,s.id');
+            const values: unknown[] = [userId];
+            const filters = [
+                [lecture, 'l.id='], [course, 'sec."courseId"='], [section, 'sec.id='],
+                [dateFrom, 'l."lectureDate">='], [dateTo, 'l."lectureDate"<='], [status, 's.status='],
+            ] as const;
+            const conditions = [predicate];
+            for (const [value, comparison] of filters) {
+                if (value !== null)
+                    conditions.push(`${comparison}$${values.push(value)}`);
+            }
+            const data = await paginated(db, `${select} WHERE ${conditions.join(' AND ')}`, values, p.limit, p.offset, '"lectureDate" DESC,sequence DESC,s.id');
             return { ...data, items: data.items.map(row => ({ id: row.id, title: row.title, status: row.status, mode: row.mode, ...context(row), ...(!owner ? { participation: { submitted: row.submitted } } : {}) })) };
+        }, true);
+        res.json({ data });
+    });
+    app.get('/api/survey-starters/:key/:version', authenticated, role('OWNER'), (req, res) => {
+        query(req, []);
+        if (req.params.key !== lectureFeedbackStarter.key || req.params.version !== String(lectureFeedbackStarter.version))
+            fail(404, 'NOT_FOUND');
+        res.json({ data: starterPreview });
+    });
+    app.get('/api/sections/:sectionId/members', authenticated, role('OWNER'), async (req, res) => {
+        const p = page(req);
+        const sectionId = uuid(req.params.sectionId);
+        const data = await transaction(pool, async db => {
+            if (!(await db.query('SELECT id FROM "Section" WHERE id=$1 AND "ownerId"=$2', [sectionId, req.actor!.userId])).rowCount)
+                fail(404, 'NOT_FOUND');
+            return paginated(db, `SELECT u.id,u."displayName" FROM "Membership" m JOIN "User" u ON u.id=m."studentId"
+                WHERE m."sectionId"=$1 AND u.role='RESPONDENT'`, [sectionId], p.limit, p.offset, '"displayName" COLLATE "C",id');
         }, true);
         res.json({ data });
     });
     app.post('/api/surveys', authenticated, csrf, role('OWNER'), async (req, res) => {
         query(req, []);
-        exact(req.body, ['lectureId'], 'INVALID_REQUEST');
-        const lecture = uuid(req.body.lectureId, 'INVALID_REQUEST');
+        const input = parseDraftCreation(req.body);
+        const lecture = input.lectureId;
+        const mode = input.mode ?? 'IDENTIFIED';
         const data = await transaction(pool, async (db) => {
             const found = await db.query('SELECT l.id FROM "Lecture" l JOIN "Section" sec ON sec.id=l."sectionId" WHERE l.id=$1 AND sec."ownerId"=$2', [lecture, req.actor!.userId]);
             if (!found.rowCount)
                 fail(404, 'NOT_FOUND');
+            let title = '';
+            let copied: DraftQuestion[] = [];
+            const source = input.source;
+            if (source && 'starterKey' in source) {
+                if (source.starterKey !== lectureFeedbackStarter.key || source.version !== lectureFeedbackStarter.version)
+                    fail(404, 'NOT_FOUND');
+                title = lectureFeedbackStarter.title;
+                copied = lectureFeedbackStarter.questions;
+            } else if (source) {
+                const original = (await db.query(`${joined} WHERE s.id=$1 AND sec."ownerId"=$2
+                    AND s."ownerId"=$2 FOR SHARE OF s`, [source.surveyId, req.actor!.userId])).rows[0];
+                if (!original)
+                    fail(404, 'NOT_FOUND');
+                sameRevision(original, source.expectedRevision);
+                title = original.title;
+                copied = (await questions(db, original.id)).map(q => ({
+                    ...questionView(q), id: null, templateSource: q.templateSource, metricVersion: q.metricVersion,
+                    options: q.options?.map((option: { label: string }) => ({ id: null, label: option.label })),
+                }));
+            }
+            if (mode === 'ANONYMOUS' && copied.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_DEFINITION', 'Remove written questions before switching to anonymous.');
             // Unique lectureId is the final arbiter for concurrent creates.
-            const row = (await db.query('INSERT INTO "Survey" ("lectureId","ownerId") VALUES ($1,$2) RETURNING id', [lecture, req.actor!.userId])).rows[0];
+            const row = (await db.query(`INSERT INTO "Survey" ("lectureId","ownerId",title,mode,"definitionSource")
+                VALUES ($1,$2,$3,$4,$5) RETURNING id`, [lecture, req.actor!.userId, title, mode, source ?? null])).rows[0];
+            await writeQuestions(db, row.id, copied);
             return definitionView(db, (await db.query(`${joined} WHERE s.id=$1`, [row.id])).rows[0], true);
         });
         res.location(`/api/surveys/${data.id}`).status(201).json({ data });
@@ -174,23 +290,49 @@ export function setupFeedback(app: Express, pool: Pool) {
             const row = await scope(db, req, true);
             state(row, 'DRAFT');
             sameRevision(row, input.expectedRevision);
+            const mode = input.mode ?? row.mode;
+            if (mode === 'ANONYMOUS' && input.questions.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_DEFINITION', 'Remove written questions before switching to anonymous.');
             const old = await questions(db, row.id);
             if (input.questions.some(q => q.id && !old.some(x => x.id === q.id)))
                 fail(422, 'INVALID_DEFINITION');
-            const existing = old.map(({ id, ...q }) => ({ id, prompt: q.prompt, type: q.type, required: q.required, ratingScale: scale(q) }));
-            if (row.title === input.title && JSON.stringify(existing) === JSON.stringify(input.questions))
+            for (const q of input.questions) {
+                const previous = old.find(row => row.id === q.id);
+                if (q.options?.some(option => option.id && !previous?.options?.some((stored: { id: string }) => stored.id === option.id)))
+                    fail(422, 'INVALID_DEFINITION');
+            }
+            const selected = input.draftStudentIds === undefined ? row.draftStudentIds : input.draftStudentIds?.slice().sort() ?? null;
+            if (input.draftStudentIds?.length) {
+                const members = (await db.query(`SELECT count(*)::int AS n FROM "Membership" m
+                    JOIN "User" u ON u.id=m."studentId" WHERE m."sectionId"=$1 AND m."studentId"=ANY($2::uuid[])
+                    AND u.role='RESPONDENT'`, [row.sectionId, selected])).rows[0].n;
+                if (members !== input.draftStudentIds.length)
+                    fail(422, 'ELIGIBILITY_INVALID', 'Choose current Section members.');
+            }
+            const existing = old.map(q => {
+                const { position, ...definition } = questionView(q);
+                return definition;
+            });
+            if (row.title === input.title && row.mode === mode && JSON.stringify(row.draftStudentIds) === JSON.stringify(selected) && JSON.stringify(existing) === JSON.stringify(input.questions))
                 return definitionView(db, row, true);
             const retained = input.questions.flatMap(q => q.id ? [q.id] : []);
             await db.query('DELETE FROM "Question" WHERE "surveyId"=$1 AND NOT (id=ANY($2::uuid[]))', [row.id, retained]);
             await db.query('UPDATE "Question" SET position=position+10 WHERE "surveyId"=$1', [row.id]);
-            for (const [index, q] of input.questions.entries()) {
-                const id = q.id ?? randomUUID();
-                const s = q.ratingScale;
-                await db.query(`INSERT INTO "Question" (id,"surveyId",position,prompt,type,required,"ratingMin","ratingMax","ratingMinLabel","ratingMaxLabel","scaleInterpretation") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,prompt=EXCLUDED.prompt,type=EXCLUDED.type,required=EXCLUDED.required,"ratingMin"=EXCLUDED."ratingMin","ratingMax"=EXCLUDED."ratingMax","ratingMinLabel"=EXCLUDED."ratingMinLabel","ratingMaxLabel"=EXCLUDED."ratingMaxLabel","scaleInterpretation"=EXCLUDED."scaleInterpretation"`, [id, row.id, index + 1, q.prompt, q.type, q.required, s?.min ?? null, s?.max ?? null, s?.minLabel ?? null, s?.maxLabel ?? null, s?.interpretation ?? null]);
-            }
+            await writeQuestions(db, row.id, input.questions.map(q => {
+                const prior = old.find(item => item.id === q.id);
+                return {
+                    ...q,
+                    templateSource: prior?.templateSource,
+                    metricVersion: prior?.prompt === q.prompt && prior?.type === q.type
+                        && JSON.stringify(scale(prior)) === JSON.stringify(q.ratingScale) ? prior?.metricVersion : null,
+                };
+            }));
             row.title = input.title;
+            row.mode = mode;
+            row.draftStudentIds = selected;
             row.definitionRevision++;
-            await db.query('UPDATE "Survey" SET title=$2,"definitionRevision"=$3 WHERE id=$1', [row.id, row.title, row.definitionRevision]);
+            await db.query(`UPDATE "Survey" SET title=$2,"definitionRevision"=$3,mode=$4,"draftStudentIds"=$5 WHERE id=$1`,
+                [row.id, row.title, row.definitionRevision, mode, selected === null ? null : JSON.stringify(selected)]);
             return definitionView(db, row, true);
         });
         res.json({ data });
@@ -204,18 +346,23 @@ export function setupFeedback(app: Express, pool: Pool) {
             state(row, 'DRAFT');
             sameRevision(row, rev);
             const qs = (await questions(db, row.id)).map(questionView);
+            if (row.mode === 'ANONYMOUS' && qs.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_DEFINITION', 'Anonymous surveys cannot contain written questions.');
             validatePublication({ title: row.title, questions: qs });
             // Validate and insert from one materialized statement snapshot. Concurrent membership
             // edits cannot change the set between validation and the eligibility insertion.
             const snapshot = (await db.query(`WITH members AS MATERIALIZED (
-                SELECT m."studentId",u.role FROM "Membership" m JOIN "User" u ON u.id=m."studentId" WHERE m."sectionId"=$2
+                SELECT m."studentId",u.role FROM "Membership" m JOIN "User" u ON u.id=m."studentId"
+                WHERE m."sectionId"=$2 AND ($3::uuid[] IS NULL OR m."studentId"=ANY($3::uuid[]))
             ), inserted AS (
                 INSERT INTO "SurveyEligibility" ("surveyId","studentId")
                 SELECT $1,"studentId" FROM members WHERE NOT EXISTS (SELECT 1 FROM members WHERE role<>'RESPONDENT')
                 RETURNING "studentId"
             ) SELECT (SELECT count(*) FROM members WHERE role<>'RESPONDENT')::int AS invalid,
-                (SELECT count(*) FROM inserted)::int AS inserted`, [row.id, row.sectionId])).rows[0];
-            if (snapshot.invalid) fail(422, 'ELIGIBILITY_INVALID');
+                (SELECT count(*) FROM members)::int AS members,
+                (SELECT count(*) FROM inserted)::int AS inserted`, [row.id, row.sectionId, row.draftStudentIds])).rows[0];
+            if (snapshot.invalid || (row.draftStudentIds !== null && snapshot.members !== row.draftStudentIds.length))
+                fail(422, 'ELIGIBILITY_INVALID', 'Choose current Section members.');
             if (!snapshot.inserted) fail(422, 'ELIGIBILITY_EMPTY');
             const updated = (await db.query('UPDATE "Survey" SET status=\'PUBLISHED\',"publishedAt"=now() WHERE id=$1 RETURNING status,"publishedAt"', [row.id])).rows[0];
             Object.assign(row, updated);
@@ -235,17 +382,25 @@ export function setupFeedback(app: Express, pool: Pool) {
         const data = await transaction(pool, async (db) => {
             const row = await scope(db, req, true);
             state(row, 'PUBLISHED');
-            if (row.mode !== 'IDENTIFIED')
+            if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
                 fail(409, 'MODE_NOT_SUPPORTED');
             if ((await db.query('SELECT 1 FROM "Participation" WHERE "surveyId"=$1 AND "studentId"=$2', [row.id, req.actor!.userId])).rowCount)
                 fail(409, 'RESPONSE_ALREADY_SUBMITTED');
-            const answers = parseAnswers(req.body, await questions(db, row.id));
+            const storedQuestions = await questions(db, row.id);
+            const anonymous = row.mode === 'ANONYMOUS';
+            if (anonymous && storedQuestions.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_ANSWERS');
+            const answers = parseAnswers(req.body, storedQuestions);
             const bundle = randomUUID();
             await db.query('INSERT INTO "Participation" VALUES ($1,$2)', [row.id, req.actor!.userId]);
-            await db.query('INSERT INTO "ResponseBundle" (id,"surveyId","identifiedStudentId") VALUES ($1,$2,$3)', [bundle, row.id, req.actor!.userId]);
-            for (const a of answers)
-                await db.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue","textValue") VALUES ($1,$2,$3,$4,$5)', [bundle, a.questionId, row.id, typeof a.value === 'number' ? a.value : null, typeof a.value === 'string' ? a.value : null]);
-            return { surveyId: row.id, submitted: true, answers };
+            await db.query('INSERT INTO "ResponseBundle" (id,"surveyId","identifiedStudentId") VALUES ($1,$2,$3)', [bundle, row.id, anonymous ? null : req.actor!.userId]);
+            for (const a of answers) {
+                const type = storedQuestions.find(q => q.id === a.questionId)!.type;
+                await db.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue","textValue","optionId") VALUES ($1,$2,$3,$4,$5,$6)',
+                    [bundle, a.questionId, row.id, type === 'RATING' ? a.value : null, type === 'TEXT' ? a.value : null, type === 'SINGLE_CHOICE' ? a.value : null]);
+            }
+            const status = { surveyId: row.id, submitted: true };
+            return anonymous ? status : { ...status, answers };
         });
         res.status(201).json({ data });
     });
@@ -253,13 +408,15 @@ export function setupFeedback(app: Express, pool: Pool) {
         query(req, []);
         const data = await transaction(pool, async (db) => {
             const row = await scope(db, req);
-            if (row.mode !== 'IDENTIFIED')
+            if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
                 fail(409, 'MODE_NOT_SUPPORTED');
             const submitted = Boolean((await db.query('SELECT 1 FROM "Participation" WHERE "surveyId"=$1 AND "studentId"=$2', [row.id, req.actor!.userId])).rowCount);
+            if (row.mode === 'ANONYMOUS')
+                return { surveyId: row.id, submitted };
             const bundles = (await db.query('SELECT id FROM "ResponseBundle" WHERE "surveyId"=$1 AND "identifiedStudentId"=$2', [row.id, req.actor!.userId])).rows;
             if (submitted !== (bundles.length === 1))
                 fail(500, 'INTERNAL_ERROR');
-            const answers = submitted ? (await db.query('SELECT a."questionId",COALESCE(to_jsonb(a."ratingValue"),to_jsonb(a."textValue")) AS value FROM "Answer" a JOIN "Question" q ON q.id=a."questionId" WHERE a."bundleId"=$1 ORDER BY q.position', [bundles[0]!.id])).rows : null;
+            const answers = submitted ? (await db.query('SELECT a."questionId",COALESCE(to_jsonb(a."ratingValue"),to_jsonb(a."textValue"),to_jsonb(a."optionId")) AS value FROM "Answer" a JOIN "Question" q ON q.id=a."questionId" WHERE a."bundleId"=$1 ORDER BY q.position', [bundles[0]!.id])).rows : null;
             if (submitted && !answers?.length)
                 fail(500, 'INTERNAL_ERROR');
             return { surveyId: row.id, submitted, answers };
@@ -268,31 +425,60 @@ export function setupFeedback(app: Express, pool: Pool) {
     });
     app.get('/api/surveys/:id/results', authenticated, role('OWNER'), async (req, res) => {
         query(req, []);
-        const data = await transaction(pool, async (db) => {
-            const row = await scope(db, req);
-            if (row.status === 'DRAFT')
-                fail(409, 'RESULTS_NOT_AVAILABLE');
-            if (row.mode !== 'IDENTIFIED')
-                fail(409, 'MODE_NOT_SUPPORTED');
-            const survey = { id: row.id, title: row.title, status: row.status, mode: row.mode, context: context(row) };
-            const responseCount = Number((await db.query('SELECT count(*) AS n FROM "Participation" WHERE "surveyId"=$1', [row.id])).rows[0].n);
-            if (row.status === 'PUBLISHED')
-                return { survey, responseCount };
-            const result = [];
-            for (const q of await questions(db, row.id)) {
-                const { id, ...base } = questionView(q);
-                const answers = (await db.query('SELECT "ratingValue","textValue" FROM "Answer" WHERE "surveyId"=$1 AND "questionId"=$2 ORDER BY "textValue" COLLATE "C"', [row.id, q.id])).rows;
-                if (answers.length > responseCount || (q.type === 'RATING' && (q.ratingMin !== 1 || q.ratingMax !== 5 || answers.some(a => !Number.isInteger(a.ratingValue) || a.ratingValue < 1 || a.ratingValue > 5 || a.textValue !== null))) || (q.type === 'TEXT' && answers.some(a => a.ratingValue !== null || typeof a.textValue !== 'string' || !a.textValue.trim())))
-                    fail(500, 'RESULTS_INCONSISTENT');
-                if (q.type === 'TEXT')
-                    result.push({ questionId: id, ...base, comments: answers.flatMap(a => typeof a.textValue === 'string' && a.textValue.trim() ? [a.textValue] : []) });
-                else {
-                    const scores = answers.map(a => Number(a.ratingValue));
-                    result.push({ questionId: id, ...base, answeredCount: scores.length, distribution: [1, 2, 3, 4, 5].map(score => ({ score, count: scores.filter(x => x === score).length })), mean: mean(scores) });
-                }
-            }
-            return { survey, responseCount, questions: result };
-        }, true);
+        const data = await transaction(pool, db => resultsSnapshot(db, req), true);
         res.json({ data });
     });
+    app.get('/api/surveys/:id/results.csv', authenticated, role('OWNER'), async (req, res) => {
+        query(req, []);
+        const data = await transaction(pool, db => resultsSnapshot(db, req, true), true);
+        res.type('text/csv').set('Content-Disposition', 'attachment; filename="survey-results.csv"').send(resultsCsv(data));
+    });
+}
+
+async function resultsSnapshot(db: PoolClient, req: Request, csv = false) {
+    const row = await scope(db, req);
+    if (row.status === 'DRAFT' || (csv && row.status !== 'CLOSED'))
+        fail(409, 'RESULTS_NOT_AVAILABLE');
+    if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
+        fail(409, 'MODE_NOT_SUPPORTED');
+    const survey = { id: row.id, title: row.title, status: row.status, mode: row.mode, context: context(row) };
+    const responseCount = Number((await db.query('SELECT count(*) AS n FROM "Participation" WHERE "surveyId"=$1', [row.id])).rows[0].n);
+    if (row.status === 'PUBLISHED')
+        return { survey, responseCount };
+    const result = [];
+    for (const q of await questions(db, row.id)) {
+        if (q.type === 'TEXT' && (csv || row.mode === 'ANONYMOUS'))
+            continue;
+        const { id, ...view } = questionView(q);
+        const template = q.templateSource;
+        const category = csv && template?.key === lectureFeedbackStarter.key && template?.version === lectureFeedbackStarter.version
+            ? lectureFeedbackStarter.questions[template.position - 1]?.category : undefined;
+        const base = category ? { ...view, category } : view;
+        const answers = (await db.query('SELECT "ratingValue","textValue","optionId" FROM "Answer" WHERE "surveyId"=$1 AND "questionId"=$2 ORDER BY "textValue" COLLATE "C"', [row.id, q.id])).rows;
+        if (answers.length > responseCount || (q.type === 'RATING' && (q.ratingMin !== 1 || q.ratingMax !== 5 || answers.some(a => !Number.isInteger(a.ratingValue) || a.ratingValue < 1 || a.ratingValue > 5 || a.textValue !== null))) || (q.type === 'TEXT' && answers.some(a => a.ratingValue !== null || typeof a.textValue !== 'string' || !a.textValue.trim())))
+            fail(500, 'RESULTS_INCONSISTENT');
+        if (q.type === 'SINGLE_CHOICE') {
+            const options: { id: string; label: string }[] = q.options;
+            if (options.length < 2 || options.length > 6 || answers.some(answer => !options.some(option => option.id === answer.optionId)))
+                fail(500, 'RESULTS_INCONSISTENT');
+            const distribution = options.map(option => ({
+                optionId: option.id, label: option.label, count: answers.filter(answer => answer.optionId === option.id).length,
+            }));
+            const visible = row.mode === 'IDENTIFIED' || canReleaseAnonymousQuestion(distribution.map(bin => bin.count));
+            result.push(visible
+                ? { questionId: id, ...base, answeredCount: answers.length, distribution }
+                : { questionId: id, ...base, suppressed: true });
+        }
+        else if (q.type === 'TEXT')
+            result.push({ questionId: id, ...base, comments: answers.flatMap(a => typeof a.textValue === 'string' && a.textValue.trim() ? [a.textValue] : []) });
+        else {
+            const scores = answers.map(a => Number(a.ratingValue));
+            const distribution = [1, 2, 3, 4, 5].map(score => ({ score, count: scores.filter(x => x === score).length }));
+            const visible = row.mode === 'IDENTIFIED' || canReleaseAnonymousQuestion(distribution.map(bin => bin.count));
+            result.push(visible
+                ? { questionId: id, ...base, answeredCount: scores.length, distribution, mean: mean(scores) }
+                : { questionId: id, ...base, suppressed: true });
+        }
+    }
+    return { survey, responseCount, questions: result };
 }

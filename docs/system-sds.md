@@ -341,7 +341,7 @@ Issue #5 now has a proposed [shared engineering contract](sprints/sprint-1/share
 | Context/discovery | `GET /api/courses`, `GET /api/sections`, `GET /api/sections/:id/lectures`, `GET /api/surveys` |
 | Survey | `POST /api/surveys`, `GET/PATCH/DELETE /api/surveys/:id`, `POST /api/surveys/:id/publish`, `POST /api/surveys/:id/close` |
 | Response | `POST /api/surveys/:id/responses`, `GET /api/surveys/:id/my-submission` |
-| Results | `GET /api/surveys/:id/results`, later `GET /api/surveys/:id/export.csv` |
+| Results | `GET /api/surveys/:id/results`, F-08 `GET /api/surveys/:id/results.csv` |
 | Starter/copy (S2) | `GET /api/questionnaire-templates`, `GET /api/questionnaire-templates/:id/versions/:version`, `POST /api/surveys` with a source selector, `POST /api/surveys/:id/copies` |
 | History/trends (S3) | `GET /api/surveys` with owned filters, `GET /api/analytics/lecture-trends` with an exact metric-definition ID |
 | Improvement notes (S3) | `GET/POST/PATCH /api/surveys/:id/improvement-note`; no public/share/delete route |
@@ -358,13 +358,11 @@ Separating tables does not by itself establish anonymity. Row order, generated I
 
 The threat boundary covers owners/ordinary application users; it does not claim unlinkability against privileged transaction/network observation. Owners cannot see per-student participation. Confirmed PD-01 forbids raw anonymous text in owner Results UI, APIs, CSV, analytics and note prefill at any count. This is separate from identity/answer separation and quantitative suppression.
 
-Collection/storage remains undecided: recommend disabling anonymous text for a simpler MVP, but do not adopt it without explicit team agreement. The alternative is collect-but-inaccessible, which needs a purpose, storage/access/retention policy and verification before F-06. An anonymous starter containing a text question must not publish until that policy is agreed and the Draft satisfies it. Do not silently drop text, add a privileged raw-text viewer, or treat hiding it in React as enforcement.
+The reviewed OPEN-04 disposition prohibits TEXT collection and storage in anonymous mode. An anonymous draft definition, publication or submission containing TEXT is rejected. The complete starter creates an identified Draft that the owner may customize before switching to anonymous. Keep the template immutable.
 
-Working quantitative policy: after closure each question needs at least five valid nonempty answers. Propose an additional sparse-bin guard of at least three answers in every nonzero rating/option bin; otherwise suppress the whole question's numeric projection, including mean, distribution and answered count. Release only frozen question metadata plus a generic suppression label. The survey's overall count may remain visible, but a total of five/ten does not unlock optional questions answered by one/two people. Never reveal complementary cells through totals, per-question means, partial CSV rows or pooled analytics. Finalize the exact guards and adversarial tests in the F-06 contract.
+Quantitative release for Closed anonymous surveys requires at least five valid answers for the question and at least three answers in every nonzero RATING or SINGLE_CHOICE bin. On suppression return only frozen question metadata and a generic label. Omit numeric counts, distribution and mean, and exclude the question from trend denominators. The overall committed-submission count is visible to the owner both before and after closure. The anonymous POST success and own-submission GET project only surveyId and submitted.
 
-The count thresholds are working project choices, not instructor mandates or anonymity guarantees. Unanimous responses, external classroom knowledge, repeated observations and coordinated respondents can still support inference. No arbitrary response-subgroup, participant or cross-question filtering is included. Trends/notes must consume release decisions for each question, not a single survey-level `isAnonymousSafe` flag.
-
-F-06 is blocked until OPEN-04 is resolved in a reviewed contract. Do not enable an anonymous checkbox before the actual privacy behavior and tests exist.
+The 5/3 thresholds are disclosure controls. Unanimous answers, external knowledge, repeated observations, coordinated responses and privileged infrastructure can still permit inference. Review metadata/log controls and verify privacy cases before enabling anonymous authoring.
 
 ## 8. Database setup, configuration and delivery
 
