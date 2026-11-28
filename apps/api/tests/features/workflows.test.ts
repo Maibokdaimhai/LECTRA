@@ -949,3 +949,41 @@ it('TEST-F06-I04R: each rating crosses 4/5 and sparse 2/3 independently of ten s
     expect(closed.questions[4]).toMatchObject({ mean: '3.00', answeredCount: 6 });
     expect(closed.questions[4].distribution.map((bin: { count: number }) => bin.count)).toEqual([3, 0, 0, 0, 3]);
 });
+
+it('TEST-F07-I03: publish a single-choice-only survey, persist a selected option, and close with option counts', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'Single choice fixture','2026-11-21',7007) RETURNING id`, [fixtureId(201)])).rows[0].id;
+    const { id } = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = `/api/surveys/${id}`;
+    const question = {
+        id: null, type: 'SINGLE_CHOICE', prompt: 'Which topic was the clearest?', required: true, ratingScale: null,
+        options: [{ id: null, label: 'Transactions' }, { id: null, label: 'Testing' }],
+    };
+    const draft = { expectedRevision: 1, title: 'Single choice fixture', questions: [question] };
+    for (const invalid of [
+        [{ id: null, label: 'Only option' }],
+        [{ id: null, label: 'Same' }, { id: null, label: ' same ' }],
+        Array.from({ length: 7 }, (_, i) => ({ id: null, label: `Option ${i}` })),
+    ]) {
+        await mutation(owner, 'patch', path, { ...draft, questions: [{ ...question, options: invalid }] }).expect(422);
+    }
+    const saved = (await mutation(owner, 'patch', path, draft).expect(200)).body.data;
+    const persisted = saved.questions[0];
+    expect(persisted.options.map((option: { label: string }) => option.label)).toEqual(['Transactions', 'Testing']);
+    expect(new Set(persisted.options.map((option: { id: string }) => option.id)).size).toBe(2);
+    await mutation(owner, 'post', `${path}/publish`, { expectedRevision: 2 }).expect(200);
+    await mutation(student, 'post', `${path}/responses`,
+        { answers: [{ questionId: persisted.id, value: fixtureId(9999) }] }).expect(422);
+    const answers = [{ questionId: persisted.id, value: persisted.options[1].id }];
+    await mutation(student, 'post', `${path}/responses`, { answers }).expect(201);
+    expect((await student.agent.get(`${path}/my-submission`).expect(200)).body.data.answers).toEqual(answers);
+    await mutation(owner, 'post', `${path}/close`, {}).expect(200);
+    const summary = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(summary.questions[0]).not.toHaveProperty('mean');
+    expect(summary.questions[0].distribution).toEqual([
+        { optionId: persisted.options[0].id, label: 'Transactions', count: 0 },
+        { optionId: persisted.options[1].id, label: 'Testing', count: 1 },
+    ]);
+});
