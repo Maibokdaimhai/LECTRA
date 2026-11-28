@@ -842,3 +842,52 @@ it('INT22-11: scoped pagination retains totals/order at default, final and beyon
         expect((await owner.agent.get(`/api/surveys?${query}`).expect(422)).body.error.code).toBe('VALIDATION_FAILED');
     }
 });
+
+it('TEST-F06-I01/I02/I03/I04R: anonymous ratings preserve private status and suppress unsafe results', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const other = await login('respondent.12@example.test');
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'Anonymous ratings','2026-11-20',6006) RETURNING id`, [fixtureId(201)])).rows[0].id;
+    const { id } = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = `/api/surveys/${id}`;
+    const rating = {
+        id: null, type: 'RATING', prompt: 'Understanding', required: true,
+        ratingScale: { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means clearer' },
+    };
+    const text = { id: null, type: 'TEXT', prompt: 'Written note', required: false, ratingScale: null };
+    const draft = { expectedRevision: 1, title: 'Anonymous ratings', mode: 'ANONYMOUS', questions: [rating] };
+    await mutation(owner, 'patch', path, { ...draft, questions: [rating, text] }).expect(422);
+    const saved = (await mutation(owner, 'patch', path, draft).expect(200)).body.data;
+    expect(saved).toMatchObject({ mode: 'ANONYMOUS', definitionRevision: 2 });
+    expect(saved.privacyDisclosure).toMatch(/inference|infer/i);
+    await mutation(owner, 'post', `${path}/publish`, { expectedRevision: 2 }).expect(200);
+    await mutation(owner, 'patch', path, { ...draft, expectedRevision: 2, mode: 'IDENTIFIED' }).expect(409);
+    const questionId = saved.questions[0].id;
+    const response = { answers: [{ questionId, value: 4 }] };
+    expect((await student.agent.get(`${path}/my-submission`).expect(200)).body.data).toEqual({ surveyId: id, submitted: false });
+    await mutation(student, 'post', `${path}/responses`, { answers: [{ questionId, value: 'Text' }] }).expect(422);
+    const attempts = await Promise.all([
+        mutation(student, 'post', `${path}/responses`, response),
+        mutation(student, 'post', `${path}/responses`, response),
+    ]);
+    expect(attempts.map(r => r.status).sort()).toEqual([201, 409]);
+    expect(attempts.find(r => r.status === 201)!.body.data).toEqual({ surveyId: id, submitted: true });
+    expect((await other.agent.get(`${path}/my-submission`).expect(200)).body.data).toEqual({ surveyId: id, submitted: false });
+    expect((await pool.query('SELECT "identifiedStudentId" FROM "ResponseBundle" WHERE "surveyId"=$1', [id])).rows)
+        .toEqual([{ identifiedStudentId: null }]);
+    const live = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(live.responseCount).toBe(1);
+    expect(live).not.toHaveProperty('questions');
+    await mutation(owner, 'post', `${path}/close`, {}).expect(200);
+    const signedInAgain = await login('respondent.11@example.test');
+    expect((await signedInAgain.agent.get(`${path}/my-submission`).expect(200)).body.data).toEqual({ surveyId: id, submitted: true });
+    const closed = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(closed.responseCount).toBe(1);
+    expect(closed.questions[0]).toMatchObject({ questionId, suppressed: true });
+    for (const key of ['answeredCount', 'mean', 'distribution', 'comments'])
+        expect(closed.questions[0]).not.toHaveProperty(key);
+    await student.agent.get(`${path}/results`).expect(403);
+    const foreign = await login('owner.2@example.test');
+    await foreign.agent.get(`${path}/results`).expect(404);
+});
