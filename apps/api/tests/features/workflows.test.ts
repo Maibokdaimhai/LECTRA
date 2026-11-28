@@ -961,6 +961,20 @@ it.each(['RATING', 'SINGLE_CHOICE'] as const)('TEST-F06-I04R/I04C: each %s quest
     }
     expect(closed.questions[4].distribution.map((bin: { count: number }) => bin.count))
         .toEqual(type === 'RATING' ? [3, 0, 0, 0, 3] : [3, 3]);
+    // TEST-F08-I03: Check both privacy paths against the same stored distributions.
+    const csv = (await owner.agent.get(path + '/results.csv').expect(200)).text.split('\r\n');
+    for (const i of [0, 2, 3]) {
+        const hidden = csv.filter((line: string) => line.includes(`"${closed.questions[i].questionId}"`));
+        expect(hidden).toHaveLength(1);
+        expect(hidden[0]).toMatch(/,"SUPPRESSED",,,,,$/);
+    }
+    for (const i of [1, 4]) {
+        const visible = csv.filter((line: string) => line.includes(`"${closed.questions[i].questionId}"`));
+        expect(visible).toHaveLength(type === 'RATING' ? 5 : 2);
+        expect(visible.map((line: string) => Number(line.split(',').at(-1))))
+            .toEqual(closed.questions[i].distribution.map((bin: { count: number }) => bin.count));
+        expect(visible.every((line: string) => line.includes(`"RELEASED",${closed.questions[i].answeredCount},`))).toBe(true);
+    }
 });
 
 it('TEST-F07-I03: publish a single-choice-only survey, persist a selected option, and close with option counts', async () => {

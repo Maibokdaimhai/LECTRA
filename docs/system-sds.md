@@ -341,7 +341,7 @@ Issue #5 now has a proposed [shared engineering contract](sprints/sprint-1/share
 | Context/discovery | `GET /api/courses`, `GET /api/sections`, `GET /api/sections/:id/lectures`, `GET /api/surveys` |
 | Survey | `POST /api/surveys`, `GET/PATCH/DELETE /api/surveys/:id`, `POST /api/surveys/:id/publish`, `POST /api/surveys/:id/close` |
 | Response | `POST /api/surveys/:id/responses`, `GET /api/surveys/:id/my-submission` |
-| Results | `GET /api/surveys/:id/results`, later `GET /api/surveys/:id/export.csv` |
+| Results | `GET /api/surveys/:id/results`, F-08 `GET /api/surveys/:id/results.csv` |
 | Starter/copy (S2) | `GET /api/questionnaire-templates`, `GET /api/questionnaire-templates/:id/versions/:version`, `POST /api/surveys` with a source selector, `POST /api/surveys/:id/copies` |
 | History/trends (S3) | `GET /api/surveys` with owned filters, `GET /api/analytics/lecture-trends` with an exact metric-definition ID |
 | Improvement notes (S3) | `GET/POST/PATCH /api/surveys/:id/improvement-note`; no public/share/delete route |

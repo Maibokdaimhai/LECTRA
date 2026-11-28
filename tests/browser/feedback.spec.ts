@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { test, expect, signIn, createSurvey, openSurvey, confirmAction, read, screenshot } from './support/real-app.js';
 
 test('B23-01 real owner → student → closed results, persisted reload/relogin and validation', async ({ page, data }, info) => {
@@ -218,4 +219,34 @@ test('TEST-F07-E04: copy a saved definition, correct invalid options and reorder
   expect(saved.questions[1].options.map((option: { label: string }) => option.label)).toEqual(['Examples', 'Review']);
   expect((await read(page, `/api/surveys/${original.id}`)).questions).toEqual(original.questions);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+
+test('TEST-F08-E01: download Closed UTF-8 aggregate CSV with keyboard and handle session expiry', async ({ page, data }, info) => {
+  const title = `ผลสรุป CSV ${info.project.name}`;
+  await signIn(page);
+  const definition = await createSurvey(page, await data.lecture(), title);
+  const url = `/api/surveys/${definition.id}/results.csv`;
+  const button = page.getByRole('button', { name: 'Download CSV', exact: true });
+  await expect(button).toHaveCount(0);
+  await confirmAction(page, 'Close survey');
+  await expect(button).toBeVisible();
+  const downloaded = page.waitForEvent('download');
+  await button.press('Enter');
+  const file = await downloaded;
+  expect(file.suggestedFilename()).toBe('survey-results.csv');
+  const csv = await readFile(await file.path(), 'utf8');
+  expect(csv.startsWith('\uFEFFformat_version,')).toBe(true);
+  expect(csv).toContain(title);
+  expect(csv).toContain('"Understanding","RATING","NO_DATA",0,,,,\r\n');
+  expect(csv).not.toContain('Next time');
+  await file.saveAs(info.outputPath('survey-results.csv'));
+  await page.route(url, route => route.fulfill({
+    status: 401,
+    contentType: 'application/json',
+    body: JSON.stringify({ error: { code: 'SESSION_EXPIRED' } }),
+  }));
+  await button.press('Enter');
+  await expect(page.getByRole('alert')).toContainText('Your session ended');
+  await expect(button).toHaveCount(0);
 });

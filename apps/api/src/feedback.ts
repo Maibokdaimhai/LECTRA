@@ -2,6 +2,7 @@ import type { Express, Request } from 'express';
 import type { Pool, PoolClient } from 'pg';
 import { randomUUID } from 'node:crypto';
 import { lectureFeedbackStarter, starterPreview } from './survey-starter.js';
+import { resultsCsv } from './results-csv.js';
 import { authenticated, role, csrf } from './auth.js';
 import { exact, fail, uuid, HttpError } from './http.js';
 import { canReleaseAnonymousQuestion, mean, parseAnswers, parseAnswerEnvelope, parseDefinition, parseDraftCreation, validatePublication } from './feedback-rules.js';
@@ -134,7 +135,7 @@ export function setupFeedback(app: Express, pool: Pool) {
     app.use('/api', (req, res, next) => {
         const path = req.path;
         let methods: string[] | undefined;
-        if (/^\/courses$|^\/sections$|^\/sections\/[^/]+\/(lectures|members)$|^\/survey-starters\/[^/]+\/[^/]+$|^\/surveys\/[^/]+\/(results|my-submission)$/.test(path))
+        if (/^\/courses$|^\/sections$|^\/sections\/[^/]+\/(lectures|members)$|^\/survey-starters\/[^/]+\/[^/]+$|^\/surveys\/[^/]+\/(results(?:\.csv)?|my-submission)$/.test(path))
             methods = ['GET'];
         else if (path === '/surveys')
             methods = ['GET', 'POST'];
@@ -398,49 +399,60 @@ export function setupFeedback(app: Express, pool: Pool) {
     });
     app.get('/api/surveys/:id/results', authenticated, role('OWNER'), async (req, res) => {
         query(req, []);
-        const data = await transaction(pool, async (db) => {
-            const row = await scope(db, req);
-            if (row.status === 'DRAFT')
-                fail(409, 'RESULTS_NOT_AVAILABLE');
-            if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
-                fail(409, 'MODE_NOT_SUPPORTED');
-            const survey = { id: row.id, title: row.title, status: row.status, mode: row.mode, context: context(row) };
-            const responseCount = Number((await db.query('SELECT count(*) AS n FROM "Participation" WHERE "surveyId"=$1', [row.id])).rows[0].n);
-            if (row.status === 'PUBLISHED')
-                return { survey, responseCount };
-            const result = [];
-            for (const q of await questions(db, row.id)) {
-                if (row.mode === 'ANONYMOUS' && q.type === 'TEXT')
-                    continue;
-                const { id, ...base } = questionView(q);
-                const answers = (await db.query('SELECT "ratingValue","textValue","optionId" FROM "Answer" WHERE "surveyId"=$1 AND "questionId"=$2 ORDER BY "textValue" COLLATE "C"', [row.id, q.id])).rows;
-                if (answers.length > responseCount || (q.type === 'RATING' && (q.ratingMin !== 1 || q.ratingMax !== 5 || answers.some(a => !Number.isInteger(a.ratingValue) || a.ratingValue < 1 || a.ratingValue > 5 || a.textValue !== null))) || (q.type === 'TEXT' && answers.some(a => a.ratingValue !== null || typeof a.textValue !== 'string' || !a.textValue.trim())))
-                    fail(500, 'RESULTS_INCONSISTENT');
-                if (q.type === 'SINGLE_CHOICE') {
-                    const options: { id: string; label: string }[] = q.options;
-                    if (options.length < 2 || options.length > 6 || answers.some(answer => !options.some(option => option.id === answer.optionId)))
-                        fail(500, 'RESULTS_INCONSISTENT');
-                    const distribution = options.map(option => ({
-                        optionId: option.id, label: option.label, count: answers.filter(answer => answer.optionId === option.id).length,
-                    }));
-                    const visible = row.mode === 'IDENTIFIED' || canReleaseAnonymousQuestion(distribution.map(bin => bin.count));
-                    result.push(visible
-                        ? { questionId: id, ...base, answeredCount: answers.length, distribution }
-                        : { questionId: id, ...base, suppressed: true });
-                }
-                else if (q.type === 'TEXT')
-                    result.push({ questionId: id, ...base, comments: answers.flatMap(a => typeof a.textValue === 'string' && a.textValue.trim() ? [a.textValue] : []) });
-                else {
-                    const scores = answers.map(a => Number(a.ratingValue));
-                    const distribution = [1, 2, 3, 4, 5].map(score => ({ score, count: scores.filter(x => x === score).length }));
-                    const visible = row.mode === 'IDENTIFIED' || canReleaseAnonymousQuestion(distribution.map(bin => bin.count));
-                    result.push(visible
-                        ? { questionId: id, ...base, answeredCount: scores.length, distribution, mean: mean(scores) }
-                        : { questionId: id, ...base, suppressed: true });
-                }
-            }
-            return { survey, responseCount, questions: result };
-        }, true);
+        const data = await transaction(pool, db => resultsSnapshot(db, req), true);
         res.json({ data });
     });
+    app.get('/api/surveys/:id/results.csv', authenticated, role('OWNER'), async (req, res) => {
+        query(req, []);
+        const data = await transaction(pool, db => resultsSnapshot(db, req, true), true);
+        res.type('text/csv').set('Content-Disposition', 'attachment; filename="survey-results.csv"').send(resultsCsv(data));
+    });
+}
+
+async function resultsSnapshot(db: PoolClient, req: Request, csv = false) {
+    const row = await scope(db, req);
+    if (row.status === 'DRAFT' || (csv && row.status !== 'CLOSED'))
+        fail(409, 'RESULTS_NOT_AVAILABLE');
+    if (row.mode !== 'IDENTIFIED' && row.mode !== 'ANONYMOUS')
+        fail(409, 'MODE_NOT_SUPPORTED');
+    const survey = { id: row.id, title: row.title, status: row.status, mode: row.mode, context: context(row) };
+    const responseCount = Number((await db.query('SELECT count(*) AS n FROM "Participation" WHERE "surveyId"=$1', [row.id])).rows[0].n);
+    if (row.status === 'PUBLISHED')
+        return { survey, responseCount };
+    const result = [];
+    for (const q of await questions(db, row.id)) {
+        if (q.type === 'TEXT' && (csv || row.mode === 'ANONYMOUS'))
+            continue;
+        const { id, ...view } = questionView(q);
+        const template = q.templateSource;
+        const category = csv && template?.key === lectureFeedbackStarter.key && template?.version === lectureFeedbackStarter.version
+            ? lectureFeedbackStarter.questions[template.position - 1]?.category : undefined;
+        const base = category ? { ...view, category } : view;
+        const answers = (await db.query('SELECT "ratingValue","textValue","optionId" FROM "Answer" WHERE "surveyId"=$1 AND "questionId"=$2 ORDER BY "textValue" COLLATE "C"', [row.id, q.id])).rows;
+        if (answers.length > responseCount || (q.type === 'RATING' && (q.ratingMin !== 1 || q.ratingMax !== 5 || answers.some(a => !Number.isInteger(a.ratingValue) || a.ratingValue < 1 || a.ratingValue > 5 || a.textValue !== null))) || (q.type === 'TEXT' && answers.some(a => a.ratingValue !== null || typeof a.textValue !== 'string' || !a.textValue.trim())))
+            fail(500, 'RESULTS_INCONSISTENT');
+        if (q.type === 'SINGLE_CHOICE') {
+            const options: { id: string; label: string }[] = q.options;
+            if (options.length < 2 || options.length > 6 || answers.some(answer => !options.some(option => option.id === answer.optionId)))
+                fail(500, 'RESULTS_INCONSISTENT');
+            const distribution = options.map(option => ({
+                optionId: option.id, label: option.label, count: answers.filter(answer => answer.optionId === option.id).length,
+            }));
+            const visible = row.mode === 'IDENTIFIED' || canReleaseAnonymousQuestion(distribution.map(bin => bin.count));
+            result.push(visible
+                ? { questionId: id, ...base, answeredCount: answers.length, distribution }
+                : { questionId: id, ...base, suppressed: true });
+        }
+        else if (q.type === 'TEXT')
+            result.push({ questionId: id, ...base, comments: answers.flatMap(a => typeof a.textValue === 'string' && a.textValue.trim() ? [a.textValue] : []) });
+        else {
+            const scores = answers.map(a => Number(a.ratingValue));
+            const distribution = [1, 2, 3, 4, 5].map(score => ({ score, count: scores.filter(x => x === score).length }));
+            const visible = row.mode === 'IDENTIFIED' || canReleaseAnonymousQuestion(distribution.map(bin => bin.count));
+            result.push(visible
+                ? { questionId: id, ...base, answeredCount: scores.length, distribution, mean: mean(scores) }
+                : { questionId: id, ...base, suppressed: true });
+        }
+    }
+    return { survey, responseCount, questions: result };
 }

@@ -125,7 +125,7 @@ type Results = {
 class ApiError extends Error {
     constructor(public status: number, public code: string, message: string, public retryAfter?: number) { super(message); }
 }
-type Api = <T>(path: string, method?: string, body?: unknown) => Promise<T>;
+type Api = <T>(path: string, method?: string, body?: unknown, format?: 'csv') => Promise<T>;
 const defaultScale = (): Scale => ({ min: 1, max: 5, minLabel: '', maxLabel: '', interpretation: '' });
 function ErrorBox({ message, fields = [], focusKey }: {
     message: string;
@@ -221,9 +221,17 @@ function App() {
         document.addEventListener('visibilitychange', revalidate);
         return () => document.removeEventListener('visibilitychange', revalidate);
     }, [bootstrap, pendingLogout]);
-    const api: Api = useCallback(async <T,>(path: string, method = 'GET', body?: unknown): Promise<T> => {
+    const api: Api = useCallback(async <T,>(path: string, method = 'GET', body?: unknown, format?: 'csv'): Promise<T> => {
         const version = generation.current;
         const response = await fetch(path, { method, credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000), headers: method === 'GET' ? {} : { 'Content-Type': 'application/json', 'X-CSRF-Token': token.current }, ...(body !== undefined ? { body: JSON.stringify(body) } : {}) });
+        if (format === 'csv' && response.ok) {
+            if (!/^text\/csv(?:;|$)/i.test(response.headers.get('Content-Type') ?? ''))
+                throw new Error('Invalid download content.');
+            const file = await response.blob();
+            if (version !== generation.current)
+                throw new Error('Account changed.');
+            return file as T;
+        }
         const value = response.status === 204 ? null : await response.json();
         if (version !== generation.current)
             throw new Error('Account changed.');
@@ -800,10 +808,30 @@ function ResultsView({ id, api, anonymous }: {
     anonymous: boolean;
 }) {
     const [data, setData] = useState<Results | null>(null), [error, setError] = useState(''), [refresh, setRefresh] = useState(0);
+    const [downloadState, setDownloadState] = useState<'idle' | 'loading' | 'ready' | 'failed'>('idle');
+    async function download() {
+        setDownloadState('loading');
+        try {
+            const file = await api<Blob>(`/api/surveys/${id}/results.csv`, 'GET', undefined, 'csv');
+            const url = URL.createObjectURL(file);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'survey-results.csv';
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            setDownloadState('ready');
+        } catch {
+            setDownloadState('failed');
+        }
+    }
     useEffect(() => { let active = true; setData(null); api<Results>(`/api/surveys/${id}/results`).then(v => { if (active)
         setData(v); }).catch(e => { if (active)
         setError(reason(e)); }); return () => { active = false; }; }, [id, api, refresh]);
-    return <section><h3>Feedback summary</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh results</button>{!data && !error && <p>Loading results…</p>}{data && <><p>Responses: <strong>{data.responseCount}</strong></p>{!data.questions && <p>{anonymous ? 'Eligible aggregate results become available after closing.' : 'Scores and written feedback become available after closing.'}</p>}{data.questions?.map(q => <section className="result" key={q.questionId}><h4>{q.prompt}</h4>{q.suppressed ? <p>Not enough anonymous data.</p> : q.type === 'RATING' ? <><p>Mean: <strong>{q.mean ?? 'No answers'}</strong> · Answered: {q.answeredCount}</p><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><table><caption>Score distribution for {q.prompt}</caption><thead><tr><th scope="col">Score</th><th scope="col">Responses</th><th scope="col">Distribution</th></tr></thead><tbody>{q.distribution?.map(b => <tr key={b.score}><th scope="row">{b.score}</th><td>{b.count}</td><td><div className="bar" style={{ width: `${Math.max(0, b.count / Math.max(1, q.answeredCount ?? 0) * 100)}%` }} aria-hidden="true"/></td></tr>)}</tbody></table></> : q.type === 'SINGLE_CHOICE' ? <>
+    return <section><h3>Feedback summary</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh results</button>{data?.questions && <>
+        <button className="secondary" disabled={downloadState === 'loading'} onClick={() => void download()}>Download CSV</button>
+        <p role="status">{downloadState === 'failed' ? 'CSV download failed. Check your session and try again.'
+            : downloadState === 'ready' ? 'CSV download started.' : downloadState === 'loading' ? 'Preparing CSV…' : ''}</p>
+    </>}{!data && !error && <p>Loading results…</p>}{data && <><p>Responses: <strong>{data.responseCount}</strong></p>{!data.questions && <p>{anonymous ? 'Eligible aggregate results become available after closing.' : 'Scores and written feedback become available after closing.'}</p>}{data.questions?.map(q => <section className="result" key={q.questionId}><h4>{q.prompt}</h4>{q.suppressed ? <p>Not enough anonymous data.</p> : q.type === 'RATING' ? <><p>Mean: <strong>{q.mean ?? 'No answers'}</strong> · Answered: {q.answeredCount}</p><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><table><caption>Score distribution for {q.prompt}</caption><thead><tr><th scope="col">Score</th><th scope="col">Responses</th><th scope="col">Distribution</th></tr></thead><tbody>{q.distribution?.map(b => <tr key={b.score}><th scope="row">{b.score}</th><td>{b.count}</td><td><div className="bar" style={{ width: `${Math.max(0, b.count / Math.max(1, q.answeredCount ?? 0) * 100)}%` }} aria-hidden="true"/></td></tr>)}</tbody></table></> : q.type === 'SINGLE_CHOICE' ? <>
       <p>Answered: {q.answeredCount}</p>
       <table><caption>Option distribution for {q.prompt}</caption><thead><tr><th scope="col">Option</th><th scope="col">Responses</th></tr></thead>
         <tbody>{q.distribution?.map(bin => <tr key={bin.optionId}><th scope="row">{bin.label}</th><td>{bin.count}</td></tr>)}</tbody></table>
