@@ -32,7 +32,12 @@ it('deploys the actual migration history onto an empty database and deploys agai
   const env = { ...process.env, DATABASE_URL: options.testUrl!, PGOPTIONS: '-c timezone=UTC' };
   await command(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], { env });
   const first = await pool.query('SELECT migration_name, checksum FROM _prisma_migrations ORDER BY migration_name');
-  expect(first.rows).toHaveLength(3);
+  expect(first.rows.map(row => row.migration_name)).toEqual([
+    '202611080001_user_session',
+    '202611080002_academic_context',
+    '202611080003_survey_response',
+    '202611280001_anonymous_survey_mode',
+  ]);
   await command(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], { env });
   expect((await pool.query('SELECT migration_name, checksum FROM _prisma_migrations ORDER BY migration_name')).rows).toEqual(first.rows);
 });
