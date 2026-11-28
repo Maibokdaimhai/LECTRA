@@ -33,6 +33,16 @@ function page(req: Request, allowed: string[] = []) {
         fail(422, 'VALIDATION_FAILED');
     return { q, limit: Number(limit), offset: Number(offset) };
 }
+function historyDate(value: string | null) {
+    if (value === null)
+        return null;
+    if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) || value.startsWith('0000-'))
+        fail(422, 'VALIDATION_FAILED');
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value)
+        fail(422, 'VALIDATION_FAILED');
+    return value;
+}
 async function transaction<T>(pool: Pool, action: (db: PoolClient) => Promise<T>, read = false): Promise<T> {
     const db = await pool.connect();
     // pg-pool handles errors on idle clients; explicitly checked-out clients
@@ -183,19 +193,35 @@ export function setupFeedback(app: Express, pool: Pool) {
     });
     app.get('/api/surveys', authenticated, async (req, res) => {
         const owner = req.actor!.role === 'OWNER';
-        const p = page(req, owner ? ['lectureId'] : []);
-        const lecture = p.q.get('lectureId');
-        if (lecture !== null)
-            uuid(lecture);
+        const p = page(req, owner ? ['lectureId', 'courseId', 'sectionId', 'dateFrom', 'dateTo', 'status'] : []);
+        const identifier = (key: string) => p.q.has(key) ? uuid(p.q.get(key)) : null;
+        const lecture = identifier('lectureId'), course = identifier('courseId'), section = identifier('sectionId');
+        const dateFrom = historyDate(p.q.get('dateFrom'));
+        const dateTo = historyDate(p.q.get('dateTo'));
+        const status = p.q.get('status');
+        if ((dateFrom && dateTo && dateFrom > dateTo) || (status !== null && !['DRAFT', 'PUBLISHED', 'CLOSED'].includes(status)))
+            fail(422, 'VALIDATION_FAILED');
         const data = await transaction(pool, async (db) => {
-            if (lecture && !(await db.query('SELECT l.id FROM "Lecture" l JOIN "Section" sec ON sec.id=l."sectionId" WHERE l.id=$1 AND sec."ownerId"=$2', [lecture, req.actor!.userId])).rowCount)
+            const userId = req.actor!.userId;
+            if (lecture && !(await db.query('SELECT l.id FROM "Lecture" l JOIN "Section" sec ON sec.id=l."sectionId" WHERE l.id=$1 AND sec."ownerId"=$2', [lecture, userId])).rowCount)
+                fail(404, 'NOT_FOUND');
+            if (course && !(await db.query('SELECT 1 FROM "Section" WHERE "courseId"=$1 AND "ownerId"=$2', [course, userId])).rowCount)
+                fail(404, 'NOT_FOUND');
+            if (section && !(await db.query('SELECT 1 FROM "Section" WHERE id=$1 AND "ownerId"=$2', [section, userId])).rowCount)
                 fail(404, 'NOT_FOUND');
             const predicate = owner ? 'sec."ownerId"=$1 AND s."ownerId"=sec."ownerId"' : `s.status IN ('PUBLISHED','CLOSED') AND EXISTS (SELECT 1 FROM "SurveyEligibility" e WHERE e."surveyId"=s.id AND e."studentId"=$1)`;
             const select = owner ? joined : joined.replace('SELECT s.*,', `SELECT s.*, EXISTS(SELECT 1 FROM "Participation" p WHERE p."surveyId"=s.id AND p."studentId"=$1) AS submitted,`);
-            const values: unknown[] = [req.actor!.userId];
-            if (lecture)
-                values.push(lecture);
-            const data = await paginated(db, `${select} WHERE ${predicate}${lecture ? ' AND l.id=$2' : ''}`, values, p.limit, p.offset, '"lectureDate" DESC,sequence DESC,s.id');
+            const values: unknown[] = [userId];
+            const filters = [
+                [lecture, 'l.id='], [course, 'sec."courseId"='], [section, 'sec.id='],
+                [dateFrom, 'l."lectureDate">='], [dateTo, 'l."lectureDate"<='], [status, 's.status='],
+            ] as const;
+            const conditions = [predicate];
+            for (const [value, comparison] of filters) {
+                if (value !== null)
+                    conditions.push(`${comparison}$${values.push(value)}`);
+            }
+            const data = await paginated(db, `${select} WHERE ${conditions.join(' AND ')}`, values, p.limit, p.offset, '"lectureDate" DESC,sequence DESC,s.id');
             return { ...data, items: data.items.map(row => ({ id: row.id, title: row.title, status: row.status, mode: row.mode, ...context(row), ...(!owner ? { participation: { submitted: row.submitted } } : {}) })) };
         }, true);
         res.json({ data });
