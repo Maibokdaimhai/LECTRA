@@ -37,6 +37,7 @@ it('deploys the actual migration history onto an empty database and deploys agai
     '202611080002_academic_context',
     '202611080003_survey_response',
     '202611280001_anonymous_survey_mode',
+    '202611280002_single_choice',
   ]);
   await command(process.execPath, ['node_modules/prisma/build/index.js', 'migrate', 'deploy'], { env });
   expect((await pool.query('SELECT migration_name, checksum FROM _prisma_migrations ORDER BY migration_name')).rows).toEqual(first.rows);

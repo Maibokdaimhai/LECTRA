@@ -26,6 +26,7 @@ enum SurveyMode {
 enum QuestionType {
   RATING
   TEXT
+  SINGLE_CHOICE
 }
 
 model User {
@@ -122,8 +123,21 @@ model Question {
   scaleInterpretation String? @db.VarChar(500)
   survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   answers Answer[]
+  options QuestionOption[]
   @@unique([surveyId, position])
   @@unique([surveyId, id])
+}
+
+model QuestionOption {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  surveyId String @db.Uuid
+  questionId String @db.Uuid
+  position Int
+  label String @db.VarChar(120)
+  question Question @relation(fields: [surveyId, questionId], references: [surveyId, id], onDelete: Cascade, onUpdate: Restrict)
+  answers Answer[]
+  @@unique([surveyId, questionId, id])
+  @@unique([questionId, position])
 }
 
 model SurveyEligibility {
@@ -161,8 +175,10 @@ model Answer {
   surveyId String @db.Uuid
   ratingValue Int?
   textValue String?
+  optionId String? @db.Uuid
   bundle ResponseBundle @relation(fields: [surveyId, bundleId], references: [surveyId, id], onDelete: Restrict, onUpdate: Restrict)
   question Question @relation(fields: [surveyId, questionId], references: [surveyId, id], onDelete: Restrict, onUpdate: Restrict)
+  option QuestionOption? @relation(fields: [surveyId, questionId, optionId], references: [surveyId, questionId, id], onDelete: Restrict, onUpdate: Restrict)
   @@id([bundleId, questionId])
   @@index([surveyId, questionId])
 }

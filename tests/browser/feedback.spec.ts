@@ -115,3 +115,33 @@ test('TEST-F06-E01/E02: anonymous submission shows status and owner sees a suppr
   await expect(page.getByRole('table')).toHaveCount(0);
   await screenshot(page, info, 'f06-anonymous-suppression');
 });
+
+test('TEST-F07-E02: author, submit and read back an identified single-choice answer', async ({ page, data }, info) => {
+  const title = `Single choice ${info.project.name}`;
+  await signIn(page);
+  const draft = await createSurvey(page, await data.lecture(), title, false);
+  await page.getByRole('button', { name: 'Remove question 2', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Question type', exact: true }).selectOption('SINGLE_CHOICE');
+  await page.getByLabel('Option 1', { exact: true }).fill('Transactions');
+  await page.getByLabel('Option 2', { exact: true }).fill('Testing');
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  await expect(page.getByText('Saved revision 3.', { exact: true })).toBeVisible();
+  await confirmAction(page, 'Publish survey');
+  await expect(page.getByRole('button', { name: 'Close survey', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+  await signIn(page, 'respondent.11@example.test');
+  await openSurvey(page, title);
+  await page.getByRole('radio', { name: 'Testing', exact: true }).check();
+  await page.getByRole('button', { name: 'Submit feedback', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Submission received', exact: true })).toBeVisible();
+  await expect(page.getByText('Testing', { exact: true })).toBeVisible();
+  expect((await read(page, `/api/surveys/${draft.id}/my-submission`)).answers).toHaveLength(1);
+  await page.getByRole('button', { name: 'Log out', exact: true }).click();
+  await signIn(page);
+  await openSurvey(page, title);
+  await confirmAction(page, 'Close survey');
+  const results = page.getByRole('table', { name: 'Option distribution for Understanding', exact: true });
+  await expect(results.getByRole('row', { name: 'Testing 1', exact: true })).toBeVisible();
+  await expect(page.getByText('Mean:', { exact: false })).toHaveCount(0);
+  await screenshot(page, info, 'f07-single-choice-persisted');
+});

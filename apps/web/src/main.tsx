@@ -24,7 +24,8 @@ type Question = {
     id: string | null;
     position?: number;
     prompt: string;
-    type: 'RATING' | 'TEXT';
+    type: 'RATING' | 'TEXT' | 'SINGLE_CHOICE';
+    options?: { id: string | null; label: string }[];
     required: boolean;
     ratingScale: Scale | null;
 };
@@ -99,7 +100,9 @@ type Results = {
         answeredCount?: number;
         suppressed?: true;
         distribution?: {
-            score: number;
+            score?: number;
+            optionId?: string;
+            label?: string;
             count: number;
         }[];
         comments?: string[];
@@ -453,7 +456,7 @@ function SurveyDetail({ id, api, owner, deleted, navigationBlocked }: {
 }
 function Questionnaire({ survey }: { survey: Survey }) {
     return <section aria-label="Frozen questionnaire"><h3>{survey.status === 'DRAFT' ? 'Saved questionnaire' : 'Frozen questionnaire'}</h3><p>Read-only · {survey.mode}</p>
-      {survey.questions.map((q, index) => <section key={q.id ?? index}><h4>{index + 1}. {q.prompt}</h4><p>{q.type === 'RATING' ? 'Rating 1–5' : 'Written feedback'} · {q.required ? 'Required' : 'Optional'}</p>{q.ratingScale && <><p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}</p><p>{q.ratingScale.interpretation}</p></>}</section>)}
+      {survey.questions.map((q, index) => <section key={q.id ?? index}><h4>{index + 1}. {q.prompt}</h4><p>{q.type === 'RATING' ? 'Rating 1–5' : q.type === 'SINGLE_CHOICE' ? 'Single choice' : 'Written feedback'} · {q.required ? 'Required' : 'Optional'}</p>{q.options && <ol>{q.options.map(option => <li key={option.id ?? option.label}>{option.label}</li>)}</ol>}{q.ratingScale && <><p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}</p><p>{q.ratingScale.interpretation}</p></>}</section>)}
     </section>;
 }
 function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
@@ -484,6 +487,10 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
         if (!dirty && !needsCheck && !saving) { setBaseline(survey); setMode(survey.mode); setTitle(survey.title); setQuestions(old => editable(survey.questions, old)); }
     }, [survey, dirty, needsCheck, saving]);
     function change(index: number, patch: Partial<Question>) { setDirty(true); setQuestions(q => q.map((v, i) => i === index ? { ...v, ...patch } : v)); }
+    function changeQuestionType(index: number, type: Question['type']) {
+        const options = type === 'SINGLE_CHOICE' ? [{ id: null, label: '' }, { id: null, label: '' }] : undefined;
+        change(index, { type, options, ratingScale: type === 'RATING' ? defaultScale() : null });
+    }
     function moveUp(index: number) {
         if (!index) return;
         pendingFocus.current = questionId(index, 'prompt');
@@ -508,7 +515,12 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
         if (!persisted) return;
         if (reapply) {
             const ids = new Set(persisted.questions.map(q => q.id));
-            setQuestions(old => old.map(q => ({ ...q, id: q.id && ids.has(q.id) ? q.id : null })));
+            setQuestions(old => old.map(q => {
+                const current = persisted.questions.find(question => question.id === q.id);
+                const optionIds = new Set(current?.options?.map(option => option.id));
+                return { ...q, id: q.id && ids.has(q.id) ? q.id : null,
+                    options: q.options?.map(option => ({ ...option, id: optionIds.has(option.id) ? option.id : null })) };
+            }));
             setDirty(true);
         } else { setMode(persisted.mode); setTitle(persisted.title); setQuestions(old => editable(persisted.questions, old)); setDirty(false); }
         setBaseline(persisted); saved(persisted); setNeedsCheck(false); setPersisted(null); setError(''); setValidation(null);
@@ -520,7 +532,7 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
             return;
         }
         setSaving(true); setError(''); setValidation(null); try {
-        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title, ...(mode !== baseline.mode ? { mode } : {}), questions: questions.map(({ id, prompt, type, required, ratingScale }) => ({ id, prompt, type, required, ratingScale })) });
+        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title, ...(mode !== baseline.mode ? { mode } : {}), questions: questions.map(({ id, prompt, type, required, ratingScale, options }) => ({ id, prompt, type, required, ratingScale, ...(type === 'SINGLE_CHOICE' ? { options } : {}) })) });
         setBaseline(value); setMode(value.mode); setTitle(value.title); setQuestions(old => editable(value.questions, old));
         saved(value);
         setDirty(false);
@@ -538,8 +550,29 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
       <option value="IDENTIFIED">Identified</option><option value="ANONYMOUS">Anonymous</option>
     </select></label>
     {mode === 'ANONYMOUS' && <p>Anonymous surveys do not collect written feedback. Remove any written questions before saving.</p>}
-    {questions.map((q, index) => <fieldset key={q.editorKey}><legend>Question {index + 1}</legend><label>Prompt<input id={questionId(index, 'prompt')} {...fieldAttributes(questionId(index, 'prompt'), fields)} value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><FieldError id={questionId(index, 'prompt')} fields={fields}/><label>Question type<select id={questionId(index, 'type')} {...fieldAttributes(questionId(index, 'type'), fields)} value={q.type} onChange={e => change(index, { type: e.target.value as Question['type'], ratingScale: e.target.value === 'RATING' ? defaultScale() : null })}><option value="RATING">Rating 1–5</option><option value="TEXT" disabled={mode === 'ANONYMOUS'}>Written feedback</option></select></label><FieldError id={questionId(index, 'type')} fields={fields}/>
+    {questions.map((q, index) => <fieldset key={q.editorKey}><legend>Question {index + 1}</legend><label>Prompt<input id={questionId(index, 'prompt')} {...fieldAttributes(questionId(index, 'prompt'), fields)} value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><FieldError id={questionId(index, 'prompt')} fields={fields}/><label>Question type<select id={questionId(index, 'type')} {...fieldAttributes(questionId(index, 'type'), fields)} value={q.type} onChange={e => changeQuestionType(index, e.target.value as Question['type'])}><option value="RATING">Rating 1–5</option><option value="SINGLE_CHOICE">Single choice</option><option value="TEXT" disabled={mode === 'ANONYMOUS'}>Written feedback</option></select></label><FieldError id={questionId(index, 'type')} fields={fields}/>
       <label className="check"><input type="checkbox" checked={q.required} onChange={e => change(index, { required: e.target.checked })}/>Required</label>
+      {q.type === 'SINGLE_CHOICE' && q.options && <div>
+        {q.options.map((option, position) => {
+          const target = questionId(index, `option-${position}`);
+          return <div key={option.id ?? position}>
+            <label>Option {position + 1}<input id={target} value={option.label} {...fieldAttributes(target, fields)}
+              onChange={e => change(index, { options: q.options!.map((value, i) => i === position ? { ...value, label: e.target.value } : value) })}/></label>
+            <FieldError id={target} fields={fields}/>
+            <div className="actions">
+              <button type="button" disabled={position === 0} onClick={() => {
+                const reordered = q.options!.slice();
+                [reordered[position - 1], reordered[position]] = [reordered[position]!, reordered[position - 1]!];
+                change(index, { options: reordered });
+              }}>Move option {position + 1} up</button>
+              <button type="button" disabled={q.options!.length === 2}
+                onClick={() => change(index, { options: q.options!.filter((_, i) => i !== position) })}>Remove option {position + 1}</button>
+            </div>
+          </div>;
+        })}
+        <button type="button" disabled={q.options.length >= 6}
+          onClick={() => change(index, { options: [...q.options!, { id: null, label: '' }] })}>Add option</button>
+      </div>}
       {q.ratingScale && <div className="scale-editor">{(['minLabel', 'maxLabel', 'interpretation'] as const).map(key => <div key={key}><label>{key === 'minLabel' ? 'Score 1 label' : key === 'maxLabel' ? 'Score 5 label' : 'Scale interpretation'}<input id={questionId(index, key)} {...fieldAttributes(questionId(index, key), fields)} value={q.ratingScale![key]} onChange={e => change(index, { ratingScale: { ...q.ratingScale!, [key]: e.target.value } })}/></label><FieldError id={questionId(index, key)} fields={fields}/></div>)}</div>}
       <div className="actions"><button type="button" disabled={index === 0} onClick={() => moveUp(index)}>Move question {index + 1} up</button><button type="button" onClick={() => remove(index)}>Remove question {index + 1}</button></div>
     </fieldset>)}
@@ -623,10 +656,16 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
     if (!submission)
         return <><ErrorBox message={error}/><p>Checking your submission…</p><button disabled={checking} onClick={() => void checkSaved()}>Check saved status</button></>;
     if (submission.submitted)
-        return <section><h3 ref={confirmation} tabIndex={-1}>Submission received</h3><p>{survey.mode === 'ANONYMOUS' ? 'Your participation is saved. Anonymous answers cannot be reopened.' : 'Your saved answers are read-only.'}</p>{survey.mode === 'IDENTIFIED' && submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{a.value}</p></div>)}</section>;
+        return <section><h3 ref={confirmation} tabIndex={-1}>Submission received</h3><p>{survey.mode === 'ANONYMOUS' ? 'Your participation is saved. Anonymous answers cannot be reopened.' : 'Your saved answers are read-only.'}</p>{survey.mode === 'IDENTIFIED' && submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{survey.questions.find(q => q.id === a.questionId)?.options?.find(option => option.id === a.value)?.label ?? a.value}</p></div>)}</section>;
     if (survey.status === 'CLOSED')
         return <><ErrorBox message={error}/><p>{unknownOutcome ? 'This survey is closed. Check saved status to confirm whether your submission was recorded.' : 'This survey is closed. No submission was recorded for your account.'}</p>{unknownOutcome && <button disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button>}</>;
-    return <form onSubmit={e => void submit(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map((q, index) => <fieldset key={q.id!} {...fieldAttributes(target(index), fields)}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input id={`${formId}-${q.id}-rating-${score}`} {...fieldAttributes(target(index), fields)} type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea id={target(index)} {...fieldAttributes(target(index), fields)} value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/{writtenAnswerLimit} characters</small></>}<FieldError id={target(index)} fields={fields}/></fieldset>)}</fieldset>
+    return <form onSubmit={e => void submit(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map((q, index) => <fieldset key={q.id!} {...fieldAttributes(target(index), fields)}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input id={`${formId}-${q.id}-rating-${score}`} {...fieldAttributes(target(index), fields)} type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : q.type === 'SINGLE_CHOICE' ? <><div className="ratings">{q.options?.map(option => <label key={option.id}>
+        <input type="radio" name={q.id!} {...fieldAttributes(target(index), fields)} value={option.id!}
+          checked={values[q.id!] === option.id} onChange={() => setValues(v => ({ ...v, [q.id!]: option.id! }))}/>{option.label}</label>)}</div>
+        {!q.required && <button type="button" onClick={() => setValues(v => {
+          const next = { ...v }; delete next[q.id!]; return next;
+        })}>Clear answer for {q.prompt}</button>}
+      </> : <><label>Written answer for {q.prompt}<textarea id={target(index)} {...fieldAttributes(target(index), fields)} value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/{writtenAnswerLimit} characters</small></>}<FieldError id={target(index)} fields={fields}/></fieldset>)}</fieldset>
       {survey.questions.some(question => question.type === 'TEXT') && <>
         <p id={totalTarget} tabIndex={-1} {...fieldAttributes(totalTarget, fields)}>
           Written answers total: {writtenAnswerTotal(survey.questions, values)}/{writtenSubmissionLimit} characters
@@ -646,6 +685,10 @@ function ResultsView({ id, api, anonymous }: {
     useEffect(() => { let active = true; setData(null); api<Results>(`/api/surveys/${id}/results`).then(v => { if (active)
         setData(v); }).catch(e => { if (active)
         setError(reason(e)); }); return () => { active = false; }; }, [id, api, refresh]);
-    return <section><h3>Feedback summary</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh results</button>{!data && !error && <p>Loading results…</p>}{data && <><p>Responses: <strong>{data.responseCount}</strong></p>{!data.questions && <p>{anonymous ? 'Eligible aggregate results become available after closing.' : 'Scores and written feedback become available after closing.'}</p>}{data.questions?.map(q => <section className="result" key={q.questionId}><h4>{q.prompt}</h4>{q.suppressed ? <p>Not enough anonymous data.</p> : q.type === 'RATING' ? <><p>Mean: <strong>{q.mean ?? 'No answers'}</strong> · Answered: {q.answeredCount}</p><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><table><caption>Score distribution for {q.prompt}</caption><thead><tr><th scope="col">Score</th><th scope="col">Responses</th><th scope="col">Distribution</th></tr></thead><tbody>{q.distribution?.map(b => <tr key={b.score}><th scope="row">{b.score}</th><td>{b.count}</td><td><div className="bar" style={{ width: `${Math.max(0, b.count / Math.max(1, q.answeredCount ?? 0) * 100)}%` }} aria-hidden="true"/></td></tr>)}</tbody></table></> : q.comments?.length ? <ul>{q.comments.map((text, index) => <li className="prewrap" key={index}>{text}</li>)}</ul> : <p>No written feedback.</p>}</section>)}</>}</section>;
+    return <section><h3>Feedback summary</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh results</button>{!data && !error && <p>Loading results…</p>}{data && <><p>Responses: <strong>{data.responseCount}</strong></p>{!data.questions && <p>{anonymous ? 'Eligible aggregate results become available after closing.' : 'Scores and written feedback become available after closing.'}</p>}{data.questions?.map(q => <section className="result" key={q.questionId}><h4>{q.prompt}</h4>{q.suppressed ? <p>Not enough anonymous data.</p> : q.type === 'RATING' ? <><p>Mean: <strong>{q.mean ?? 'No answers'}</strong> · Answered: {q.answeredCount}</p><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><table><caption>Score distribution for {q.prompt}</caption><thead><tr><th scope="col">Score</th><th scope="col">Responses</th><th scope="col">Distribution</th></tr></thead><tbody>{q.distribution?.map(b => <tr key={b.score}><th scope="row">{b.score}</th><td>{b.count}</td><td><div className="bar" style={{ width: `${Math.max(0, b.count / Math.max(1, q.answeredCount ?? 0) * 100)}%` }} aria-hidden="true"/></td></tr>)}</tbody></table></> : q.type === 'SINGLE_CHOICE' ? <>
+      <p>Answered: {q.answeredCount}</p>
+      <table><caption>Option distribution for {q.prompt}</caption><thead><tr><th scope="col">Option</th><th scope="col">Responses</th></tr></thead>
+        <tbody>{q.distribution?.map(bin => <tr key={bin.optionId}><th scope="row">{bin.label}</th><td>{bin.count}</td></tr>)}</tbody></table>
+    </> : q.comments?.length ? <ul>{q.comments.map((text, index) => <li className="prewrap" key={index}>{text}</li>)}</ul> : <p>No written feedback.</p>}</section>)}</>}</section>;
 }
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);

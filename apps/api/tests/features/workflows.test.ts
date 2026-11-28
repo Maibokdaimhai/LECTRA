@@ -892,28 +892,30 @@ it('TEST-F06-I01/I02/I03/I04R: anonymous ratings preserve private status and sup
     await foreign.agent.get(`${path}/results`).expect(404);
 });
 
-it('TEST-F06-I04R: each rating crosses 4/5 and sparse 2/3 independently of ten submissions', async () => {
+it.each(['RATING', 'SINGLE_CHOICE'] as const)('TEST-F06-I04R/I04C: each %s question crosses 4/5 and sparse 2/3 independently of ten submissions', async type => {
+    const offset = type === 'RATING' ? 0 : 100;
     const owner = await login();
     const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
-        VALUES ($1,'Anonymous privacy boundaries','2026-11-20',6007) RETURNING id`, [fixtureId(201)])).rows[0].id;
+        VALUES ($1,'Anonymous privacy boundaries','2026-11-20',$2) RETURNING id`, [fixtureId(201), 6007 + offset])).rows[0].id;
     const { id } = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
     const path = `/api/surveys/${id}`;
     const cases = [[4, 0], [5, 0], [3, 2], [4, 2], [3, 3]];
     const draft = {
         expectedRevision: 1, title: 'Anonymous privacy boundaries', mode: 'ANONYMOUS',
         questions: cases.map((_, i) => ({
-            id: null, type: 'RATING', prompt: `Threshold case ${i + 1}`, required: false,
-            ratingScale: { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means higher understanding' },
+            id: null, type, prompt: `Threshold case ${i + 1}`, required: false,
+            ratingScale: type === 'RATING' ? { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means higher understanding' } : null,
+            ...(type === 'SINGLE_CHOICE' ? { options: [{ id: null, label: 'First' }, { id: null, label: 'Second' }] } : {}),
         })),
     };
     const saved = (await mutation(owner, 'patch', path, draft).expect(200)).body.data;
     await mutation(owner, 'post', `${path}/publish`, { expectedRevision: 2 }).expect(200);
     const students = [11, 12];
     for (let i = 0; i < 8; i++) {
-        students.push(6201 + i);
+        students.push(6201 + offset + i);
         await pool.query('INSERT INTO "User" (id,email,"passwordHash",role,"displayName") VALUES ($1,$2,$3,\'RESPONDENT\',$4)',
-            [fixtureId(6201 + i), `threshold.${i}@example.test`, 'fixture-only', 'Threshold fixture']);
-        await pool.query('INSERT INTO "SurveyEligibility" ("surveyId","studentId") VALUES ($1,$2)', [id, fixtureId(6201 + i)]);
+            [fixtureId(6201 + offset + i), `threshold.${offset}.${i}@example.test`, 'fixture-only', 'Threshold fixture']);
+        await pool.query('INSERT INTO "SurveyEligibility" ("surveyId","studentId") VALUES ($1,$2)', [id, fixtureId(6201 + offset + i)]);
     }
     await expect(pool.query('INSERT INTO "ResponseBundle" ("surveyId","identifiedStudentId") VALUES ($1,$2)', [id, fixtureId(11)]))
         .rejects.toMatchObject({ code: '23514' });
@@ -921,18 +923,21 @@ it('TEST-F06-I04R: each rating crosses 4/5 and sparse 2/3 independently of ten s
         .rejects.toMatchObject({ code: '23514' });
     for (const [index, student] of students.entries()) {
         const studentId = fixtureId(student);
-        const bundleId = fixtureId(6301 + index);
+        const bundleId = fixtureId(6301 + offset + index);
         await pool.query('INSERT INTO "Participation" VALUES ($1,$2)', [id, studentId]);
         await pool.query('INSERT INTO "ResponseBundle" (id,"surveyId") VALUES ($1,$2)', [bundleId, id]);
         for (const [question, [low, high]] of cases.entries()) {
             const score = index < low! ? 1 : index < low! + high! ? 5 : null;
-            if (score !== null)
-                await pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue") VALUES ($1,$2,$3,$4)',
-                    [bundleId, saved.questions[question].id, id, score]);
+            if (score !== null) {
+                const definition = saved.questions[question];
+                const chosen = type === 'SINGLE_CHOICE' ? definition.options[score === 1 ? 0 : 1].id : null;
+                await pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue","optionId") VALUES ($1,$2,$3,$4,$5)',
+                    [bundleId, definition.id, id, chosen ? null : score, chosen]);
+            }
         }
     }
     await expect(pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","textValue") VALUES ($1,$2,$3,$4)',
-        [fixtureId(6310), saved.questions[0].id, id, 'Private text']))
+        [fixtureId(6310 + offset), saved.questions[0].id, id, 'Private text']))
         .rejects.toMatchObject({ code: '23514' });
     const published = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
     expect(published.responseCount).toBe(10);
@@ -945,9 +950,17 @@ it('TEST-F06-I04R: each rating crosses 4/5 and sparse 2/3 independently of ten s
         for (const key of ['answeredCount', 'distribution', 'mean'])
             expect(closed.questions[i]).not.toHaveProperty(key);
     }
-    expect(closed.questions[1]).toMatchObject({ mean: '1.00', answeredCount: 5 });
-    expect(closed.questions[4]).toMatchObject({ mean: '3.00', answeredCount: 6 });
-    expect(closed.questions[4].distribution.map((bin: { count: number }) => bin.count)).toEqual([3, 0, 0, 0, 3]);
+    expect(closed.questions[1]).toMatchObject({ answeredCount: 5 });
+    expect(closed.questions[4]).toMatchObject({ answeredCount: 6 });
+    if (type === 'RATING') {
+        expect(closed.questions[1].mean).toBe('1.00');
+        expect(closed.questions[4].mean).toBe('3.00');
+    } else {
+        expect(closed.questions[1]).not.toHaveProperty('mean');
+        expect(closed.questions[4]).not.toHaveProperty('mean');
+    }
+    expect(closed.questions[4].distribution.map((bin: { count: number }) => bin.count))
+        .toEqual(type === 'RATING' ? [3, 0, 0, 0, 3] : [3, 3]);
 });
 
 it('TEST-F07-I03: publish a single-choice-only survey, persist a selected option, and close with option counts', async () => {
