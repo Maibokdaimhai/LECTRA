@@ -1,10 +1,10 @@
 # F-09 survey history verification
 
-27 November 2026, ICT. Implementation is ready for teammate review on `codex/d2-f09-history`. This working branch has not been accepted, integrated to staging or deployed.
+The original RED/GREEN runs below took place on 27 November 2026 ICT. The implementation branch used for review and integration was `feat/f09-survey-history`. Songwit approved [PR #83](https://github.com/Maibokdaimhai/LECTRA/pull/83) at `3d5653a` after [CI & Docker Build](https://github.com/Maibokdaimhai/LECTRA/actions/runs/46153055660) passed. It merged into staging as `fee75ee`; the reviewed Deliverable 2 candidate then merged to main via [PR #84](https://github.com/Maibokdaimhai/LECTRA/pull/84) as `f08ed43`.
 
 | Checkpoint | Version and evidence |
 | --- | --- |
-| Release baseline | `main` 11a3d693585f5d601e974fcacb0e63f7c65dff1a and staging efafce7e406abcc6cade2d173d0a5206459edf97 share tree 38172e1de0c730c2fd5e10f81d6ec053c4ccf203. Production remains lectra-00010-9qf. |
+| Release baseline | `main` 11a3d693585f5d601e974fcacb0e63f7c65dff1a and staging efafce7e406abcc6cade2d173d0a5206459edf97 share tree 38172e1de0c730c2fd5e10f81d6ec053c4ccf203. The pre-change Production revision was lectra-00010-9qf. |
 | Contract | 6aba863, 19:27. AC-F09-01 and AC-F09-02 describe the owned history slice. |
 | RED | fc0564e, 19:28. `node node_modules/vitest/vitest.mjs run --config vitest.features.config.ts -t TEST-F09` against a fresh PostgreSQL 17 database. Two failed, 43 filtered out. One-day combined filter was expected to succeed with 200 but received 422. Foreign Section was expected to get the scoped 404 but received 422 from the unsupported parameter check. |
 | GREEN | Implementation 5084075. Full `node node_modules/vitest/vitest.mjs run --config vitest.features.config.ts` on a new database at 19:34. 45 passed, 0 failed or skipped. TEST-F09-I01 verified inclusive dates, scoped result ordering and pagination. TEST-F09-I02 verified guest/role behavior, other-owner scope and invalid query input. |
