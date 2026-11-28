@@ -21,6 +21,7 @@ enum SurveyStatus {
 }
 enum SurveyMode {
   IDENTIFIED
+  ANONYMOUS
 }
 enum QuestionType {
   RATING

@@ -5,7 +5,7 @@ const wellFormed = (s: string) => !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD8
 const text = (max: number) => z.string().transform(s => s.trim()).refine(s => !s.includes('\0') && wellFormed(s) && [...s].length <= max);
 const ratingScale = z.object({ min: z.literal(1), max: z.literal(5), minLabel: text(120), maxLabel: text(120), interpretation: text(500) }).strict();
 const question = z.object({ id: id.nullable(), prompt: text(500), type: z.enum(['RATING', 'TEXT']), required: z.boolean(), ratingScale: ratingScale.nullable() }).strict().refine(q => (q.type === 'RATING') === (q.ratingScale !== null));
-const definition = z.object({ expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER), title: text(120), questions: z.array(question).max(10) }).strict();
+const definition = z.object({ expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER), title: text(120), mode: z.enum(['IDENTIFIED', 'ANONYMOUS']).optional(), questions: z.array(question).max(10) }).strict();
 export function parseDefinition(value: unknown) {
     const parsed = definition.safeParse(value);
     if (!parsed.success)
@@ -89,4 +89,9 @@ export function mean(scores: number[]) {
         return null;
     const cents = (BigInt(scores.reduce((a, b) => a + b, 0)) * 100n * 2n + BigInt(scores.length)) / (2n * BigInt(scores.length));
     return `${cents / 100n}.${String(cents % 100n).padStart(2, '0')}`;
+}
+
+export function canReleaseAnonymousQuestion(counts: readonly number[]) {
+    return counts.reduce((sum, count) => sum + count, 0) >= 5
+        && counts.every(count => count === 0 || count >= 3);
 }

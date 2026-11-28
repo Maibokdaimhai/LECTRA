@@ -891,3 +891,61 @@ it('TEST-F06-I01/I02/I03/I04R: anonymous ratings preserve private status and sup
     const foreign = await login('owner.2@example.test');
     await foreign.agent.get(`${path}/results`).expect(404);
 });
+
+it('TEST-F06-I04R: each rating crosses 4/5 and sparse 2/3 independently of ten submissions', async () => {
+    const owner = await login();
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'Anonymous privacy boundaries','2026-11-20',6007) RETURNING id`, [fixtureId(201)])).rows[0].id;
+    const { id } = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = `/api/surveys/${id}`;
+    const cases = [[4, 0], [5, 0], [3, 2], [4, 2], [3, 3]];
+    const draft = {
+        expectedRevision: 1, title: 'Anonymous privacy boundaries', mode: 'ANONYMOUS',
+        questions: cases.map((_, i) => ({
+            id: null, type: 'RATING', prompt: `Threshold case ${i + 1}`, required: false,
+            ratingScale: { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means higher understanding' },
+        })),
+    };
+    const saved = (await mutation(owner, 'patch', path, draft).expect(200)).body.data;
+    await mutation(owner, 'post', `${path}/publish`, { expectedRevision: 2 }).expect(200);
+    const students = [11, 12];
+    for (let i = 0; i < 8; i++) {
+        students.push(6201 + i);
+        await pool.query('INSERT INTO "User" (id,email,"passwordHash",role,"displayName") VALUES ($1,$2,$3,\'RESPONDENT\',$4)',
+            [fixtureId(6201 + i), `threshold.${i}@example.test`, 'fixture-only', 'Threshold fixture']);
+        await pool.query('INSERT INTO "SurveyEligibility" ("surveyId","studentId") VALUES ($1,$2)', [id, fixtureId(6201 + i)]);
+    }
+    await expect(pool.query('INSERT INTO "ResponseBundle" ("surveyId","identifiedStudentId") VALUES ($1,$2)', [id, fixtureId(11)]))
+        .rejects.toMatchObject({ code: '23514' });
+    await expect(pool.query('UPDATE "Survey" SET mode=\'IDENTIFIED\' WHERE id=$1', [id]))
+        .rejects.toMatchObject({ code: '23514' });
+    for (const [index, student] of students.entries()) {
+        const studentId = fixtureId(student);
+        const bundleId = fixtureId(6301 + index);
+        await pool.query('INSERT INTO "Participation" VALUES ($1,$2)', [id, studentId]);
+        await pool.query('INSERT INTO "ResponseBundle" (id,"surveyId") VALUES ($1,$2)', [bundleId, id]);
+        for (const [question, [low, high]] of cases.entries()) {
+            const score = index < low! ? 1 : index < low! + high! ? 5 : null;
+            if (score !== null)
+                await pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","ratingValue") VALUES ($1,$2,$3,$4)',
+                    [bundleId, saved.questions[question].id, id, score]);
+        }
+    }
+    await expect(pool.query('INSERT INTO "Answer" ("bundleId","questionId","surveyId","textValue") VALUES ($1,$2,$3,$4)',
+        [fixtureId(6310), saved.questions[0].id, id, 'Private text']))
+        .rejects.toMatchObject({ code: '23514' });
+    const published = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(published.responseCount).toBe(10);
+    expect(published).not.toHaveProperty('questions');
+    await mutation(owner, 'post', `${path}/close`, {}).expect(200);
+    const closed = (await owner.agent.get(`${path}/results`).expect(200)).body.data;
+    expect(closed.responseCount).toBe(10);
+    for (const i of [0, 2, 3]) {
+        expect(closed.questions[i]).toHaveProperty('suppressed', true);
+        for (const key of ['answeredCount', 'distribution', 'mean'])
+            expect(closed.questions[i]).not.toHaveProperty(key);
+    }
+    expect(closed.questions[1]).toMatchObject({ mean: '1.00', answeredCount: 5 });
+    expect(closed.questions[4]).toMatchObject({ mean: '3.00', answeredCount: 6 });
+    expect(closed.questions[4].distribution.map((bin: { count: number }) => bin.count)).toEqual([3, 0, 0, 0, 3]);
+});
