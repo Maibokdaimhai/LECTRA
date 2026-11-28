@@ -1125,3 +1125,49 @@ it('TEST-F08-I01/I02: only a Closed owner can export the scoped aggregate CSV v1
     expect(result.text).toContain('"Choose","SINGLE_CHOICE","RELEASED",1,,,"\'@Thai ตัวอย่าง",1\r\n');
     expect(result.text).not.toMatch(/comment-marker|Private comment|respondent\.11|studentId|bundleId/);
 });
+
+it('TEST-F09-I01: combine owned history filters with inclusive dates and scoped pagination', async () => {
+    const owner = await login();
+    const fixtures = [
+        [fixtureId(201), fixtureId(1), 'History early', '2026-10-17', 7001],
+        [fixtureId(201), fixtureId(1), 'History first', '2026-10-18', 7002],
+        [fixtureId(201), fixtureId(1), 'History second', '2026-10-18', 7003],
+        [fixtureId(202), fixtureId(2), 'History foreign', '2026-10-18', 7004],
+    ] as const;
+    for (const [sectionId, ownerId, title, date, sequence] of fixtures) {
+        await pool.query(`WITH lecture AS (
+            INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+            VALUES ($1,$2,$3,$4) RETURNING id
+        )
+        INSERT INTO "Survey" ("lectureId","ownerId",title) SELECT id,$5,$2 FROM lecture`,
+        [sectionId, title, date, sequence, ownerId]);
+    }
+    const filters = new URLSearchParams({
+        courseId: fixtureId(101), sectionId: fixtureId(201), status: 'DRAFT',
+        dateFrom: '2026-10-18', dateTo: '2026-10-18', limit: '1',
+    });
+    const first = (await owner.agent.get(`/api/surveys?${filters}`).expect(200)).body.data;
+    expect(first.pagination).toEqual({ total: 2, limit: 1, offset: 0 });
+    expect(first.items).toMatchObject([{ title: 'History second' }]);
+
+    filters.set('offset', '1');
+    const second = (await owner.agent.get(`/api/surveys?${filters}`).expect(200)).body.data;
+    expect(second.pagination).toEqual({ total: 2, limit: 1, offset: 1 });
+    expect(second.items).toMatchObject([{ title: 'History first' }]);
+    filters.set('status', 'CLOSED');
+    const closed = (await owner.agent.get(`/api/surveys?${filters}`).expect(200)).body.data;
+    expect(closed.pagination.total).toBe(0);
+    expect(closed.items).toEqual([]);
+});
+
+it('TEST-F09-I02: reject foreign ownership and invalid history filters without exposing surveys', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    await request(app).get('/api/surveys?status=DRAFT').expect(401);
+    await student.agent.get('/api/surveys?status=DRAFT').expect(422);
+    const foreign = await owner.agent.get(`/api/surveys?sectionId=${fixtureId(202)}`).expect(404);
+    expect(foreign.body.error.code).toBe('NOT_FOUND');
+    for (const invalid of ['dateFrom=2026-02-30', 'dateFrom=2026-12-01&dateTo=2026-11-30', 'status=OTHER', 'status=DRAFT&status=CLOSED']) {
+        expect((await owner.agent.get(`/api/surveys?${invalid}`).expect(422)).body.error.code).toBe('VALIDATION_FAILED');
+    }
+});
