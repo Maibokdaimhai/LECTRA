@@ -961,6 +961,20 @@ it.each(['RATING', 'SINGLE_CHOICE'] as const)('TEST-F06-I04R/I04C: each %s quest
     }
     expect(closed.questions[4].distribution.map((bin: { count: number }) => bin.count))
         .toEqual(type === 'RATING' ? [3, 0, 0, 0, 3] : [3, 3]);
+    // TEST-F08-I03: Check both privacy paths against the same stored distributions.
+    const csv = (await owner.agent.get(path + '/results.csv').expect(200)).text.split('\r\n');
+    for (const i of [0, 2, 3]) {
+        const hidden = csv.filter((line: string) => line.includes(`"${closed.questions[i].questionId}"`));
+        expect(hidden).toHaveLength(1);
+        expect(hidden[0]).toMatch(/,"SUPPRESSED",,,,,$/);
+    }
+    for (const i of [1, 4]) {
+        const visible = csv.filter((line: string) => line.includes(`"${closed.questions[i].questionId}"`));
+        expect(visible).toHaveLength(type === 'RATING' ? 5 : 2);
+        expect(visible.map((line: string) => Number(line.split(',').at(-1))))
+            .toEqual(closed.questions[i].distribution.map((bin: { count: number }) => bin.count));
+        expect(visible.every((line: string) => line.includes(`"RELEASED",${closed.questions[i].answeredCount},`))).toBe(true);
+    }
 });
 
 it('TEST-F07-I03: publish a single-choice-only survey, persist a selected option, and close with option counts', async () => {
@@ -1066,4 +1080,48 @@ it('TEST-F07-I01/I02/I04/I05/I06: preview, copy and publish independent Draft de
         await otherStudent.agent.get(path).expect(404);
     } finally { await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), selection[0]]); }
     expect((await owner.agent.get('/api/surveys/' + original.id).expect(200)).body.data.questions).toEqual(original.questions);
+});
+
+it('TEST-F08-I01/I02: only a Closed owner can export the scoped aggregate CSV v1', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const other = await login('owner.2@example.test');
+    const lecture = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        VALUES ($1,'CSV lecture','2026-11-24',8101) RETURNING id`, [fixtureId(201)])).rows[0].id;
+    const created = (await mutation(owner, 'post', '/api/surveys', { lectureId: lecture }).expect(201)).body.data;
+    const path = '/api/surveys/' + created.id;
+    const csv = path + '/results.csv';
+    await request(app).get(csv).expect(401);
+    await student.agent.get(csv).expect(403);
+    await other.agent.get(csv).expect(404);
+    await owner.agent.get(csv + '?fields=hidden').expect(422);
+    await owner.agent.get(csv).expect(409);
+    const scale = { min: 1, max: 5, minLabel: 'Low', maxLabel: 'High', interpretation: 'Higher means clearer' };
+    const saved = (await mutation(owner, 'patch', path, {
+        expectedRevision: 1, title: '=1+1 ผลทดสอบ', questions: [
+            { id: null, prompt: 'คำถาม, "หนึ่ง"', type: 'RATING', required: true, ratingScale: scale },
+            { id: null, prompt: 'Skipped', type: 'RATING', required: false, ratingScale: scale },
+            { id: null, prompt: 'Choose', type: 'SINGLE_CHOICE', required: false, ratingScale: null,
+                options: [{ id: null, label: '@Thai ตัวอย่าง' }, { id: null, label: 'Other' }] },
+            { id: null, prompt: 'Private comment', type: 'TEXT', required: false, ratingScale: null },
+        ],
+    }).expect(200)).body.data;
+    await mutation(owner, 'post', path + '/publish', { expectedRevision: 2 }).expect(200);
+    await owner.agent.get(csv).expect(409);
+    await mutation(student, 'post', path + '/responses', { answers: [
+        { questionId: saved.questions[0].id, value: 4 },
+        { questionId: saved.questions[2].id, value: saved.questions[2].options[0].id },
+        { questionId: saved.questions[3].id, value: 'comment-marker-that-must-stay-private' },
+    ] }).expect(201);
+    await mutation(owner, 'post', path + '/close', {}).expect(200);
+    const result = await owner.agent.get(csv).expect(200)
+        .expect('Content-Type', /text\/csv; charset=utf-8/i)
+        .expect('Content-Disposition', 'attachment; filename="survey-results.csv"')
+        .expect('Cache-Control', 'no-store');
+    expect(result.text.startsWith('\uFEFFformat_version,course_code,section_code,term,lecture_title,lecture_date,survey_id,survey_title,survey_mode,question_id,question_category,question_prompt,question_type,result_status,answered_count,mean,rating_score,option_label,bin_count\r\n')).toBe(true);
+    expect(result.text).toContain(`"${created.id}","'=1+1 ผลทดสอบ","IDENTIFIED"`);
+    expect(result.text).toContain('"คำถาม, ""หนึ่ง""","RATING","RELEASED",1,4.00,4,,1\r\n');
+    expect(result.text).toContain('"Skipped","RATING","NO_DATA",0,,,,\r\n');
+    expect(result.text).toContain('"Choose","SINGLE_CHOICE","RELEASED",1,,,"\'@Thai ตัวอย่าง",1\r\n');
+    expect(result.text).not.toMatch(/comment-marker|Private comment|respondent\.11|studentId|bundleId/);
 });
