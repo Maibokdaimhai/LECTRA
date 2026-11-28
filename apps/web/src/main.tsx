@@ -24,7 +24,8 @@ type Question = {
     id: string | null;
     position?: number;
     prompt: string;
-    type: 'RATING' | 'TEXT';
+    type: 'RATING' | 'TEXT' | 'SINGLE_CHOICE';
+    options?: { id: string | null; label: string }[];
     required: boolean;
     ratingScale: Scale | null;
 };
@@ -34,6 +35,7 @@ type Context = {
         code: string;
     };
     section: {
+        id: string;
         sectionCode: string;
     };
     lecture: {
@@ -48,6 +50,7 @@ type Survey = {
     status: 'DRAFT' | 'PUBLISHED' | 'CLOSED';
     mode: string;
     definitionRevision?: number;
+    draftStudentIds?: string[] | null;
     context: Context;
     questions: Question[];
     privacyDisclosure: string;
@@ -79,6 +82,18 @@ type Collection = {
         offset: number;
     };
 };
+type DraftSource = { starterKey: string; version: number } | { surveyId: string; expectedRevision: number };
+type Starter = {
+    key: string;
+    version: number;
+    title: string;
+    privacyNote: string;
+    questions: (Question & { category: string })[];
+};
+type MemberPage = {
+    items: { id: string; displayName: string }[];
+    pagination: Collection['pagination'];
+};
 type Answer = {
     questionId: string;
     value: string | number;
@@ -99,7 +114,9 @@ type Results = {
         answeredCount?: number;
         suppressed?: true;
         distribution?: {
-            score: number;
+            score?: number;
+            optionId?: string;
+            label?: string;
             count: number;
         }[];
         comments?: string[];
@@ -316,18 +333,19 @@ function App() {
     <button className="secondary" disabled={busy} onClick={() => { void bootstrap(); }}>Check session / reconnect</button></section>}
   </main>;
 }
-function Selector({ path, label, api, onSelect, beforeChange = () => true }: {
+function Selector({ path, label, api, onSelect, beforeChange = () => true, optionLabel }: {
     path: string;
     label: string;
     api: Api;
     onSelect: (item: Item | null) => void;
     beforeChange?: () => boolean;
+    optionLabel?: (item: Item) => string;
 }) {
     const [data, setData] = useState<Collection | null>(null), [offset, setOffset] = useState(0), [value, setValue] = useState(''), [error, setError] = useState('');
     useEffect(() => { let current = true; setData(null); setError(''); api<Collection>(`${path}${path.includes('?') ? '&' : '?'}offset=${offset}`).then(d => { if (current)
         setData(d); }).catch(e => { if (current)
         setError(reason(e)); }); return () => { current = false; }; }, [path, offset, api]);
-    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { if (!beforeChange()) return; setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{i.code ?? i.sectionCode ?? i.title}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button disabled={offset === 0} onClick={() => { if (!beforeChange()) return; setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button disabled={offset + 20 >= data.pagination.total} onClick={() => { if (!beforeChange()) return; setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
+    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { if (!beforeChange()) return; setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{optionLabel ? optionLabel(i) : (i.code ?? i.sectionCode ?? i.title)}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button disabled={offset === 0} onClick={() => { if (!beforeChange()) return; setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button disabled={offset + 20 >= data.pagination.total} onClick={() => { if (!beforeChange()) return; setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
 }
 function Workspace({ user, api }: {
     user: User;
@@ -351,15 +369,15 @@ function Workspace({ user, api }: {
             }
         } catch (e) { setError(reason(e)); } finally { setBusy(false); }
     }
-    async function create() { if (!lecture || busy || createUncertain)
+    async function create(source?: DraftSource) { if (!lecture || busy || createUncertain)
         return; setBusy(true); setError(''); try {
-        const result = await api<Survey>('/api/surveys', 'POST', { lectureId: lecture.id });
+        const result = await api<Survey>('/api/surveys', 'POST', { lectureId: lecture.id, ...(source ? { source } : {}) });
         setSelected(result.id);
         setRevision(r => r + 1);
     }
     catch (e) {
         setError(reason(e));
-        setCreateUncertain(true);
+        setCreateUncertain(!(e instanceof ApiError) || e.status >= 500 || e.code === 'SURVEY_ALREADY_EXISTS');
     }
     finally {
         setBusy(false);
@@ -368,12 +386,68 @@ function Workspace({ user, api }: {
     {user.role === 'OWNER' && <section className="card selectors"><Selector beforeChange={beforeNavigate} label="Course" path="/api/courses" api={api} onSelect={i => { setCreateUncertain(false); setCourse(i); setSection(null); setLecture(null); setSelected(''); }}/>
       {course && <Selector beforeChange={beforeNavigate} key={course.id} label="Section" path={`/api/sections?courseId=${course.id}`} api={api} onSelect={i => { setCreateUncertain(false); setSection(i); setLecture(null); setSelected(''); }}/>}
       {section && <Selector beforeChange={beforeNavigate} key={`${section.id}:${revision}`} label="Lecture" path={`/api/sections/${section.id}/lectures`} api={api} onSelect={i => { setCreateUncertain(false); setLecture(i); setSelected(i?.existingSurvey?.id ?? ''); }}/>}
-      {lecture && !selected && <button onClick={() => void create()} disabled={busy || createUncertain}>{busy ? 'Creating…' : 'Create draft'}</button>}
+      {lecture && !selected && <DraftCreation key={lecture.id} api={api} busy={busy || createUncertain}
+        create={source => void create(source)}/>}
       {createUncertain && <><p>Creation outcome needs checking before another create attempt.</p><button disabled={busy} onClick={() => void checkCreated()}>Check persisted lecture</button></>}
     </section>}
     {!selected && <SurveyList key={revision} api={api} select={setSelected}/>}
     {selected && <><button className="secondary" onClick={() => { if (!beforeNavigate()) return; setSelected(''); setLecture(null); setRevision(r => r + 1); }}>Back to survey list</button><SurveyDetail key={selected} id={selected} api={api} owner={user.role === 'OWNER'} navigationBlocked={setNavigationBlocked} deleted={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}/></>}
   </>;
+}
+function DraftCreation({ api, busy, create }: { api: Api; busy: boolean; create: (source?: DraftSource) => void }) {
+    const [panel, setPanel] = useState<'starter' | 'copy' | null>(null);
+    const [starter, setStarter] = useState<Starter | null>(null);
+    const [survey, setSurvey] = useState<Survey | null>(null);
+    const [sourceId, setSourceId] = useState('');
+    const [sourceRefresh, setSourceRefresh] = useState(0);
+    const [error, setError] = useState('');
+    useEffect(() => {
+        const path = panel === 'starter' ? '/api/survey-starters/lecture-feedback/1'
+            : panel === 'copy' && sourceId ? '/api/surveys/' + sourceId : null;
+        if (!path) return;
+        let current = true;
+        if (panel === 'starter') {
+            api<Starter>(path).then(value => { if (current) setStarter(value); })
+                .catch(e => { if (current) setError(reason(e)); });
+        } else {
+            api<Survey>(path).then(value => { if (current) setSurvey(value); })
+                .catch(e => { if (current) setError(reason(e)); });
+        }
+        return () => { current = false; };
+    }, [panel, sourceId, sourceRefresh, api]);
+    function open(next: 'starter' | 'copy') {
+        setError(''); setStarter(null); setSurvey(null); setSourceId('');
+        setPanel(current => current === next ? null : next);
+    }
+    return <fieldset className="draft-creation" disabled={busy}><legend>Draft creation</legend>
+        <div className="actions">
+            <button onClick={() => create()}>Create draft</button>
+            <button onClick={() => open('starter')} aria-expanded={panel === 'starter'}>Preview Starter Questionnaire</button>
+            <button onClick={() => open('copy')} aria-expanded={panel === 'copy'}>Copy a survey</button>
+        </div>
+        <ErrorBox message={error}/>
+        {panel === 'starter' && (starter ? <section aria-label="Starter preview">
+            <h3>{starter.title}</h3><p>{starter.key} · Version {starter.version}</p><p>{starter.privacyNote}</p>
+            <ol>{starter.questions.map(q => <li key={q.category}>
+                <strong>{q.category} · {q.required ? 'Required' : 'Optional'}</strong><p>{q.prompt}</p>
+                {q.ratingScale && <p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}. {q.ratingScale.interpretation}</p>}
+            </li>)}</ol>
+            <button onClick={() => create({ starterKey: starter.key, version: starter.version })}>Use Starter Questionnaire</button>
+        </section> : !error && <p role="status">Loading starter…</p>)}
+        {panel === 'copy' && <section>
+            <Selector label="Source survey" path="/api/surveys" api={api}
+                optionLabel={item => `${item.title || 'Untitled draft'} · ${item.lecture?.title} · ${item.status}`}
+                onSelect={item => { setError(''); setSurvey(null); setSourceId(item?.id ?? ''); }}/>
+            {sourceId && !survey && !error && <p role="status">Reading source revision…</p>}
+            {survey && <><p>{survey.title || 'Untitled draft'} · Revision {survey.definitionRevision}</p>
+                <Questionnaire survey={survey}/>
+                <div className="actions">
+                    <button onClick={() => create({ surveyId: survey.id, expectedRevision: survey.definitionRevision! })}>Copy as identified draft</button>
+                    <button onClick={() => { setSurvey(null); setError(''); setSourceRefresh(value => value + 1); }}>Refresh source survey</button>
+                </div>
+            </>}
+        </section>}
+    </fieldset>;
 }
 function SurveyList({ api, select }: {
     api: Api;
@@ -453,8 +527,44 @@ function SurveyDetail({ id, api, owner, deleted, navigationBlocked }: {
 }
 function Questionnaire({ survey }: { survey: Survey }) {
     return <section aria-label="Frozen questionnaire"><h3>{survey.status === 'DRAFT' ? 'Saved questionnaire' : 'Frozen questionnaire'}</h3><p>Read-only · {survey.mode}</p>
-      {survey.questions.map((q, index) => <section key={q.id ?? index}><h4>{index + 1}. {q.prompt}</h4><p>{q.type === 'RATING' ? 'Rating 1–5' : 'Written feedback'} · {q.required ? 'Required' : 'Optional'}</p>{q.ratingScale && <><p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}</p><p>{q.ratingScale.interpretation}</p></>}</section>)}
+      {survey.questions.map((q, index) => <section key={q.id ?? index}><h4>{index + 1}. {q.prompt}</h4><p>{q.type === 'RATING' ? 'Rating 1–5' : q.type === 'SINGLE_CHOICE' ? 'Single choice' : 'Written feedback'} · {q.required ? 'Required' : 'Optional'}</p>{q.options && <ol>{q.options.map(option => <li key={option.id ?? option.label}>{option.label}</li>)}</ol>}{q.ratingScale && <><p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}</p><p>{q.ratingScale.interpretation}</p></>}</section>)}
     </section>;
+}
+function EligibilitySubset({ sectionId, api, selected, change }: {
+    sectionId: string;
+    api: Api;
+    selected: string[];
+    change: (ids: string[]) => void;
+}) {
+    const [offset, setOffset] = useState(0);
+    const [data, setData] = useState<MemberPage | null>(null);
+    const [error, setError] = useState('');
+    useEffect(() => {
+        let current = true;
+        api<MemberPage>(`/api/sections/${sectionId}/members?offset=${offset}`)
+            .then(value => { if (current) setData(value); })
+            .catch(e => { if (current) setError(reason(e)); });
+        return () => { current = false; };
+    }, [sectionId, offset, api]);
+    function navigate(next: number) {
+        setData(null); setError(''); setOffset(next);
+    }
+    return <div>
+        <ErrorBox message={error}/>
+        <p>{selected.length} selected</p>
+        {data?.items.map(member => <label key={member.id} className="check">
+            <input type="checkbox" checked={selected.includes(member.id)}
+                onChange={e => change(e.target.checked ? [...selected, member.id] : selected.filter(id => id !== member.id))}/>
+            {member.displayName}</label>)}
+        {!data && !error && <p role="status">Loading Section members…</p>}
+        {data && !data.items.length && <p>No Section members available.</p>}
+        {data && (offset > 0 || data.pagination.total > data.pagination.limit) && <div className="actions">
+            <button type="button" disabled={offset === 0} onClick={() => navigate(offset - data.pagination.limit)}>Previous members</button>
+            <button type="button" disabled={offset + data.pagination.limit >= data.pagination.total}
+                onClick={() => navigate(offset + data.pagination.limit)}>Next members</button>
+        </div>}
+        {selected.length > 0 && <button type="button" onClick={() => change([])}>Clear selected members</button>}
+    </div>;
 }
 function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     survey: Survey;
@@ -471,6 +581,7 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     }
     const [baseline, setBaseline] = useState(survey);
     const [mode, setMode] = useState(survey.mode);
+    const [selectedMembers, setSelectedMembers] = useState(survey.draftStudentIds ?? null);
     const [needsCheck, setNeedsCheck] = useState(false), [persisted, setPersisted] = useState<Survey | null>(null), [checking, setChecking] = useState(false);
     const [title, setTitle] = useState(survey.title), [questions, setQuestions] = useState<EditorQuestion[]>(() => editable(survey.questions)), [dirty, setDirty] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('');
     const [validation, setValidation] = useState<'draft' | 'publish' | null>(null), [errorAttempt, setErrorAttempt] = useState(0);
@@ -481,9 +592,13 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     useLayoutEffect(() => { if (pendingFocus.current) { document.getElementById(pendingFocus.current)?.focus(); pendingFocus.current = null; } }, [questions]);
     useEffect(() => { blocked(saving || needsCheck || checking || dirty); return () => blocked(false); }, [saving, needsCheck, checking, dirty, blocked]);
     useEffect(() => {
-        if (!dirty && !needsCheck && !saving) { setBaseline(survey); setMode(survey.mode); setTitle(survey.title); setQuestions(old => editable(survey.questions, old)); }
+        if (!dirty && !needsCheck && !saving) { setBaseline(survey); setMode(survey.mode); setSelectedMembers(survey.draftStudentIds ?? null); setTitle(survey.title); setQuestions(old => editable(survey.questions, old)); }
     }, [survey, dirty, needsCheck, saving]);
     function change(index: number, patch: Partial<Question>) { setDirty(true); setQuestions(q => q.map((v, i) => i === index ? { ...v, ...patch } : v)); }
+    function changeQuestionType(index: number, type: Question['type']) {
+        const options = type === 'SINGLE_CHOICE' ? [{ id: null, label: '' }, { id: null, label: '' }] : undefined;
+        change(index, { type, options, ratingScale: type === 'RATING' ? defaultScale() : null });
+    }
     function moveUp(index: number) {
         if (!index) return;
         pendingFocus.current = questionId(index, 'prompt');
@@ -508,9 +623,14 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
         if (!persisted) return;
         if (reapply) {
             const ids = new Set(persisted.questions.map(q => q.id));
-            setQuestions(old => old.map(q => ({ ...q, id: q.id && ids.has(q.id) ? q.id : null })));
+            setQuestions(old => old.map(q => {
+                const current = persisted.questions.find(question => question.id === q.id);
+                const optionIds = new Set(current?.options?.map(option => option.id));
+                return { ...q, id: q.id && ids.has(q.id) ? q.id : null,
+                    options: q.options?.map(option => ({ ...option, id: optionIds.has(option.id) ? option.id : null })) };
+            }));
             setDirty(true);
-        } else { setMode(persisted.mode); setTitle(persisted.title); setQuestions(old => editable(persisted.questions, old)); setDirty(false); }
+        } else { setMode(persisted.mode); setSelectedMembers(persisted.draftStudentIds ?? null); setTitle(persisted.title); setQuestions(old => editable(persisted.questions, old)); setDirty(false); }
         setBaseline(persisted); saved(persisted); setNeedsCheck(false); setPersisted(null); setError(''); setValidation(null);
     }
     async function save(e: FormEvent) { e.preventDefault(); if (saving || busy || needsCheck) return;
@@ -520,8 +640,10 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
             return;
         }
         setSaving(true); setError(''); setValidation(null); try {
-        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title, ...(mode !== baseline.mode ? { mode } : {}), questions: questions.map(({ id, prompt, type, required, ratingScale }) => ({ id, prompt, type, required, ratingScale })) });
-        setBaseline(value); setMode(value.mode); setTitle(value.title); setQuestions(old => editable(value.questions, old));
+        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title,
+            ...(selectedMembers !== (baseline.draftStudentIds ?? null) ? { draftStudentIds: selectedMembers } : {}),
+            ...(mode !== baseline.mode ? { mode } : {}), questions: questions.map(({ id, prompt, type, required, ratingScale, options }) => ({ id, prompt, type, required, ratingScale, ...(type === 'SINGLE_CHOICE' ? { options } : {}) })) });
+        setBaseline(value); setMode(value.mode); setSelectedMembers(value.draftStudentIds ?? null); setTitle(value.title); setQuestions(old => editable(value.questions, old));
         saved(value);
         setDirty(false);
     }
@@ -538,8 +660,37 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
       <option value="IDENTIFIED">Identified</option><option value="ANONYMOUS">Anonymous</option>
     </select></label>
     {mode === 'ANONYMOUS' && <p>Anonymous surveys do not collect written feedback. Remove any written questions before saving.</p>}
-    {questions.map((q, index) => <fieldset key={q.editorKey}><legend>Question {index + 1}</legend><label>Prompt<input id={questionId(index, 'prompt')} {...fieldAttributes(questionId(index, 'prompt'), fields)} value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><FieldError id={questionId(index, 'prompt')} fields={fields}/><label>Question type<select id={questionId(index, 'type')} {...fieldAttributes(questionId(index, 'type'), fields)} value={q.type} onChange={e => change(index, { type: e.target.value as Question['type'], ratingScale: e.target.value === 'RATING' ? defaultScale() : null })}><option value="RATING">Rating 1–5</option><option value="TEXT" disabled={mode === 'ANONYMOUS'}>Written feedback</option></select></label><FieldError id={questionId(index, 'type')} fields={fields}/>
+    <fieldset><legend>Eligible students</legend>
+        <label>Eligibility<select aria-label="Eligibility" value={selectedMembers === null ? 'all' : 'subset'}
+            onChange={e => { setSelectedMembers(e.target.value === 'all' ? null : []); setDirty(true); }}>
+            <option value="all">All Section members</option><option value="subset">Selected Section members</option>
+        </select></label>
+        {selectedMembers !== null && <EligibilitySubset sectionId={survey.context.section.id} api={api} selected={selectedMembers}
+            change={ids => { setSelectedMembers(ids); setDirty(true); }}/>}
+    </fieldset>
+    {questions.map((q, index) => <fieldset key={q.editorKey}><legend>Question {index + 1}</legend><label>Prompt<input id={questionId(index, 'prompt')} {...fieldAttributes(questionId(index, 'prompt'), fields)} value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><FieldError id={questionId(index, 'prompt')} fields={fields}/><label>Question type<select id={questionId(index, 'type')} {...fieldAttributes(questionId(index, 'type'), fields)} value={q.type} onChange={e => changeQuestionType(index, e.target.value as Question['type'])}><option value="RATING">Rating 1–5</option><option value="SINGLE_CHOICE">Single choice</option><option value="TEXT" disabled={mode === 'ANONYMOUS'}>Written feedback</option></select></label><FieldError id={questionId(index, 'type')} fields={fields}/>
       <label className="check"><input type="checkbox" checked={q.required} onChange={e => change(index, { required: e.target.checked })}/>Required</label>
+      {q.type === 'SINGLE_CHOICE' && q.options && <div>
+        {q.options.map((option, position) => {
+          const target = questionId(index, `option-${position}`);
+          return <div key={option.id ?? position}>
+            <label>Option {position + 1}<input id={target} value={option.label} {...fieldAttributes(target, fields)}
+              onChange={e => change(index, { options: q.options!.map((value, i) => i === position ? { ...value, label: e.target.value } : value) })}/></label>
+            <FieldError id={target} fields={fields}/>
+            <div className="actions">
+              <button type="button" disabled={position === 0} onClick={() => {
+                const reordered = q.options!.slice();
+                [reordered[position - 1], reordered[position]] = [reordered[position]!, reordered[position - 1]!];
+                change(index, { options: reordered });
+              }}>Move option {position + 1} up</button>
+              <button type="button" disabled={q.options!.length === 2}
+                onClick={() => change(index, { options: q.options!.filter((_, i) => i !== position) })}>Remove option {position + 1}</button>
+            </div>
+          </div>;
+        })}
+        <button type="button" disabled={q.options.length >= 6}
+          onClick={() => change(index, { options: [...q.options!, { id: null, label: '' }] })}>Add option</button>
+      </div>}
       {q.ratingScale && <div className="scale-editor">{(['minLabel', 'maxLabel', 'interpretation'] as const).map(key => <div key={key}><label>{key === 'minLabel' ? 'Score 1 label' : key === 'maxLabel' ? 'Score 5 label' : 'Scale interpretation'}<input id={questionId(index, key)} {...fieldAttributes(questionId(index, key), fields)} value={q.ratingScale![key]} onChange={e => change(index, { ratingScale: { ...q.ratingScale!, [key]: e.target.value } })}/></label><FieldError id={questionId(index, key)} fields={fields}/></div>)}</div>}
       <div className="actions"><button type="button" disabled={index === 0} onClick={() => moveUp(index)}>Move question {index + 1} up</button><button type="button" onClick={() => remove(index)}>Remove question {index + 1}</button></div>
     </fieldset>)}
@@ -623,10 +774,16 @@ function ResponseForm({ survey, api, navigationBlocked, refreshSurvey }: {
     if (!submission)
         return <><ErrorBox message={error}/><p>Checking your submission…</p><button disabled={checking} onClick={() => void checkSaved()}>Check saved status</button></>;
     if (submission.submitted)
-        return <section><h3 ref={confirmation} tabIndex={-1}>Submission received</h3><p>{survey.mode === 'ANONYMOUS' ? 'Your participation is saved. Anonymous answers cannot be reopened.' : 'Your saved answers are read-only.'}</p>{survey.mode === 'IDENTIFIED' && submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{a.value}</p></div>)}</section>;
+        return <section><h3 ref={confirmation} tabIndex={-1}>Submission received</h3><p>{survey.mode === 'ANONYMOUS' ? 'Your participation is saved. Anonymous answers cannot be reopened.' : 'Your saved answers are read-only.'}</p>{survey.mode === 'IDENTIFIED' && submission.answers?.map(a => <div className="answer" key={a.questionId}><strong>{survey.questions.find(q => q.id === a.questionId)?.prompt}</strong><p className="prewrap">{survey.questions.find(q => q.id === a.questionId)?.options?.find(option => option.id === a.value)?.label ?? a.value}</p></div>)}</section>;
     if (survey.status === 'CLOSED')
         return <><ErrorBox message={error}/><p>{unknownOutcome ? 'This survey is closed. Check saved status to confirm whether your submission was recorded.' : 'This survey is closed. No submission was recorded for your account.'}</p>{unknownOutcome && <button disabled={busy || checking} onClick={() => void checkSaved()}>Check saved status</button>}</>;
-    return <form onSubmit={e => void submit(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map((q, index) => <fieldset key={q.id!} {...fieldAttributes(target(index), fields)}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input id={`${formId}-${q.id}-rating-${score}`} {...fieldAttributes(target(index), fields)} type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : <><label>Written answer for {q.prompt}<textarea id={target(index)} {...fieldAttributes(target(index), fields)} value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/{writtenAnswerLimit} characters</small></>}<FieldError id={target(index)} fields={fields}/></fieldset>)}</fieldset>
+    return <form onSubmit={e => void submit(e)}><ErrorBox message={validation && !fields.length ? '' : error} fields={fields} focusKey={errorAttempt}/>{unknownOutcome && <p role="status">Submission outcome unknown. Check saved status before trying again.</p>}<fieldset disabled={busy || checking || unknownOutcome}><legend className="sr-only">Feedback answers</legend>{survey.questions.map((q, index) => <fieldset key={q.id!} {...fieldAttributes(target(index), fields)}><legend>{q.prompt}{q.required ? ' (required)' : ' (optional)'}</legend>{q.type === 'RATING' ? <><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><div className="ratings">{[1, 2, 3, 4, 5].map(score => <label key={score}><input id={`${formId}-${q.id}-rating-${score}`} {...fieldAttributes(target(index), fields)} type="radio" name={q.id!} value={score} checked={values[q.id!] === score} onChange={() => setValues(v => ({ ...v, [q.id!]: score }))}/>{score}</label>)}</div>{!q.required && <button type="button" onClick={() => setValues(v => { const next = { ...v }; delete next[q.id!]; return next; })}>Clear answer for {q.prompt}</button>}</> : q.type === 'SINGLE_CHOICE' ? <><div className="ratings">{q.options?.map(option => <label key={option.id}>
+        <input type="radio" name={q.id!} {...fieldAttributes(target(index), fields)} value={option.id!}
+          checked={values[q.id!] === option.id} onChange={() => setValues(v => ({ ...v, [q.id!]: option.id! }))}/>{option.label}</label>)}</div>
+        {!q.required && <button type="button" onClick={() => setValues(v => {
+          const next = { ...v }; delete next[q.id!]; return next;
+        })}>Clear answer for {q.prompt}</button>}
+      </> : <><label>Written answer for {q.prompt}<textarea id={target(index)} {...fieldAttributes(target(index), fields)} value={values[q.id!] ?? ''} onChange={e => setValues(v => ({ ...v, [q.id!]: e.target.value }))}/></label><small>{[...String(values[q.id!] ?? '')].length}/{writtenAnswerLimit} characters</small></>}<FieldError id={target(index)} fields={fields}/></fieldset>)}</fieldset>
       {survey.questions.some(question => question.type === 'TEXT') && <>
         <p id={totalTarget} tabIndex={-1} {...fieldAttributes(totalTarget, fields)}>
           Written answers total: {writtenAnswerTotal(survey.questions, values)}/{writtenSubmissionLimit} characters
@@ -646,6 +803,10 @@ function ResultsView({ id, api, anonymous }: {
     useEffect(() => { let active = true; setData(null); api<Results>(`/api/surveys/${id}/results`).then(v => { if (active)
         setData(v); }).catch(e => { if (active)
         setError(reason(e)); }); return () => { active = false; }; }, [id, api, refresh]);
-    return <section><h3>Feedback summary</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh results</button>{!data && !error && <p>Loading results…</p>}{data && <><p>Responses: <strong>{data.responseCount}</strong></p>{!data.questions && <p>{anonymous ? 'Eligible aggregate results become available after closing.' : 'Scores and written feedback become available after closing.'}</p>}{data.questions?.map(q => <section className="result" key={q.questionId}><h4>{q.prompt}</h4>{q.suppressed ? <p>Not enough anonymous data.</p> : q.type === 'RATING' ? <><p>Mean: <strong>{q.mean ?? 'No answers'}</strong> · Answered: {q.answeredCount}</p><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><table><caption>Score distribution for {q.prompt}</caption><thead><tr><th scope="col">Score</th><th scope="col">Responses</th><th scope="col">Distribution</th></tr></thead><tbody>{q.distribution?.map(b => <tr key={b.score}><th scope="row">{b.score}</th><td>{b.count}</td><td><div className="bar" style={{ width: `${Math.max(0, b.count / Math.max(1, q.answeredCount ?? 0) * 100)}%` }} aria-hidden="true"/></td></tr>)}</tbody></table></> : q.comments?.length ? <ul>{q.comments.map((text, index) => <li className="prewrap" key={index}>{text}</li>)}</ul> : <p>No written feedback.</p>}</section>)}</>}</section>;
+    return <section><h3>Feedback summary</h3><ErrorBox message={error}/><button className="secondary" onClick={() => { setError(''); setRefresh(r => r + 1); }}>Refresh results</button>{!data && !error && <p>Loading results…</p>}{data && <><p>Responses: <strong>{data.responseCount}</strong></p>{!data.questions && <p>{anonymous ? 'Eligible aggregate results become available after closing.' : 'Scores and written feedback become available after closing.'}</p>}{data.questions?.map(q => <section className="result" key={q.questionId}><h4>{q.prompt}</h4>{q.suppressed ? <p>Not enough anonymous data.</p> : q.type === 'RATING' ? <><p>Mean: <strong>{q.mean ?? 'No answers'}</strong> · Answered: {q.answeredCount}</p><p>1: {q.ratingScale?.minLabel} · 5: {q.ratingScale?.maxLabel}</p><p>{q.ratingScale?.interpretation}</p><table><caption>Score distribution for {q.prompt}</caption><thead><tr><th scope="col">Score</th><th scope="col">Responses</th><th scope="col">Distribution</th></tr></thead><tbody>{q.distribution?.map(b => <tr key={b.score}><th scope="row">{b.score}</th><td>{b.count}</td><td><div className="bar" style={{ width: `${Math.max(0, b.count / Math.max(1, q.answeredCount ?? 0) * 100)}%` }} aria-hidden="true"/></td></tr>)}</tbody></table></> : q.type === 'SINGLE_CHOICE' ? <>
+      <p>Answered: {q.answeredCount}</p>
+      <table><caption>Option distribution for {q.prompt}</caption><thead><tr><th scope="col">Option</th><th scope="col">Responses</th></tr></thead>
+        <tbody>{q.distribution?.map(bin => <tr key={bin.optionId}><th scope="row">{bin.label}</th><td>{bin.count}</td></tr>)}</tbody></table>
+    </> : q.comments?.length ? <ul>{q.comments.map((text, index) => <li className="prewrap" key={index}>{text}</li>)}</ul> : <p>No written feedback.</p>}</section>)}</>}</section>;
 }
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
