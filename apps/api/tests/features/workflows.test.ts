@@ -1000,3 +1000,62 @@ it('TEST-F07-I03: publish a single-choice-only survey, persist a selected option
         { optionId: persisted.options[1].id, label: 'Testing', count: 1 },
     ]);
 });
+
+it('TEST-F07-I01/I02/I04/I05/I06: preview, copy and publish independent Draft definitions', async () => {
+    const owner = await login();
+    const student = await login('respondent.11@example.test');
+    const otherStudent = await login('respondent.12@example.test');
+    const foreignOwner = await login('owner.2@example.test');
+    const starterPath = '/api/survey-starters/lecture-feedback/1';
+    await student.agent.get(starterPath).expect(403);
+    const starter = (await owner.agent.get(starterPath).expect(200)).body.data;
+    expect(starter.questions.map((q: { type: string; required: boolean }) => [q.type, q.required])).toEqual([
+        ['RATING', true], ['RATING', true], ['RATING', false], ['TEXT', false],
+    ]);
+    const lectures = (await pool.query(`INSERT INTO "Lecture" ("sectionId",title,"lectureDate",sequence)
+        SELECT $1,'Draft tools fixture','2026-11-22',n FROM generate_series(7101,7103) AS n RETURNING id`,
+    [fixtureId(201)])).rows;
+    const create = (actor: typeof owner, data: object) => mutation(actor, 'post', '/api/surveys', data);
+    const starterInput = { lectureId: lectures[0].id, source: { starterKey: 'lecture-feedback', version: 1 } };
+    await create(owner, { ...starterInput, mode: 'ANONYMOUS' }).expect(422);
+    await create(foreignOwner, starterInput).expect(404);
+    const original = (await create(owner, starterInput).expect(201)).body.data;
+    expect(original.questions[0].metricVersion).toBe('content-clarity@1');
+    const source = { surveyId: original.id, expectedRevision: original.definitionRevision };
+    const copyInput = { lectureId: lectures[1].id, source };
+    await create(owner, { ...copyInput, source: { ...source, expectedRevision: 99 } }).expect(409);
+    const attempts = await Promise.all([create(owner, copyInput), create(owner, copyInput)]);
+    expect(attempts.map(r => r.status).sort()).toEqual([201, 409]);
+    const draft = attempts.find(r => r.status === 201)!.body.data;
+    const path = '/api/surveys/' + draft.id;
+    expect(draft.questions.map((q: { id: string }) => q.id)).not.toEqual(original.questions.map((q: { id: string }) => q.id));
+    expect(draft.draftStudentIds).toBeNull();
+    const selection = [fixtureId(11)];
+    const questions = draft.questions.slice(0, 3).map(({ position, metricVersion, templateSource, ...q }: Record<string, unknown>) => q);
+    const update = { expectedRevision: 1, title: 'Subset survey', mode: 'ANONYMOUS', questions };
+    await mutation(owner, 'patch', path, { ...update, draftStudentIds: [...selection, ...selection] }).expect(422);
+    await mutation(owner, 'patch', path, { ...update, draftStudentIds: [fixtureId(9999)] }).expect(422);
+    const interpretation = questions[0].ratingScale.interpretation;
+    const edited = (await mutation(owner, 'patch', path, { ...update, draftStudentIds: selection,
+        questions: [{ ...questions[0], ratingScale: { ...questions[0].ratingScale, interpretation: 'Changed interpretation' } },
+            ...questions.slice(1)] }).expect(200)).body.data;
+    expect(edited.questions[0].metricVersion).toBeNull();
+    expect(edited.questions[0].templateSource).toEqual(original.questions[0].templateSource);
+    expect(edited.questions[1].metricVersion).toBe(original.questions[1].metricVersion);
+    const restored = (await mutation(owner, 'patch', path, { ...update, expectedRevision: 2, questions: [
+        { ...questions[0], ratingScale: { ...questions[0].ratingScale, interpretation } }, ...questions.slice(1),
+    ] }).expect(200)).body.data;
+    expect(restored.questions[0].metricVersion).toBeNull();
+    await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), selection[0]]);
+    try { await mutation(owner, 'post', path + '/publish', { expectedRevision: 3 }).expect(422); }
+    finally { await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), selection[0]]); }
+    await mutation(owner, 'post', path + '/publish', { expectedRevision: 3 }).expect(200);
+    await pool.query('DELETE FROM "Membership" WHERE "sectionId"=$1 AND "studentId"=$2', [fixtureId(201), selection[0]]);
+    try {
+        const studentView = (await student.agent.get(path).expect(200)).body.data;
+        expect(studentView).not.toHaveProperty('draftStudentIds');
+        expect(studentView.questions[0]).not.toHaveProperty('templateSource');
+        await otherStudent.agent.get(path).expect(404);
+    } finally { await pool.query('INSERT INTO "Membership" ("sectionId","studentId") VALUES ($1,$2)', [fixtureId(201), selection[0]]); }
+    expect((await owner.agent.get('/api/surveys/' + original.id).expect(200)).body.data.questions).toEqual(original.questions);
+});
