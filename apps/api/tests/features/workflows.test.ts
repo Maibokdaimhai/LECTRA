@@ -1024,6 +1024,14 @@ it('TEST-F07-I01/I02/I04/I05/I06: preview, copy and publish independent Draft de
     const source = { surveyId: original.id, expectedRevision: original.definitionRevision };
     const copyInput = { lectureId: lectures[1].id, source };
     await create(owner, { ...copyInput, source: { ...source, expectedRevision: 99 } }).expect(409);
+    await mutation(student, 'post', '/api/surveys', copyInput).expect(403);
+    await mutation(foreignOwner, 'post', '/api/surveys', {
+        ...copyInput, lectureId: fixtureId(303),
+    }).expect(404);
+    const membersPath = '/api/sections/' + fixtureId(201) + '/members';
+    await student.agent.get(membersPath).expect(403);
+    await foreignOwner.agent.get(membersPath).expect(404);
+    expect((await owner.agent.get(membersPath).expect(200)).body.data.items[0]).toHaveProperty('displayName');
     const attempts = await Promise.all([create(owner, copyInput), create(owner, copyInput)]);
     expect(attempts.map(r => r.status).sort()).toEqual([201, 409]);
     const draft = attempts.find(r => r.status === 201)!.body.data;

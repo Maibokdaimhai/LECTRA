@@ -35,6 +35,7 @@ type Context = {
         code: string;
     };
     section: {
+        id: string;
         sectionCode: string;
     };
     lecture: {
@@ -49,6 +50,7 @@ type Survey = {
     status: 'DRAFT' | 'PUBLISHED' | 'CLOSED';
     mode: string;
     definitionRevision?: number;
+    draftStudentIds?: string[] | null;
     context: Context;
     questions: Question[];
     privacyDisclosure: string;
@@ -79,6 +81,18 @@ type Collection = {
         limit: number;
         offset: number;
     };
+};
+type DraftSource = { starterKey: string; version: number } | { surveyId: string; expectedRevision: number };
+type Starter = {
+    key: string;
+    version: number;
+    title: string;
+    privacyNote: string;
+    questions: (Question & { category: string })[];
+};
+type MemberPage = {
+    items: { id: string; displayName: string }[];
+    pagination: Collection['pagination'];
 };
 type Answer = {
     questionId: string;
@@ -319,18 +333,19 @@ function App() {
     <button className="secondary" disabled={busy} onClick={() => { void bootstrap(); }}>Check session / reconnect</button></section>}
   </main>;
 }
-function Selector({ path, label, api, onSelect, beforeChange = () => true }: {
+function Selector({ path, label, api, onSelect, beforeChange = () => true, optionLabel }: {
     path: string;
     label: string;
     api: Api;
     onSelect: (item: Item | null) => void;
     beforeChange?: () => boolean;
+    optionLabel?: (item: Item) => string;
 }) {
     const [data, setData] = useState<Collection | null>(null), [offset, setOffset] = useState(0), [value, setValue] = useState(''), [error, setError] = useState('');
     useEffect(() => { let current = true; setData(null); setError(''); api<Collection>(`${path}${path.includes('?') ? '&' : '?'}offset=${offset}`).then(d => { if (current)
         setData(d); }).catch(e => { if (current)
         setError(reason(e)); }); return () => { current = false; }; }, [path, offset, api]);
-    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { if (!beforeChange()) return; setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{i.code ?? i.sectionCode ?? i.title}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button disabled={offset === 0} onClick={() => { if (!beforeChange()) return; setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button disabled={offset + 20 >= data.pagination.total} onClick={() => { if (!beforeChange()) return; setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
+    return <section><ErrorBox message={error}/><label>{label}<select aria-label={label} value={value} disabled={!data} onChange={e => { if (!beforeChange()) return; setValue(e.target.value); onSelect(data?.items.find(i => i.id === e.target.value) ?? null); }}><option value="">Choose {label.toLowerCase()}</option>{data?.items.map(i => <option key={i.id} value={i.id}>{optionLabel ? optionLabel(i) : (i.code ?? i.sectionCode ?? i.title)}{i.sequence ? ` · Lecture ${i.sequence}` : ''}</option>)}</select></label>{!data && !error && <p>Loading {label.toLowerCase()}…</p>}{data && !data.items.length && <p>No {label.toLowerCase()} available.</p>}{data && data.pagination.total > 20 && <div className="actions"><button disabled={offset === 0} onClick={() => { if (!beforeChange()) return; setOffset(Math.max(0, offset - 20)); setValue(''); onSelect(null); }}>Previous {label.toLowerCase()}</button><button disabled={offset + 20 >= data.pagination.total} onClick={() => { if (!beforeChange()) return; setOffset(offset + 20); setValue(''); onSelect(null); }}>Next {label.toLowerCase()}</button></div>}</section>;
 }
 function Workspace({ user, api }: {
     user: User;
@@ -354,15 +369,15 @@ function Workspace({ user, api }: {
             }
         } catch (e) { setError(reason(e)); } finally { setBusy(false); }
     }
-    async function create() { if (!lecture || busy || createUncertain)
+    async function create(source?: DraftSource) { if (!lecture || busy || createUncertain)
         return; setBusy(true); setError(''); try {
-        const result = await api<Survey>('/api/surveys', 'POST', { lectureId: lecture.id });
+        const result = await api<Survey>('/api/surveys', 'POST', { lectureId: lecture.id, ...(source ? { source } : {}) });
         setSelected(result.id);
         setRevision(r => r + 1);
     }
     catch (e) {
         setError(reason(e));
-        setCreateUncertain(true);
+        setCreateUncertain(!(e instanceof ApiError) || e.status >= 500 || e.code === 'SURVEY_ALREADY_EXISTS');
     }
     finally {
         setBusy(false);
@@ -371,12 +386,68 @@ function Workspace({ user, api }: {
     {user.role === 'OWNER' && <section className="card selectors"><Selector beforeChange={beforeNavigate} label="Course" path="/api/courses" api={api} onSelect={i => { setCreateUncertain(false); setCourse(i); setSection(null); setLecture(null); setSelected(''); }}/>
       {course && <Selector beforeChange={beforeNavigate} key={course.id} label="Section" path={`/api/sections?courseId=${course.id}`} api={api} onSelect={i => { setCreateUncertain(false); setSection(i); setLecture(null); setSelected(''); }}/>}
       {section && <Selector beforeChange={beforeNavigate} key={`${section.id}:${revision}`} label="Lecture" path={`/api/sections/${section.id}/lectures`} api={api} onSelect={i => { setCreateUncertain(false); setLecture(i); setSelected(i?.existingSurvey?.id ?? ''); }}/>}
-      {lecture && !selected && <button onClick={() => void create()} disabled={busy || createUncertain}>{busy ? 'Creating…' : 'Create draft'}</button>}
+      {lecture && !selected && <DraftCreation key={lecture.id} api={api} busy={busy || createUncertain}
+        create={source => void create(source)}/>}
       {createUncertain && <><p>Creation outcome needs checking before another create attempt.</p><button disabled={busy} onClick={() => void checkCreated()}>Check persisted lecture</button></>}
     </section>}
     {!selected && <SurveyList key={revision} api={api} select={setSelected}/>}
     {selected && <><button className="secondary" onClick={() => { if (!beforeNavigate()) return; setSelected(''); setLecture(null); setRevision(r => r + 1); }}>Back to survey list</button><SurveyDetail key={selected} id={selected} api={api} owner={user.role === 'OWNER'} navigationBlocked={setNavigationBlocked} deleted={() => { setSelected(''); setLecture(null); setRevision(r => r + 1); }}/></>}
   </>;
+}
+function DraftCreation({ api, busy, create }: { api: Api; busy: boolean; create: (source?: DraftSource) => void }) {
+    const [panel, setPanel] = useState<'starter' | 'copy' | null>(null);
+    const [starter, setStarter] = useState<Starter | null>(null);
+    const [survey, setSurvey] = useState<Survey | null>(null);
+    const [sourceId, setSourceId] = useState('');
+    const [sourceRefresh, setSourceRefresh] = useState(0);
+    const [error, setError] = useState('');
+    useEffect(() => {
+        const path = panel === 'starter' ? '/api/survey-starters/lecture-feedback/1'
+            : panel === 'copy' && sourceId ? '/api/surveys/' + sourceId : null;
+        if (!path) return;
+        let current = true;
+        if (panel === 'starter') {
+            api<Starter>(path).then(value => { if (current) setStarter(value); })
+                .catch(e => { if (current) setError(reason(e)); });
+        } else {
+            api<Survey>(path).then(value => { if (current) setSurvey(value); })
+                .catch(e => { if (current) setError(reason(e)); });
+        }
+        return () => { current = false; };
+    }, [panel, sourceId, sourceRefresh, api]);
+    function open(next: 'starter' | 'copy') {
+        setError(''); setStarter(null); setSurvey(null); setSourceId('');
+        setPanel(current => current === next ? null : next);
+    }
+    return <fieldset disabled={busy}><legend>Draft creation</legend>
+        <div className="actions">
+            <button onClick={() => create()}>Create draft</button>
+            <button onClick={() => open('starter')} aria-expanded={panel === 'starter'}>Preview Starter Questionnaire</button>
+            <button onClick={() => open('copy')} aria-expanded={panel === 'copy'}>Copy a survey</button>
+        </div>
+        <ErrorBox message={error}/>
+        {panel === 'starter' && (starter ? <section aria-label="Starter preview">
+            <h3>{starter.title}</h3><p>{starter.key} · Version {starter.version}</p><p>{starter.privacyNote}</p>
+            <ol>{starter.questions.map(q => <li key={q.category}>
+                <strong>{q.category} · {q.required ? 'Required' : 'Optional'}</strong><p>{q.prompt}</p>
+                {q.ratingScale && <p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}. {q.ratingScale.interpretation}</p>}
+            </li>)}</ol>
+            <button onClick={() => create({ starterKey: starter.key, version: starter.version })}>Use Starter Questionnaire</button>
+        </section> : !error && <p role="status">Loading starter…</p>)}
+        {panel === 'copy' && <section>
+            <Selector label="Source survey" path="/api/surveys" api={api}
+                optionLabel={item => `${item.title || 'Untitled draft'} · ${item.lecture?.title} · ${item.status}`}
+                onSelect={item => { setError(''); setSurvey(null); setSourceId(item?.id ?? ''); }}/>
+            {sourceId && !survey && !error && <p role="status">Reading source revision…</p>}
+            {survey && <><p>{survey.title || 'Untitled draft'} · Revision {survey.definitionRevision}</p>
+                <Questionnaire survey={survey}/>
+                <div className="actions">
+                    <button onClick={() => create({ surveyId: survey.id, expectedRevision: survey.definitionRevision! })}>Copy as identified draft</button>
+                    <button onClick={() => { setSurvey(null); setError(''); setSourceRefresh(value => value + 1); }}>Refresh source survey</button>
+                </div>
+            </>}
+        </section>}
+    </fieldset>;
 }
 function SurveyList({ api, select }: {
     api: Api;
@@ -459,6 +530,42 @@ function Questionnaire({ survey }: { survey: Survey }) {
       {survey.questions.map((q, index) => <section key={q.id ?? index}><h4>{index + 1}. {q.prompt}</h4><p>{q.type === 'RATING' ? 'Rating 1–5' : q.type === 'SINGLE_CHOICE' ? 'Single choice' : 'Written feedback'} · {q.required ? 'Required' : 'Optional'}</p>{q.options && <ol>{q.options.map(option => <li key={option.id ?? option.label}>{option.label}</li>)}</ol>}{q.ratingScale && <><p>1: {q.ratingScale.minLabel} · 5: {q.ratingScale.maxLabel}</p><p>{q.ratingScale.interpretation}</p></>}</section>)}
     </section>;
 }
+function EligibilitySubset({ sectionId, api, selected, change }: {
+    sectionId: string;
+    api: Api;
+    selected: string[];
+    change: (ids: string[]) => void;
+}) {
+    const [offset, setOffset] = useState(0);
+    const [data, setData] = useState<MemberPage | null>(null);
+    const [error, setError] = useState('');
+    useEffect(() => {
+        let current = true;
+        api<MemberPage>(`/api/sections/${sectionId}/members?offset=${offset}`)
+            .then(value => { if (current) setData(value); })
+            .catch(e => { if (current) setError(reason(e)); });
+        return () => { current = false; };
+    }, [sectionId, offset, api]);
+    function navigate(next: number) {
+        setData(null); setError(''); setOffset(next);
+    }
+    return <div>
+        <ErrorBox message={error}/>
+        <p>{selected.length} selected</p>
+        {data?.items.map(member => <label key={member.id} className="check">
+            <input type="checkbox" checked={selected.includes(member.id)}
+                onChange={e => change(e.target.checked ? [...selected, member.id] : selected.filter(id => id !== member.id))}/>
+            {member.displayName}</label>)}
+        {!data && !error && <p role="status">Loading Section members…</p>}
+        {data && !data.items.length && <p>No Section members available.</p>}
+        {data && (offset > 0 || data.pagination.total > data.pagination.limit) && <div className="actions">
+            <button type="button" disabled={offset === 0} onClick={() => navigate(offset - data.pagination.limit)}>Previous members</button>
+            <button type="button" disabled={offset + data.pagination.limit >= data.pagination.total}
+                onClick={() => navigate(offset + data.pagination.limit)}>Next members</button>
+        </div>}
+        {selected.length > 0 && <button type="button" onClick={() => change([])}>Clear selected members</button>}
+    </div>;
+}
 function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     survey: Survey;
     api: Api;
@@ -474,6 +581,7 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     }
     const [baseline, setBaseline] = useState(survey);
     const [mode, setMode] = useState(survey.mode);
+    const [selectedMembers, setSelectedMembers] = useState(survey.draftStudentIds ?? null);
     const [needsCheck, setNeedsCheck] = useState(false), [persisted, setPersisted] = useState<Survey | null>(null), [checking, setChecking] = useState(false);
     const [title, setTitle] = useState(survey.title), [questions, setQuestions] = useState<EditorQuestion[]>(() => editable(survey.questions)), [dirty, setDirty] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('');
     const [validation, setValidation] = useState<'draft' | 'publish' | null>(null), [errorAttempt, setErrorAttempt] = useState(0);
@@ -484,7 +592,7 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
     useLayoutEffect(() => { if (pendingFocus.current) { document.getElementById(pendingFocus.current)?.focus(); pendingFocus.current = null; } }, [questions]);
     useEffect(() => { blocked(saving || needsCheck || checking || dirty); return () => blocked(false); }, [saving, needsCheck, checking, dirty, blocked]);
     useEffect(() => {
-        if (!dirty && !needsCheck && !saving) { setBaseline(survey); setMode(survey.mode); setTitle(survey.title); setQuestions(old => editable(survey.questions, old)); }
+        if (!dirty && !needsCheck && !saving) { setBaseline(survey); setMode(survey.mode); setSelectedMembers(survey.draftStudentIds ?? null); setTitle(survey.title); setQuestions(old => editable(survey.questions, old)); }
     }, [survey, dirty, needsCheck, saving]);
     function change(index: number, patch: Partial<Question>) { setDirty(true); setQuestions(q => q.map((v, i) => i === index ? { ...v, ...patch } : v)); }
     function changeQuestionType(index: number, type: Question['type']) {
@@ -522,7 +630,7 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
                     options: q.options?.map(option => ({ ...option, id: optionIds.has(option.id) ? option.id : null })) };
             }));
             setDirty(true);
-        } else { setMode(persisted.mode); setTitle(persisted.title); setQuestions(old => editable(persisted.questions, old)); setDirty(false); }
+        } else { setMode(persisted.mode); setSelectedMembers(persisted.draftStudentIds ?? null); setTitle(persisted.title); setQuestions(old => editable(persisted.questions, old)); setDirty(false); }
         setBaseline(persisted); saved(persisted); setNeedsCheck(false); setPersisted(null); setError(''); setValidation(null);
     }
     async function save(e: FormEvent) { e.preventDefault(); if (saving || busy || needsCheck) return;
@@ -532,8 +640,10 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
             return;
         }
         setSaving(true); setError(''); setValidation(null); try {
-        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title, ...(mode !== baseline.mode ? { mode } : {}), questions: questions.map(({ id, prompt, type, required, ratingScale, options }) => ({ id, prompt, type, required, ratingScale, ...(type === 'SINGLE_CHOICE' ? { options } : {}) })) });
-        setBaseline(value); setMode(value.mode); setTitle(value.title); setQuestions(old => editable(value.questions, old));
+        const value = await api<Survey>(`/api/surveys/${survey.id}`, 'PATCH', { expectedRevision: baseline.definitionRevision, title,
+            ...(selectedMembers !== (baseline.draftStudentIds ?? null) ? { draftStudentIds: selectedMembers } : {}),
+            ...(mode !== baseline.mode ? { mode } : {}), questions: questions.map(({ id, prompt, type, required, ratingScale, options }) => ({ id, prompt, type, required, ratingScale, ...(type === 'SINGLE_CHOICE' ? { options } : {}) })) });
+        setBaseline(value); setMode(value.mode); setSelectedMembers(value.draftStudentIds ?? null); setTitle(value.title); setQuestions(old => editable(value.questions, old));
         saved(value);
         setDirty(false);
     }
@@ -550,6 +660,14 @@ function DraftEditor({ survey, api, saved, publish, busy, blocked }: {
       <option value="IDENTIFIED">Identified</option><option value="ANONYMOUS">Anonymous</option>
     </select></label>
     {mode === 'ANONYMOUS' && <p>Anonymous surveys do not collect written feedback. Remove any written questions before saving.</p>}
+    <fieldset><legend>Eligible students</legend>
+        <label>Eligibility<select aria-label="Eligibility" value={selectedMembers === null ? 'all' : 'subset'}
+            onChange={e => { setSelectedMembers(e.target.value === 'all' ? null : []); setDirty(true); }}>
+            <option value="all">All Section members</option><option value="subset">Selected Section members</option>
+        </select></label>
+        {selectedMembers !== null && <EligibilitySubset sectionId={survey.context.section.id} api={api} selected={selectedMembers}
+            change={ids => { setSelectedMembers(ids); setDirty(true); }}/>}
+    </fieldset>
     {questions.map((q, index) => <fieldset key={q.editorKey}><legend>Question {index + 1}</legend><label>Prompt<input id={questionId(index, 'prompt')} {...fieldAttributes(questionId(index, 'prompt'), fields)} value={q.prompt} onChange={e => change(index, { prompt: e.target.value })}/></label><FieldError id={questionId(index, 'prompt')} fields={fields}/><label>Question type<select id={questionId(index, 'type')} {...fieldAttributes(questionId(index, 'type'), fields)} value={q.type} onChange={e => changeQuestionType(index, e.target.value as Question['type'])}><option value="RATING">Rating 1–5</option><option value="SINGLE_CHOICE">Single choice</option><option value="TEXT" disabled={mode === 'ANONYMOUS'}>Written feedback</option></select></label><FieldError id={questionId(index, 'type')} fields={fields}/>
       <label className="check"><input type="checkbox" checked={q.required} onChange={e => change(index, { required: e.target.checked })}/>Required</label>
       {q.type === 'SINGLE_CHOICE' && q.options && <div>

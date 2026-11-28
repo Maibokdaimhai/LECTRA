@@ -1,14 +1,18 @@
 import type { Express, Request } from 'express';
 import type { Pool, PoolClient } from 'pg';
 import { randomUUID } from 'node:crypto';
+import { lectureFeedbackStarter, starterPreview } from './survey-starter.js';
 import { authenticated, role, csrf } from './auth.js';
 import { exact, fail, uuid, HttpError } from './http.js';
-import { canReleaseAnonymousQuestion, mean, parseAnswers, parseAnswerEnvelope, parseDefinition, validatePublication } from './feedback-rules.js';
+import { canReleaseAnonymousQuestion, mean, parseAnswers, parseAnswerEnvelope, parseDefinition, parseDraftCreation, validatePublication } from './feedback-rules.js';
 type Row = Record<string, any>;
 const disclosure = 'This survey is identified. Your answers remain linked to your account in storage. The survey owner sees summaries and unlabelled written feedback after closing, without your account identifier. Your written content may still identify you. Small groups can also make summaries identifiable.';
 const anonymousDisclosure = 'This survey is anonymous to the instructor. Your account records eligibility and whether you submitted. Your answers are stored separately, and you can reopen only your submission status. This survey does not collect written feedback. Results are subject to disclosure thresholds. External knowledge, patterns or privileged infrastructure access may still allow inference.';
 const scale = (q: Row) => q.type !== 'RATING' ? null : ({ min: q.ratingMin, max: q.ratingMax, minLabel: q.ratingMinLabel, maxLabel: q.ratingMaxLabel, interpretation: q.scaleInterpretation });
 const questionView = (q: Row) => ({ id: q.id, position: q.position, prompt: q.prompt, type: q.type, required: q.required, ratingScale: scale(q), ...(q.type === 'SINGLE_CHOICE' ? { options: q.options } : {}) });
+const ownerQuestionView = (q: Row) => ({
+    ...questionView(q), ...(q.templateSource ? { templateSource: q.templateSource, metricVersion: q.metricVersion } : {}),
+});
 const courseView = (r: Row) => ({ id: r.courseId, code: r.courseCode, title: r.courseTitle });
 const sectionView = (r: Row) => ({ id: r.sectionId, courseId: r.courseId, term: r.term, sectionCode: r.sectionCode });
 const lectureView = (r: Row) => ({ id: r.lectureId, title: r.lectureTitle, lectureDate: typeof r.lectureDate === 'string' ? r.lectureDate : r.lectureDate.toISOString().slice(0, 10), sequence: r.sequence });
@@ -72,9 +76,46 @@ async function questions(db: PoolClient, id: string) {
               FROM "QuestionOption" o WHERE o."questionId"=q.id)
         END AS options FROM "Question" q WHERE q."surveyId"=$1 ORDER BY q.position`, [id])).rows;
 }
+type DraftQuestion = {
+    id: string | null;
+    prompt: string;
+    type: string;
+    required: boolean;
+    ratingScale: ReturnType<typeof scale>;
+    options?: { id: string | null; label: string }[];
+    templateSource?: { key: string; version: number; position: number } | null;
+    metricVersion?: string | null;
+};
+
+async function writeQuestions(db: PoolClient, surveyId: string, questions: DraftQuestion[]) {
+    for (const [index, q] of questions.entries()) {
+        const id = q.id ?? randomUUID();
+        const s = q.ratingScale;
+        await db.query(`INSERT INTO "Question" (id,"surveyId",position,prompt,type,required,"ratingMin","ratingMax",
+            "ratingMinLabel","ratingMaxLabel","scaleInterpretation","templateSource","metricVersion")
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+            ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,prompt=EXCLUDED.prompt,type=EXCLUDED.type,
+                required=EXCLUDED.required,"ratingMin"=EXCLUDED."ratingMin","ratingMax"=EXCLUDED."ratingMax",
+                "ratingMinLabel"=EXCLUDED."ratingMinLabel","ratingMaxLabel"=EXCLUDED."ratingMaxLabel",
+                "scaleInterpretation"=EXCLUDED."scaleInterpretation","metricVersion"=EXCLUDED."metricVersion"`,
+            [id, surveyId, index + 1, q.prompt, q.type, q.required, s?.min ?? null, s?.max ?? null,
+                s?.minLabel ?? null, s?.maxLabel ?? null, s?.interpretation ?? null, q.templateSource ?? null, q.metricVersion ?? null]);
+        const options = q.options ?? [];
+        const retained = options.flatMap(option => option.id ? [option.id] : []);
+        await db.query('DELETE FROM "QuestionOption" WHERE "questionId"=$1 AND NOT (id=ANY($2::uuid[]))', [id, retained]);
+        if (retained.length)
+            await db.query('UPDATE "QuestionOption" SET position=position+6 WHERE "questionId"=$1', [id]);
+        for (const [position, option] of options.entries()) {
+            await db.query(`INSERT INTO "QuestionOption" (id,"surveyId","questionId",position,label) VALUES ($1,$2,$3,$4,$5)
+                ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,label=EXCLUDED.label`,
+            [option.id ?? randomUUID(), surveyId, id, position + 1, option.label]);
+        }
+    }
+}
+
 async function definitionView(db: PoolClient, row: Row, owner: boolean) {
-    const base = { id: row.id, lectureId: row.lectureId, title: row.title, status: row.status, mode: row.mode, context: context(row), questions: (await questions(db, row.id)).map(questionView), privacyDisclosure: row.mode === 'ANONYMOUS' ? anonymousDisclosure : disclosure };
-    return owner ? { ...base, definitionRevision: row.definitionRevision, publishedAt: row.publishedAt?.toISOString() ?? null, closedAt: row.closedAt?.toISOString() ?? null } : base;
+    const base = { id: row.id, lectureId: row.lectureId, title: row.title, status: row.status, mode: row.mode, context: context(row), questions: (await questions(db, row.id)).map(owner ? ownerQuestionView : questionView), privacyDisclosure: row.mode === 'ANONYMOUS' ? anonymousDisclosure : disclosure };
+    return owner ? { ...base, definitionRevision: row.definitionRevision, definitionSource: row.definitionSource, ...(row.status === 'DRAFT' ? { draftStudentIds: row.draftStudentIds } : {}), publishedAt: row.publishedAt?.toISOString() ?? null, closedAt: row.closedAt?.toISOString() ?? null } : base;
 }
 const revision = (value: unknown) => { exact(value, ['expectedRevision'], 'INVALID_REQUEST'); const n = (value as {
     expectedRevision: unknown;
@@ -93,7 +134,7 @@ export function setupFeedback(app: Express, pool: Pool) {
     app.use('/api', (req, res, next) => {
         const path = req.path;
         let methods: string[] | undefined;
-        if (/^\/courses$|^\/sections$|^\/sections\/[^/]+\/lectures$|^\/surveys\/[^/]+\/(results|my-submission)$/.test(path))
+        if (/^\/courses$|^\/sections$|^\/sections\/[^/]+\/(lectures|members)$|^\/survey-starters\/[^/]+\/[^/]+$|^\/surveys\/[^/]+\/(results|my-submission)$/.test(path))
             methods = ['GET'];
         else if (path === '/surveys')
             methods = ['GET', 'POST'];
@@ -158,16 +199,58 @@ export function setupFeedback(app: Express, pool: Pool) {
         }, true);
         res.json({ data });
     });
+    app.get('/api/survey-starters/:key/:version', authenticated, role('OWNER'), (req, res) => {
+        query(req, []);
+        if (req.params.key !== lectureFeedbackStarter.key || req.params.version !== String(lectureFeedbackStarter.version))
+            fail(404, 'NOT_FOUND');
+        res.json({ data: starterPreview });
+    });
+    app.get('/api/sections/:sectionId/members', authenticated, role('OWNER'), async (req, res) => {
+        const p = page(req);
+        const sectionId = uuid(req.params.sectionId);
+        const data = await transaction(pool, async db => {
+            if (!(await db.query('SELECT id FROM "Section" WHERE id=$1 AND "ownerId"=$2', [sectionId, req.actor!.userId])).rowCount)
+                fail(404, 'NOT_FOUND');
+            return paginated(db, `SELECT u.id,u."displayName" FROM "Membership" m JOIN "User" u ON u.id=m."studentId"
+                WHERE m."sectionId"=$1 AND u.role='RESPONDENT'`, [sectionId], p.limit, p.offset, '"displayName" COLLATE "C",id');
+        }, true);
+        res.json({ data });
+    });
     app.post('/api/surveys', authenticated, csrf, role('OWNER'), async (req, res) => {
         query(req, []);
-        exact(req.body, ['lectureId'], 'INVALID_REQUEST');
-        const lecture = uuid(req.body.lectureId, 'INVALID_REQUEST');
+        const input = parseDraftCreation(req.body);
+        const lecture = input.lectureId;
+        const mode = input.mode ?? 'IDENTIFIED';
         const data = await transaction(pool, async (db) => {
             const found = await db.query('SELECT l.id FROM "Lecture" l JOIN "Section" sec ON sec.id=l."sectionId" WHERE l.id=$1 AND sec."ownerId"=$2', [lecture, req.actor!.userId]);
             if (!found.rowCount)
                 fail(404, 'NOT_FOUND');
+            let title = '';
+            let copied: DraftQuestion[] = [];
+            const source = input.source;
+            if (source && 'starterKey' in source) {
+                if (source.starterKey !== lectureFeedbackStarter.key || source.version !== lectureFeedbackStarter.version)
+                    fail(404, 'NOT_FOUND');
+                title = lectureFeedbackStarter.title;
+                copied = lectureFeedbackStarter.questions;
+            } else if (source) {
+                const original = (await db.query(`${joined} WHERE s.id=$1 AND sec."ownerId"=$2
+                    AND s."ownerId"=$2 FOR SHARE OF s`, [source.surveyId, req.actor!.userId])).rows[0];
+                if (!original)
+                    fail(404, 'NOT_FOUND');
+                sameRevision(original, source.expectedRevision);
+                title = original.title;
+                copied = (await questions(db, original.id)).map(q => ({
+                    ...questionView(q), id: null, templateSource: q.templateSource, metricVersion: q.metricVersion,
+                    options: q.options?.map((option: { label: string }) => ({ id: null, label: option.label })),
+                }));
+            }
+            if (mode === 'ANONYMOUS' && copied.some(q => q.type === 'TEXT'))
+                fail(422, 'INVALID_DEFINITION', 'Remove written questions before switching to anonymous.');
             // Unique lectureId is the final arbiter for concurrent creates.
-            const row = (await db.query('INSERT INTO "Survey" ("lectureId","ownerId") VALUES ($1,$2) RETURNING id', [lecture, req.actor!.userId])).rows[0];
+            const row = (await db.query(`INSERT INTO "Survey" ("lectureId","ownerId",title,mode,"definitionSource")
+                VALUES ($1,$2,$3,$4,$5) RETURNING id`, [lecture, req.actor!.userId, title, mode, source ?? null])).rows[0];
+            await writeQuestions(db, row.id, copied);
             return definitionView(db, (await db.query(`${joined} WHERE s.id=$1`, [row.id])).rows[0], true);
         });
         res.location(`/api/surveys/${data.id}`).status(201).json({ data });
@@ -191,35 +274,38 @@ export function setupFeedback(app: Express, pool: Pool) {
                 if (q.options?.some(option => option.id && !previous?.options?.some((stored: { id: string }) => stored.id === option.id)))
                     fail(422, 'INVALID_DEFINITION');
             }
+            const selected = input.draftStudentIds === undefined ? row.draftStudentIds : input.draftStudentIds?.slice().sort() ?? null;
+            if (input.draftStudentIds?.length) {
+                const members = (await db.query(`SELECT count(*)::int AS n FROM "Membership" m
+                    JOIN "User" u ON u.id=m."studentId" WHERE m."sectionId"=$1 AND m."studentId"=ANY($2::uuid[])
+                    AND u.role='RESPONDENT'`, [row.sectionId, selected])).rows[0].n;
+                if (members !== input.draftStudentIds.length)
+                    fail(422, 'ELIGIBILITY_INVALID', 'Choose current Section members.');
+            }
             const existing = old.map(q => {
                 const { position, ...definition } = questionView(q);
                 return definition;
             });
-            if (row.title === input.title && row.mode === mode && JSON.stringify(existing) === JSON.stringify(input.questions))
+            if (row.title === input.title && row.mode === mode && JSON.stringify(row.draftStudentIds) === JSON.stringify(selected) && JSON.stringify(existing) === JSON.stringify(input.questions))
                 return definitionView(db, row, true);
             const retained = input.questions.flatMap(q => q.id ? [q.id] : []);
             await db.query('DELETE FROM "Question" WHERE "surveyId"=$1 AND NOT (id=ANY($2::uuid[]))', [row.id, retained]);
             await db.query('UPDATE "Question" SET position=position+10 WHERE "surveyId"=$1', [row.id]);
-            for (const [index, q] of input.questions.entries()) {
-                const id = q.id ?? randomUUID();
-                const s = q.ratingScale;
-                await db.query(`INSERT INTO "Question" (id,"surveyId",position,prompt,type,required,"ratingMin","ratingMax","ratingMinLabel","ratingMaxLabel","scaleInterpretation") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,prompt=EXCLUDED.prompt,type=EXCLUDED.type,required=EXCLUDED.required,"ratingMin"=EXCLUDED."ratingMin","ratingMax"=EXCLUDED."ratingMax","ratingMinLabel"=EXCLUDED."ratingMinLabel","ratingMaxLabel"=EXCLUDED."ratingMaxLabel","scaleInterpretation"=EXCLUDED."scaleInterpretation"`, [id, row.id, index + 1, q.prompt, q.type, q.required, s?.min ?? null, s?.max ?? null, s?.minLabel ?? null, s?.maxLabel ?? null, s?.interpretation ?? null]);
-                const options = q.options ?? [];
-                const retainedOptions = options.flatMap(option => option.id ? [option.id] : []);
-                await db.query('DELETE FROM "QuestionOption" WHERE "questionId"=$1 AND NOT (id=ANY($2::uuid[]))', [id, retainedOptions]);
-                if (options.length) {
-                    await db.query('UPDATE "QuestionOption" SET position=position+6 WHERE "questionId"=$1', [id]);
-                    for (const [position, option] of options.entries()) {
-                        await db.query(`INSERT INTO "QuestionOption" (id,"surveyId","questionId",position,label) VALUES ($1,$2,$3,$4,$5)
-                            ON CONFLICT (id) DO UPDATE SET position=EXCLUDED.position,label=EXCLUDED.label`,
-                        [option.id ?? randomUUID(), row.id, id, position + 1, option.label]);
-                    }
-                }
-            }
+            await writeQuestions(db, row.id, input.questions.map(q => {
+                const prior = old.find(item => item.id === q.id);
+                return {
+                    ...q,
+                    templateSource: prior?.templateSource,
+                    metricVersion: prior?.prompt === q.prompt && prior?.type === q.type
+                        && JSON.stringify(scale(prior)) === JSON.stringify(q.ratingScale) ? prior?.metricVersion : null,
+                };
+            }));
             row.title = input.title;
             row.mode = mode;
+            row.draftStudentIds = selected;
             row.definitionRevision++;
-            await db.query('UPDATE "Survey" SET title=$2,"definitionRevision"=$3,mode=$4 WHERE id=$1', [row.id, row.title, row.definitionRevision, mode]);
+            await db.query(`UPDATE "Survey" SET title=$2,"definitionRevision"=$3,mode=$4,"draftStudentIds"=$5 WHERE id=$1`,
+                [row.id, row.title, row.definitionRevision, mode, selected === null ? null : JSON.stringify(selected)]);
             return definitionView(db, row, true);
         });
         res.json({ data });
@@ -239,14 +325,17 @@ export function setupFeedback(app: Express, pool: Pool) {
             // Validate and insert from one materialized statement snapshot. Concurrent membership
             // edits cannot change the set between validation and the eligibility insertion.
             const snapshot = (await db.query(`WITH members AS MATERIALIZED (
-                SELECT m."studentId",u.role FROM "Membership" m JOIN "User" u ON u.id=m."studentId" WHERE m."sectionId"=$2
+                SELECT m."studentId",u.role FROM "Membership" m JOIN "User" u ON u.id=m."studentId"
+                WHERE m."sectionId"=$2 AND ($3::uuid[] IS NULL OR m."studentId"=ANY($3::uuid[]))
             ), inserted AS (
                 INSERT INTO "SurveyEligibility" ("surveyId","studentId")
                 SELECT $1,"studentId" FROM members WHERE NOT EXISTS (SELECT 1 FROM members WHERE role<>'RESPONDENT')
                 RETURNING "studentId"
             ) SELECT (SELECT count(*) FROM members WHERE role<>'RESPONDENT')::int AS invalid,
-                (SELECT count(*) FROM inserted)::int AS inserted`, [row.id, row.sectionId])).rows[0];
-            if (snapshot.invalid) fail(422, 'ELIGIBILITY_INVALID');
+                (SELECT count(*) FROM members)::int AS members,
+                (SELECT count(*) FROM inserted)::int AS inserted`, [row.id, row.sectionId, row.draftStudentIds])).rows[0];
+            if (snapshot.invalid || (row.draftStudentIds !== null && snapshot.members !== row.draftStudentIds.length))
+                fail(422, 'ELIGIBILITY_INVALID', 'Choose current Section members.');
             if (!snapshot.inserted) fail(422, 'ELIGIBILITY_EMPTY');
             const updated = (await db.query('UPDATE "Survey" SET status=\'PUBLISHED\',"publishedAt"=now() WHERE id=$1 RETURNING status,"publishedAt"', [row.id])).rows[0];
             Object.assign(row, updated);

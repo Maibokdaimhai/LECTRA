@@ -23,7 +23,24 @@ const question = z.object({
     const ids = q.options.flatMap(option => option.id ? [option.id] : []);
     return new Set(labels).size === labels.length && new Set(ids).size === ids.length;
 });
-const definition = z.object({ expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER), title: text(120), mode: z.enum(['IDENTIFIED', 'ANONYMOUS']).optional(), questions: z.array(question).max(10) }).strict();
+const draftStudentIds = z.array(id).refine(ids => new Set(ids).size === ids.length).nullable();
+const source = z.union([
+    z.object({ starterKey: z.string(), version: z.number().int().positive() }).strict(),
+    z.object({ surveyId: id, expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER) }).strict(),
+]);
+const draftCreation = z.object({
+    lectureId: id,
+    mode: z.enum(['IDENTIFIED', 'ANONYMOUS']).optional(),
+    source: source.optional(),
+}).strict();
+export function parseDraftCreation(value: unknown) {
+    const parsed = draftCreation.safeParse(value);
+    if (!parsed.success)
+        return fail(422, 'INVALID_REQUEST');
+    return parsed.data;
+}
+
+const definition = z.object({ expectedRevision: z.number().int().positive().max(Number.MAX_SAFE_INTEGER), title: text(120), mode: z.enum(['IDENTIFIED', 'ANONYMOUS']).optional(), questions: z.array(question).max(10), draftStudentIds: draftStudentIds.optional() }).strict();
 export function parseDefinition(value: unknown) {
     const parsed = definition.safeParse(value);
     if (!parsed.success)

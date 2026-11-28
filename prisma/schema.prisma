@@ -99,6 +99,8 @@ model Survey {
   status SurveyStatus @default(DRAFT)
   mode SurveyMode @default(IDENTIFIED)
   definitionRevision Int @default(1)
+  definitionSource Json?
+  draftStudentIds Json?
   publishedAt DateTime? @db.Timestamptz(3)
   closedAt DateTime? @db.Timestamptz(3)
   lecture Lecture @relation(fields: [lectureId], references: [id], onDelete: Restrict, onUpdate: Restrict)
@@ -121,6 +123,8 @@ model Question {
   ratingMinLabel String? @db.VarChar(120)
   ratingMaxLabel String? @db.VarChar(120)
   scaleInterpretation String? @db.VarChar(500)
+  templateSource Json?
+  metricVersion String?
   survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   answers Answer[]
   options QuestionOption[]
